@@ -1,0 +1,7 @@
+{
+  "best_cv_r2": 0.7241318922824005,
+  "best_feature_count": 12,
+  "selected_feature_count": 6,
+  "selected_cv_r2": 0.7072100795211563,
+  "explanation": "The highest mean cross-validation R\u00b2 was 0.7241 at 12 descriptor(s). Applying the one-standard-error rule (threshold = 0.6838), the smallest feature count within one SE of the best is 6 descriptor(s) with CV R\u00b2 = 0.7072. Training R\u00b2 exceeds validation R\u00b2, suggesting some overfitting may be present."
+}

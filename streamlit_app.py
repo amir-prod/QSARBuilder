@@ -1,0 +1,323 @@
+"""QSAR Agent Streamlit application."""
+
+from __future__ import annotations
+
+import io
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
+
+from qsar_agent.app_state import init_session_state, reset_session, set_workflow_state
+from qsar_agent.config import (
+    ClusteringConfig,
+    DescriptorConfig,
+    GAConfig,
+    ModelConfig,
+    PreprocessingConfig,
+    SFSConfig,
+    UMAPConfig,
+    WorkflowConfig,
+)
+from qsar_agent.schemas.workflow import StageStatus
+from qsar_agent.services.artifact_manager import generate_run_id, get_run_dir
+from qsar_agent.services.workflow_runner import WorkflowRunner
+from qsar_agent.tools.dataset_validation import validate_dataset
+
+MAX_UPLOAD_MB = 50
+APP_TITLE = "QSAR Agent"
+TOTAL_STAGES = 9
+
+st.set_page_config(page_title=APP_TITLE, page_icon="🧪", layout="wide")
+init_session_state()
+
+
+def file_download_button(label: str, path: str, mime: str = "application/octet-stream") -> None:
+    p = Path(path)
+    if p.exists():
+        st.download_button(label, p.read_bytes(), file_name=p.name, mime=mime)
+
+
+def render_header() -> None:
+    st.title(f"🧪 {APP_TITLE}")
+    st.markdown(
+        "Build regression QSAR models from SMILES and experimental activity using "
+        "Mordred descriptors, UMAP-based cluster splitting, sequential and genetic "
+        "feature selection, and Random Forest modeling."
+    )
+    st.warning(
+        "External-test performance is evaluated only after feature selection and "
+        "final model training. The test set is never used for tuning."
+    )
+    if st.session_state.get("run_id"):
+        st.info(f"Current run ID: `{st.session_state.run_id}`")
+
+
+def render_sidebar_config() -> WorkflowConfig:
+    st.sidebar.header("Configuration")
+    mapping = st.session_state.get("column_mapping", {})
+
+    test_fraction = st.sidebar.slider("External test fraction", 0.1, 0.4, 0.2, 0.05)
+    random_seed = st.sidebar.number_input("Random seed", 0, 99999, 42)
+    missing_thresh = st.sidebar.slider("Missing value threshold", 0.0, 0.5, 0.2, 0.05)
+    near_const = st.sidebar.number_input("Near-constant std threshold", 0.0, 0.1, 0.01, 0.001)
+    corr_thresh = st.sidebar.slider("Correlation threshold", 0.8, 0.99, 0.95, 0.01)
+    max_sfs = st.sidebar.slider("Max SFS descriptors", 1, 20, 20)
+    cv_folds = st.sidebar.number_input("CV folds", 2, 10, 5)
+    output_dir = st.sidebar.text_input("Output directory", "outputs")
+
+    with st.sidebar.expander("Model settings"):
+        n_estimators = st.number_input("RF n_estimators", 10, 500, 100)
+        max_depth = st.number_input("RF max_depth", 2, 50, 10)
+
+    with st.sidebar.expander("UMAP settings"):
+        n_neighbors = st.number_input("UMAP n_neighbors", 2, 50, 15)
+        min_dist = st.number_input("UMAP min_dist", 0.0, 1.0, 0.1)
+
+    with st.sidebar.expander("GA settings"):
+        pop_size = st.number_input("Population size", 10, 200, 50)
+        n_gen = st.number_input("Generations", 5, 100, 30)
+        cx_prob = st.slider("Crossover probability", 0.0, 1.0, 0.7)
+        mut_prob = st.slider("Mutation probability", 0.0, 1.0, 0.2)
+
+    return WorkflowConfig(
+        test_fraction=test_fraction,
+        random_seed=int(random_seed),
+        output_dir=output_dir,
+        smiles_column=mapping.get("smiles", ""),
+        activity_column=mapping.get("activity", ""),
+        id_column=mapping.get("id"),
+        umap=UMAPConfig(n_neighbors=int(n_neighbors), min_dist=float(min_dist)),
+        clustering=ClusteringConfig(),
+        preprocessing=PreprocessingConfig(
+            missing_value_threshold=missing_thresh,
+            near_constant_std_threshold=float(near_const),
+            correlation_threshold=corr_thresh,
+        ),
+        model=ModelConfig(n_estimators=int(n_estimators), max_depth=int(max_depth)),
+        descriptors=DescriptorConfig(),
+        ga=GAConfig(
+            population_size=int(pop_size),
+            n_generations=int(n_gen),
+            crossover_prob=cx_prob,
+            mutation_prob=mut_prob,
+            cv_folds=int(cv_folds),
+        ),
+        sfs=SFSConfig(max_features=int(max_sfs), cv_folds=int(cv_folds)),
+    )
+
+
+def render_upload_section() -> bytes | None:
+    st.header("Dataset Upload")
+    uploaded = st.file_uploader("Upload CSV dataset", type=["csv"])
+    if not uploaded:
+        return st.session_state.get("_upload_bytes")
+
+    upload_bytes = uploaded.getvalue()
+    st.session_state._upload_bytes = upload_bytes
+    size_mb = len(upload_bytes) / (1024 * 1024)
+    if size_mb > MAX_UPLOAD_MB:
+        st.error(f"File too large ({size_mb:.1f} MB). Maximum: {MAX_UPLOAD_MB} MB.")
+        return None
+
+    df = pd.read_csv(io.BytesIO(upload_bytes))
+    st.session_state.dataset_preview = df
+    st.session_state.uploaded_filename = uploaded.name
+    st.dataframe(df.head(20), use_container_width=True)
+    st.caption(f"Rows: {len(df)} | Columns: {len(df.columns)}")
+
+    cols = df.columns.tolist()
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        smiles_col = st.selectbox("SMILES column", cols, key="smiles_col")
+    with c2:
+        activity_col = st.selectbox("Activity column", cols, key="activity_col")
+    with c3:
+        id_options = ["(none)"] + cols
+        id_col = st.selectbox("Compound ID column (optional)", id_options, key="id_col")
+
+    st.session_state.column_mapping = {
+        "smiles": smiles_col,
+        "activity": activity_col,
+        "id": None if id_col == "(none)" else id_col,
+    }
+
+    numeric = pd.to_numeric(df[activity_col], errors="coerce")
+    st.write(
+        f"Activity stats: min={numeric.min():.3f}, max={numeric.max():.3f}, "
+        f"mean={numeric.mean():.3f}, missing={numeric.isna().sum()}"
+    )
+
+    if st.button("Validate Dataset"):
+        with st.spinner("Validating..."):
+            run_id = generate_run_id()
+            run_dir = get_run_dir("outputs", run_id)
+            tmp = run_dir / "upload_temp.csv"
+            tmp.write_bytes(upload_bytes)
+            try:
+                result = validate_dataset(
+                    tmp,
+                    smiles_col,
+                    activity_col,
+                    None if id_col == "(none)" else id_col,
+                    run_dir,
+                )
+                st.session_state.validation_result = result
+                st.session_state.run_id = run_id
+                st.success(
+                    f"Validation complete: {result.valid_compound_count} valid compounds."
+                )
+                st.json(result.model_dump())
+            except Exception as exc:
+                st.error(str(exc))
+
+    return upload_bytes
+
+
+def render_workflow_execution(config: WorkflowConfig, upload_bytes: bytes | None) -> None:
+    st.header("Workflow Execution")
+    if not upload_bytes:
+        st.info("Upload a dataset to run the workflow.")
+        return
+    if not config.smiles_column or not config.activity_column:
+        st.warning("Select SMILES and activity columns before running.")
+        return
+
+    c1, c2 = st.columns(2)
+    with c1:
+        run_clicked = st.button("Run QSAR Workflow", type="primary")
+    with c2:
+        if st.button("Reset Session"):
+            reset_session()
+            st.rerun()
+
+    if run_clicked:
+        run_id = generate_run_id()
+        run_dir = get_run_dir(config.output_dir, run_id)
+        dataset_path = run_dir / "input_dataset.csv"
+        dataset_path.write_bytes(upload_bytes)
+
+        progress = st.progress(0.0)
+        status_placeholder = st.empty()
+        stage_table = st.empty()
+
+        def on_progress(state) -> None:
+            completed = sum(
+                1 for s in state.stages if s.status == StageStatus.COMPLETED
+            )
+            progress.progress(min(completed / TOTAL_STAGES, 1.0))
+            running = [s.stage for s in state.stages if s.status == StageStatus.RUNNING]
+            if running:
+                status_placeholder.info(f"Running: {running[0]}")
+            stage_table.dataframe(
+                pd.DataFrame([s.model_dump() for s in state.stages]),
+                use_container_width=True,
+            )
+
+        try:
+            with st.status("Executing QSAR workflow...", expanded=True) as status:
+                runner = WorkflowRunner(
+                    config, dataset_path, progress_callback=on_progress, run_id=run_id
+                )
+                final_state = runner.run()
+                set_workflow_state(final_state)
+                status.update(label="Workflow complete!", state="complete")
+            st.success("QSAR workflow finished successfully.")
+        except Exception as exc:
+            st.error(f"Workflow failed: {exc}")
+
+    state = st.session_state.get("workflow_state")
+    if state:
+        st.subheader("Stage Status")
+        st.dataframe(
+            pd.DataFrame([s.model_dump() for s in state.stages]),
+            use_container_width=True,
+        )
+        if state.logs:
+            with st.expander("Logs"):
+                st.text("\n".join(state.logs[-50:]))
+        for warning in state.warnings:
+            st.warning(warning)
+
+
+def render_results_dashboard() -> None:
+    report = st.session_state.get("final_report")
+    artifacts = st.session_state.get("artifact_paths", {})
+    if not report:
+        return
+
+    st.header("Results Dashboard")
+    tabs = st.tabs(
+        [
+            "Dataset",
+            "Descriptors",
+            "Split",
+            "Feature Selection",
+            "Model",
+            "Applicability Domain",
+            "Downloads",
+            "Logs",
+        ]
+    )
+
+    with tabs[0]:
+        st.json(report.model_dump())
+        if artifacts.get("cleaned_dataset"):
+            st.dataframe(pd.read_csv(artifacts["cleaned_dataset"]).head())
+
+    with tabs[1]:
+        st.write(
+            f"Mordred: {report.initial_mordred_descriptors} | "
+            f"Preprocessed: {report.final_preprocessed_descriptors}"
+        )
+
+    with tabs[2]:
+        umap_plot = artifacts.get("umap_plot")
+        if umap_plot and Path(umap_plot).exists():
+            st.image(umap_plot)
+
+    with tabs[3]:
+        if artifacts.get("sfs_results"):
+            sfs_png = Path(artifacts["sfs_results"]).parent / "sfs_r2_vs_feature_count.png"
+            if sfs_png.exists():
+                st.image(str(sfs_png))
+        st.markdown(report.agent_explanation)
+        if artifacts.get("ga_selected_features"):
+            st.json(pd.read_json(artifacts["ga_selected_features"]))
+
+    with tabs[4]:
+        scatter = artifacts.get("prediction_scatter")
+        if scatter and Path(scatter).exists():
+            st.image(scatter)
+        st.write("Training:", report.train_metrics)
+        st.write("External test:", report.test_metrics)
+
+    with tabs[5]:
+        williams = artifacts.get("williams_plot")
+        if williams and Path(williams).exists():
+            st.image(williams)
+        st.write(report.applicability_domain_summary)
+
+    with tabs[6]:
+        for name, path in artifacts.items():
+            file_download_button(f"Download {name}", path)
+        ws = st.session_state.get("workflow_state")
+        if ws and ws.zip_path:
+            file_download_button("Download complete run ZIP", ws.zip_path, "application/zip")
+
+    with tabs[7]:
+        ws = st.session_state.get("workflow_state")
+        if ws and ws.logs:
+            st.text("\n".join(ws.logs))
+
+
+def main() -> None:
+    render_header()
+    upload_bytes = render_upload_section()
+    config = render_sidebar_config()
+    render_workflow_execution(config, upload_bytes)
+    render_results_dashboard()
+
+
+if __name__ == "__main__":
+    main()

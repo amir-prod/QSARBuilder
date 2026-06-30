@@ -1,2 +1,258 @@
-# QSARBuilder
-Creating a QSAR model given a data set containing compounds smiles and their endpoint.
+# QSAR Agent
+
+**QSAR Agent** is a Streamlit application for building regression QSAR models from SMILES and experimental activity data. It orchestrates a reproducible, leakage-aware workflow using Mordred descriptors, UMAP-based cluster splitting, sequential and genetic feature selection, and Random Forest modeling—with optional OpenAI agent coordination for feature-count decisions.
+
+> **Important:** External-test performance is evaluated only after feature selection and final model training. The test set is never used for preprocessing, tuning, or feature selection.
+
+## Features
+
+- CSV upload with column mapping (SMILES, activity, optional compound ID)
+- RDKit validation and canonicalization of SMILES
+- Mordred 2D descriptor calculation
+- UMAP + KMeans cluster-aware train/external-test split
+- Train-only descriptor preprocessing (imputation, variance/correlation filtering, scaling)
+- Sequential forward feature selection (mlxtend) with CV R² curves
+- One-standard-error rule for optimal descriptor count (OpenAI explains the choice)
+- DEAP genetic algorithm for final descriptor subset optimization
+- Random Forest final model with train and external-test metrics
+- Williams applicability-domain plot
+- Per-run artifact export and ZIP download
+
+## Architecture
+
+```
+streamlit_app.py          # Streamlit UI
+qsar_agent/
+  config.py               # Workflow defaults and OpenAI settings
+  app_state.py            # Streamlit session state helpers
+  schemas/                # Pydantic models for tools, state, and reports
+  tools/                  # Deterministic scientific pipeline stages
+  agents/                 # OpenAI-assisted feature-count explanation
+  services/               # Workflow runner, plotting, artifact management
+examples/                 # Original reference scripts (UMAP split, GA, SFS)
+example/                  # Sample input CSV for testing
+outputs/<run_id>/         # Isolated artifacts per workflow run
+tests/                    # Unit and integration tests
+```
+
+The OpenAI agent coordinates the workflow and explains decisions but **never** calculates descriptors, trains models, or fabricates metrics. All scientific work is done by deterministic Python tools.
+
+## Installation
+
+### Requirements
+
+- Python 3.9+ (3.10+ recommended)
+- RDKit-compatible environment (conda/micromamba recommended for cheminformatics deps)
+
+### Setup
+
+```bash
+cd QSARBuilder
+python -m venv .venv          # or: micromamba create -n qsar-agent python=3.11
+source .venv/bin/activate     # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+On Python 3.9, `eval_type_backport` (included in `requirements.txt`) is required for Pydantic type annotations.
+
+### OpenAI configuration (optional)
+
+The workflow runs without OpenAI. For agent explanations of feature-count selection, set:
+
+**Environment variables** (copy from `.env.example`):
+
+```bash
+export OPENAI_API_KEY="your_key_here"
+export OPENAI_MODEL="gpt-4o-mini"
+```
+
+**Or Streamlit secrets** (copy from `.streamlit/secrets.toml.example`):
+
+```toml
+OPENAI_API_KEY = "your_key_here"
+OPENAI_MODEL = "gpt-4o-mini"
+```
+
+Never commit `.env` or `.streamlit/secrets.toml` with real keys.
+
+## Running the application
+
+From the project root:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+Open the URL shown in the terminal (typically `http://localhost:8501`).
+
+### Quick start
+
+1. Upload a CSV dataset.
+2. Select **SMILES**, **activity**, and optional **compound ID** columns.
+3. Optionally click **Validate Dataset**.
+4. Adjust settings in the sidebar (test fraction, preprocessing thresholds, GA/SFS parameters).
+5. Click **Run QSAR Workflow**.
+6. Review results in the dashboard tabs and download artifacts.
+
+### Example dataset
+
+```bash
+example/synthetic_qsar_dataset.csv
+```
+
+Columns: `compound_id`, `smiles`, `pIC50` (30 compounds).
+
+## Expected CSV format
+
+| Column | Required | Description |
+|--------|----------|-------------|
+| SMILES | Yes | Structure strings (parsed with RDKit) |
+| Activity | Yes | Continuous numeric endpoint (e.g. pIC50, log IC50) |
+| Compound ID | No | Unique identifier; auto-generated if omitted |
+
+Invalid SMILES, missing activities, and duplicates are reported separately—not silently dropped without a record.
+
+## Workflow stages
+
+| Stage | Description |
+|-------|-------------|
+| 1. Dataset validation | Column checks, SMILES parsing, activity cleaning, duplicate handling |
+| 2. Mordred descriptors | All 2D Mordred descriptors (`ignore_3D=True`) |
+| 3. UMAP split | Provisional unsupervised preprocessing → UMAP embedding → KMeans clustering → per-cluster train/test split |
+| 4. Descriptor preprocessing | Train-only filtering, median imputation, StandardScaler; applied unchanged to test |
+| 5. Sequential feature selection | Forward SFS for 1…N descriptors with mean training and CV R² |
+| 6. Feature count selection | One-standard-error rule on CV R²; OpenAI explains the choice |
+| 7. Genetic algorithm | DEAP GA optimizes CV R² for exactly the selected descriptor count |
+| 8. Final model | Random Forest trained on GA-selected features; external test evaluated once |
+| 9. Applicability domain | Williams plot (leverage vs standardized residuals) |
+
+## Methodological notes
+
+### Near-constant filtering before StandardScaler
+
+Near-constant descriptors are removed using raw training-set standard deviation (`std < 0.01`) **before** `StandardScaler` is fit. After scaling, every non-constant feature has ~unit variance, so post-scaling variance checks would fail to detect near-constant raw descriptors.
+
+### Preprocessing fitted only on training data
+
+Missing-value thresholds, imputation values, correlation decisions, and scaling parameters are learned from the training set only and applied unchanged to the external test set.
+
+### External test set isolation
+
+The external test set is not used during:
+
+- Descriptor preprocessing decisions
+- Sequential feature selection
+- Feature-count selection (one-standard-error rule)
+- Genetic algorithm fitness
+- Hyperparameter tuning
+
+### UMAP is not clustering
+
+UMAP produces a 2D embedding; **KMeans** clusters that embedding (following the `examples/` reference code). Splitting is performed within each cluster to preserve chemical diversity.
+
+### Williams plot limitations
+
+The Williams plot is a classical descriptor-space diagnostic based on leverage and standardized residuals. Interpret with caution for nonlinear models such as Random Forest.
+
+### Corrections from reference `examples/` code
+
+- **GA fitness:** Cross-validation on the training set only (the example GA used the test set for fitness—data leakage).
+- **Preprocessing order:** Near-constant removal before scaling (examples scaled first).
+- **SFS efficiency:** A single mlxtend SFS fit up to `max_features` reads all subset sizes from `sfs.subsets_` (the example `build_each_model` pattern), rather than re-fitting SFS separately for each feature count.
+
+## Output files
+
+Each run writes to `outputs/<run_id>/`:
+
+| File | Description |
+|------|-------------|
+| `input_dataset.csv` | Uploaded dataset copy |
+| `cleaned_dataset.csv` | Valid, deduplicated compounds |
+| `invalid_rows.csv` | Invalid SMILES or activities (if any) |
+| `duplicate_compounds.csv` | Duplicate SMILES removed (if any) |
+| `dataset_validation.json` | Validation summary |
+| `mordred_descriptors_raw.csv` | Full Mordred descriptor matrix |
+| `mordred_calculation_report.json` | Descriptor calculation metadata |
+| `train_set_raw_descriptors.csv` / `test_set_raw_descriptors.csv` | Post-split descriptor sets |
+| `split_assignments.csv` / `umap_coordinates.csv` | Split and embedding coordinates |
+| `umap_split.png` / `.svg` | UMAP split figure |
+| `preprocessed_train_descriptors.csv` / `preprocessed_test_descriptors.csv` | Scaled descriptor matrices |
+| `descriptor_preprocessor.joblib` | Fitted preprocessing pipeline |
+| `descriptor_preprocessing_report.json` | Preprocessing summary |
+| `removed_descriptors.csv` | Descriptors removed and reasons |
+| `sfs_results.csv` | SFS R² vs descriptor count |
+| `sfs_r2_vs_feature_count.png` / `.svg` | SFS performance plot |
+| `selected_feature_count.json` | Chosen descriptor count |
+| `feature_count_selection_explanation.md` | Agent/rule explanation |
+| `ga_selected_features.json` / `ga_history.csv` | GA results |
+| `ga_convergence.png` / `.svg` | GA convergence plot |
+| `predictions.csv` / `model_metrics.json` | Per-compound predictions and metrics |
+| `final_model.joblib` | Trained Random Forest |
+| `prediction_scatter.png` / `.svg` | Predicted vs experimental plot |
+| `applicability_domain.csv` | Per-compound AD classification |
+| `williams_plot.png` / `.svg` | Williams plot |
+| `run_manifest.json` | Reproducibility metadata |
+| `qsar_agent_run_<run_id>.zip` | Complete run archive |
+
+## Configuration
+
+Key defaults (adjustable in the Streamlit sidebar):
+
+| Setting | Default |
+|---------|---------|
+| External test fraction | 0.20 |
+| Random seed | 42 |
+| Missing-value threshold | 20% |
+| Near-constant std threshold | 0.01 |
+| Correlation threshold | 0.95 |
+| Max SFS descriptors | 20 |
+| CV folds | 5 |
+| SFS / GA / model `n_jobs` | -1 (all cores) |
+| Random Forest | 100 trees, max_depth=10 |
+| GA population / generations | 50 / 30 |
+
+## Running tests
+
+```bash
+pytest tests/ -v
+```
+
+Skip the slow end-to-end smoke test:
+
+```bash
+pytest tests/ -v -m "not slow"
+```
+
+## Reproducibility
+
+`run_manifest.json` records Python and package versions, random seeds, model parameters, selected descriptors, and a SHA-256 hash of the input dataset. Re-running with the same data, configuration, and package versions should yield the same results as closely as the libraries allow.
+
+## Troubleshooting
+
+### `streamlit streamlit_app.py` fails
+
+Use `streamlit run streamlit_app.py` (the `run` subcommand is required).
+
+### Workflow stuck at sequential feature selection
+
+SFS evaluates many candidate feature subsets with cross-validation. With hundreds of retained descriptors this stage can take **15–30+ minutes** even with `n_jobs=-1`. Progress appears in the terminal running Streamlit (mlxtend logs like `Features: 3/20`). Reduce `Max SFS descriptors` or tighten preprocessing (higher correlation threshold, lower missing-value threshold) to retain fewer descriptors.
+
+### OpenAI errors
+
+The workflow continues without OpenAI; feature-count selection uses the deterministic one-standard-error rule. Check `OPENAI_API_KEY` and `OPENAI_MODEL` in `.env` or `.streamlit/secrets.toml`.
+
+### `PosixPath ... are the same file`
+
+Fixed: when the dataset is already saved as `input_dataset.csv` in the run directory, the workflow skips redundant copying.
+
+## Reference examples
+
+The `examples/` directory contains the original scripts this project extends:
+
+- `reg_cluster_split.py` — UMAP + KMeans cluster split
+- `ga_feature_selection_regression.py` — DEAP genetic algorithm (test-set leakage corrected in QSAR Agent)
+- `utils.py` — SFS, preprocessing helpers, UMAP clustering
+
+## License
+
+See [LICENSE](LICENSE).

@@ -1,0 +1,17 @@
+{
+  "original_row_count": 30,
+  "valid_compound_count": 29,
+  "invalid_smiles_count": 0,
+  "missing_or_invalid_activity_count": 0,
+  "duplicate_compound_count": 1,
+  "activity_stats": {
+    "min": 4.5,
+    "max": 6.0,
+    "mean": 5.210344827586206,
+    "median": 5.2,
+    "std": 0.35990557053820865
+  },
+  "smiles_column": "smiles",
+  "activity_column": "pIC50",
+  "id_column": null
+}

@@ -1,0 +1,152 @@
+{
+  "1": [
+    "BCUTd-1h"
+  ],
+  "2": [
+    "BCUTd-1h",
+    "Diameter"
+  ],
+  "3": [
+    "BCUTd-1h",
+    "SMR_VSA1",
+    "Diameter"
+  ],
+  "4": [
+    "AATSC7v",
+    "BCUTd-1h",
+    "SMR_VSA1",
+    "Diameter"
+  ],
+  "5": [
+    "nBase",
+    "AATSC7v",
+    "BCUTd-1h",
+    "SMR_VSA1",
+    "Diameter"
+  ],
+  "6": [
+    "nBase",
+    "AATSC7v",
+    "BCUTd-1h",
+    "SMR_VSA1",
+    "MDEC-33",
+    "Diameter"
+  ],
+  "7": [
+    "nBase",
+    "AATSC7v",
+    "BCUTd-1h",
+    "SMR_VSA1",
+    "MDEC-33",
+    "n10FAHRing",
+    "Diameter"
+  ],
+  "8": [
+    "nBase",
+    "AATSC7v",
+    "GATS4dv",
+    "BCUTd-1h",
+    "SMR_VSA1",
+    "MDEC-33",
+    "n10FAHRing",
+    "Diameter"
+  ],
+  "9": [
+    "nBase",
+    "AATSC7v",
+    "GATS4dv",
+    "BCUTd-1h",
+    "C3SP2",
+    "SMR_VSA1",
+    "MDEC-33",
+    "n10FAHRing",
+    "Diameter"
+  ],
+  "10": [
+    "nBase",
+    "AATSC7v",
+    "GATS4dv",
+    "BCUTd-1h",
+    "C3SP2",
+    "NddC",
+    "SMR_VSA1",
+    "MDEC-33",
+    "n10FAHRing",
+    "Diameter"
+  ],
+  "11": [
+    "nBase",
+    "AATSC7v",
+    "GATS4dv",
+    "BCUTd-1h",
+    "C3SP2",
+    "NddC",
+    "SMR_VSA1",
+    "MDEC-33",
+    "nFAHRing",
+    "n10FAHRing",
+    "Diameter"
+  ],
+  "12": [
+    "nBase",
+    "AATSC7v",
+    "GATS4dv",
+    "BCUTd-1h",
+    "C3SP2",
+    "Xc-6d",
+    "NddC",
+    "SMR_VSA1",
+    "MDEC-33",
+    "nFAHRing",
+    "n10FAHRing",
+    "Diameter"
+  ],
+  "13": [
+    "nBase",
+    "AATSC7v",
+    "GATS4dv",
+    "BCUTd-1h",
+    "C3SP2",
+    "Xc-6d",
+    "NddC",
+    "NssS",
+    "SMR_VSA1",
+    "MDEC-33",
+    "nFAHRing",
+    "n10FAHRing",
+    "Diameter"
+  ],
+  "14": [
+    "nBase",
+    "AATSC7v",
+    "GATS4dv",
+    "BCUTd-1h",
+    "C3SP2",
+    "Xc-6d",
+    "NddC",
+    "NssS",
+    "SMR_VSA1",
+    "MDEC-33",
+    "n10FARing",
+    "nFAHRing",
+    "n10FAHRing",
+    "Diameter"
+  ],
+  "15": [
+    "nBase",
+    "AATSC7v",
+    "GATS4dv",
+    "BCUTd-1h",
+    "C3SP2",
+    "Xc-6d",
+    "NddC",
+    "NssS",
+    "SMR_VSA1",
+    "MDEC-33",
+    "n10FARing",
+    "nFAHRing",
+    "n10FAHRing",
+    "n11FAHRing",
+    "Diameter"
+  ]
+}

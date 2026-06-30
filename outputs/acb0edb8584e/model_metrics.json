@@ -1,0 +1,22 @@
+{
+  "train": {
+    "r2": 0.9436083713521471,
+    "rmse": 0.2300198733576254,
+    "mae": 0.17832208681941414,
+    "n_samples": 152
+  },
+  "test": {
+    "r2": 0.15818938652462922,
+    "rmse": 0.8726682684566369,
+    "mae": 0.6410949537733617,
+    "n_samples": 39
+  },
+  "selected_features": [
+    "ATSC6se",
+    "MATS6are",
+    "BCUTZ-1h",
+    "SddsN",
+    "ETA_shape_y",
+    "ETA_beta_ns_d"
+  ]
+}
