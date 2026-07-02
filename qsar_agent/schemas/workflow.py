@@ -27,6 +27,12 @@ WORKFLOW_STAGES = [
     "sequential_feature_selection",
     "feature_count_selection",
     "genetic_algorithm",
+    "baseline_cv_diagnostics",
+    "overfitting_assessment",
+    "hpo_round_1",
+    "hpo_round_2",
+    "hpo_round_3",
+    "final_model_selection",
     "final_model",
     "applicability_domain",
 ]

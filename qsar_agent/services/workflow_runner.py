@@ -5,9 +5,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Callable
 
-from qsar_agent.agents.qsar_agent import build_final_report, run_agent_feature_count_selection
-from qsar_agent.config import WorkflowConfig
+from qsar_agent.agents.qsar_agent import (
+    build_final_report,
+    propose_hyperparameter_grid,
+    run_agent_feature_count_selection,
+)
+from qsar_agent.config import ModelConfig, WorkflowConfig
 from qsar_agent.logging_utils import append_log, append_warning, get_logger
+from qsar_agent.schemas.hyperparameter_optimization import HPOConfig, OverfittingThresholds
 from qsar_agent.schemas.workflow import StageStatus, WorkflowState
 from qsar_agent.services.artifact_manager import (
     copy_input_dataset,
@@ -22,11 +27,33 @@ from qsar_agent.tools.dataset_validation import validate_dataset
 from qsar_agent.tools.descriptor_preprocessing import fit_descriptor_preprocessor
 from qsar_agent.tools.final_model import train_and_evaluate_final_model
 from qsar_agent.tools.genetic_algorithm import run_genetic_algorithm
+from qsar_agent.tools.hyperparameter_optimization import run_iterative_hyperparameter_optimization
 from qsar_agent.tools.mordred_descriptors import calculate_mordred_descriptors
 from qsar_agent.tools.sequential_feature_selection import run_sequential_feature_selection
 from qsar_agent.tools.umap_split import create_umap_cluster_split
 
 logger = get_logger()
+
+
+def _hpo_config_from_workflow(config: WorkflowConfig) -> HPOConfig:
+    h = config.hpo
+    return HPOConfig(
+        enabled=h.enabled,
+        max_hpo_rounds=min(h.max_hpo_rounds, 3),
+        cv_folds=h.cv_folds or config.sfs.cv_folds,
+        max_candidates_per_round=h.max_candidates_per_round,
+        min_cv_improvement=h.min_cv_improvement,
+        random_seed=config.random_seed,
+        n_jobs=h.n_jobs,
+        openai_model=h.openai_model or "",
+        thresholds=OverfittingThresholds(
+            overfit_gap_threshold=h.overfit_gap_threshold,
+            severe_overfit_gap_threshold=h.severe_overfit_gap_threshold,
+            minimum_cv_r2=h.minimum_cv_r2,
+            cv_std_threshold=h.cv_std_threshold,
+            minimum_train_r2=h.minimum_train_r2,
+        ),
+    )
 
 
 class WorkflowRunner:
@@ -67,6 +94,10 @@ class WorkflowRunner:
     def _fail_stage(self, stage: str, error: str) -> None:
         self.state.set_stage_status(stage, StageStatus.FAILED, error)
         append_log(self.state.logs, f"Failed stage {stage}: {error}", "ERROR")
+        self._notify()
+
+    def _skip_stage(self, stage: str, message: str = "Skipped") -> None:
+        self.state.set_stage_status(stage, StageStatus.CANCELLED, message)
         self._notify()
 
     def run(self) -> WorkflowState:
@@ -184,17 +215,135 @@ class WorkflowRunner:
             self.artifact_paths["ga_selected_features"] = ga.selected_features_path
             self._complete_stage("genetic_algorithm")
 
-            # 8. Final model
+            hpo_cfg = _hpo_config_from_workflow(self.config)
+            train_df = __import__("pandas").read_csv(preprocessing.preprocessed_train_path)
+            n_train = len(train_df)
+            n_features = len(ga.selected_features)
+
+            def hpo_log(msg: str) -> None:
+                append_log(self.state.logs, msg)
+
+            if not hpo_cfg.enabled:
+                self._skip_stage("baseline_cv_diagnostics", "HPO disabled")
+                self._skip_stage("overfitting_assessment", "HPO disabled")
+                for r in (1, 2, 3):
+                    self._skip_stage(f"hpo_round_{r}", "HPO disabled")
+                self._skip_stage("final_model_selection", "HPO disabled")
+                hpo_result = run_iterative_hyperparameter_optimization(
+                    preprocessing.preprocessed_train_path,
+                    ga.selected_features,
+                    self.config.model,
+                    hpo_cfg,
+                    self.run_dir,
+                    log_callback=hpo_log,
+                )
+                final_model_config = ModelConfig(**hpo_result.final_model_config)
+                hpo_metadata = {
+                    "enabled": False,
+                    "max_rounds": hpo_cfg.max_hpo_rounds,
+                    "rounds_completed": 0,
+                    "final_model_source": "baseline",
+                    "final_params": self.config.model.model_dump(),
+                }
+            else:
+                self._start_stage("baseline_cv_diagnostics")
+
+                def grid_proposer(**kwargs):
+                    return propose_hyperparameter_grid(
+                        openai_model=hpo_cfg.openai_model or None,
+                        **kwargs,
+                    )
+
+                hpo_result = run_iterative_hyperparameter_optimization(
+                    preprocessing.preprocessed_train_path,
+                    ga.selected_features,
+                    self.config.model,
+                    hpo_cfg,
+                    self.run_dir,
+                    grid_proposer=grid_proposer,
+                    log_callback=hpo_log,
+                    n_features=n_features,
+                    n_train_samples=n_train,
+                )
+                self._complete_stage("baseline_cv_diagnostics")
+                self._start_stage("overfitting_assessment")
+                append_log(
+                    self.state.logs,
+                    f"Overfitting assessment: {hpo_result.baseline_assessment.status}. "
+                    f"Train-CV R² gap = {hpo_result.baseline_assessment.train_cv_r2_gap:.3f}.",
+                )
+                self._complete_stage("overfitting_assessment")
+
+                completed_rounds = hpo_result.rounds_completed
+                for r in (1, 2, 3):
+                    stage = f"hpo_round_{r}"
+                    if r <= completed_rounds:
+                        self.state.set_stage_status(
+                            stage,
+                            StageStatus.COMPLETED,
+                            f"Best CV R²={hpo_result.rounds[r - 1].best_cv_summary.mean_cv_r2:.3f}",
+                        )
+                    elif hpo_result.baseline_assessment and hpo_result.baseline_assessment.is_acceptable:
+                        self._skip_stage(stage, "Baseline acceptable")
+                    elif not hpo_result.hpo_triggered:
+                        self._skip_stage(stage, "HPO not required")
+                    else:
+                        self._skip_stage(stage, "Stopped early or max rounds not reached")
+                self._notify()
+
+                self._start_stage("final_model_selection")
+                append_log(
+                    self.state.logs,
+                    f"Final selected model: {hpo_result.final_selection.source}.",
+                )
+                self._complete_stage("final_model_selection")
+
+                final_model_config = ModelConfig(**hpo_result.final_model_config)
+                hpo_metadata = {
+                    "enabled": True,
+                    "max_rounds": hpo_cfg.max_hpo_rounds,
+                    "rounds_completed": hpo_result.rounds_completed,
+                    "final_model_source": hpo_result.final_selection.source,
+                    "final_params": hpo_result.final_selection.params,
+                    "baseline_assessment": (
+                        hpo_result.baseline_assessment.model_dump()
+                        if hpo_result.baseline_assessment
+                        else {}
+                    ),
+                    "final_assessment": (
+                        hpo_result.final_assessment.model_dump()
+                        if hpo_result.final_assessment
+                        else {}
+                    ),
+                }
+                self.artifact_paths.update(
+                    {
+                        "baseline_cv_metrics": hpo_result.baseline_cv.fold_metrics_path
+                        if hpo_result.baseline_cv
+                        else "",
+                        "baseline_overfitting_assessment": hpo_result.baseline_assessment_path,
+                        "hpo_iteration_log": hpo_result.iteration_log_md_path,
+                        "hpo_final_selection": hpo_result.final_selection_json_path,
+                        "hpo_summary_plot": hpo_result.summary_plot_png_path,
+                    }
+                )
+                for rr in hpo_result.rounds:
+                    self.artifact_paths[f"hpo_round_{rr.round_index}_results"] = (
+                        rr.search_results_path
+                    )
+
+            # Final model (external test evaluated only here)
             self._start_stage("final_model")
             modeling = train_and_evaluate_final_model(
                 preprocessing.preprocessed_train_path,
                 preprocessing.preprocessed_test_path,
                 self.run_dir,
                 ga.selected_features,
-                self.config.model,
+                final_model_config,
                 self.config.activity_column or "activity",
                 dataset_hash,
                 self.config.to_dict(),
+                hpo_metadata=hpo_metadata,
             )
             self.artifact_paths.update(
                 {

@@ -1,0 +1,79 @@
+{
+  "original_grid": {
+    "n_estimators": [
+      200,
+      500
+    ],
+    "max_depth": [
+      3,
+      5,
+      8,
+      12
+    ],
+    "min_samples_split": [
+      4,
+      8,
+      12
+    ],
+    "min_samples_leaf": [
+      2,
+      4,
+      8
+    ],
+    "max_features": [
+      "sqrt",
+      0.3,
+      0.5
+    ],
+    "bootstrap": [
+      true
+    ],
+    "max_samples": [
+      0.7,
+      0.9
+    ]
+  },
+  "sanitized_grid": {
+    "n_estimators": [
+      200,
+      500
+    ],
+    "max_depth": [
+      3,
+      12
+    ],
+    "min_samples_split": [
+      4,
+      12
+    ],
+    "min_samples_leaf": [
+      2,
+      8
+    ],
+    "max_features": [
+      "sqrt",
+      0.3,
+      0.5
+    ],
+    "bootstrap": [
+      true
+    ],
+    "max_samples": [
+      0.7,
+      0.9
+    ]
+  },
+  "removed_params": [],
+  "removed_values": {},
+  "shrink_steps": [
+    "Removed max_depth=8 to reduce candidates (remaining estimate=324).",
+    "Removed max_depth=5 to reduce candidates (remaining estimate=216).",
+    "Removed min_samples_split=8 to reduce candidates (remaining estimate=144).",
+    "Removed min_samples_leaf=4 to reduce candidates (remaining estimate=96)."
+  ],
+  "candidate_count": 96,
+  "used_randomized_search": false,
+  "warnings": [
+    "Grid has 432 combinations; shrinking to <= 120."
+  ]
+}

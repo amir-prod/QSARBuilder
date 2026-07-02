@@ -6,6 +6,7 @@ import json
 import platform
 import sys
 from pathlib import Path
+from typing import Any
 
 import joblib
 import numpy as np
@@ -17,7 +18,6 @@ from qsar_agent.schemas.modeling import Metrics, ModelingResult
 from qsar_agent.services import build_estimator
 from qsar_agent.services.artifact_manager import file_hash, save_json
 from qsar_agent.services.plotting import plot_prediction_scatter
-from qsar_agent.tools.mordred_descriptors import META_COLUMNS
 
 
 def _compute_metrics(y_true, y_pred) -> Metrics:
@@ -38,6 +38,7 @@ def train_and_evaluate_final_model(
     activity_label: str = "activity",
     dataset_hash: str = "",
     config_snapshot: dict | None = None,
+    hpo_metadata: dict[str, Any] | None = None,
 ) -> ModelingResult:
     """Train final model on GA-selected features; evaluate on external test."""
     train_df = pd.read_csv(train_path)
@@ -81,10 +82,12 @@ def train_and_evaluate_final_model(
     pred_path = run_dir / "predictions.csv"
     pd.DataFrame(predictions).to_csv(pred_path, index=False)
 
+    hpo_meta = hpo_metadata or {}
     metrics_data = {
         "train": train_metrics.model_dump(),
         "test": test_metrics.model_dump(),
         "selected_features": selected_features,
+        "hyperparameter_optimization": hpo_meta,
     }
     metrics_path = run_dir / "model_metrics.json"
     save_json(metrics_path, metrics_data)
@@ -116,6 +119,7 @@ def train_and_evaluate_final_model(
         "selected_features": selected_features,
         "dataset_hash": dataset_hash,
         "workflow_config": config_snapshot or {},
+        "hyperparameter_optimization": hpo_meta,
     }
     manifest_path = run_dir / "run_manifest.json"
     save_json(manifest_path, manifest)
@@ -130,4 +134,7 @@ def train_and_evaluate_final_model(
         scatter_png_path=str(png_path),
         scatter_svg_path=str(svg_path),
         manifest_path=str(manifest_path),
+        hpo_enabled=bool(hpo_meta.get("enabled", False)),
+        hpo_rounds_completed=int(hpo_meta.get("rounds_completed", 0)),
+        final_model_source=str(hpo_meta.get("final_model_source", "baseline")),
     )

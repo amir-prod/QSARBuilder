@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -13,11 +14,13 @@ from qsar_agent.config import (
     ClusteringConfig,
     DescriptorConfig,
     GAConfig,
+    HPOSettings,
     ModelConfig,
     PreprocessingConfig,
     SFSConfig,
     UMAPConfig,
     WorkflowConfig,
+    get_openai_model,
 )
 from qsar_agent.schemas.workflow import StageStatus
 from qsar_agent.services.artifact_manager import generate_run_id, get_run_dir
@@ -26,7 +29,7 @@ from qsar_agent.tools.dataset_validation import validate_dataset
 
 MAX_UPLOAD_MB = 50
 APP_TITLE = "QSAR Agent"
-TOTAL_STAGES = 9
+TOTAL_STAGES = 15
 
 st.set_page_config(page_title=APP_TITLE, page_icon="🧪", layout="wide")
 init_session_state()
@@ -46,8 +49,9 @@ def render_header() -> None:
         "feature selection, and Random Forest modeling."
     )
     st.warning(
-        "External-test performance is evaluated only after feature selection and "
-        "final model training. The test set is never used for tuning."
+        "External-test performance is evaluated only after feature selection, "
+        "hyperparameter optimization, and final model training. The test set is "
+        "never used for tuning."
     )
     if st.session_state.get("run_id"):
         st.info(f"Current run ID: `{st.session_state.run_id}`")
@@ -80,6 +84,21 @@ def render_sidebar_config() -> WorkflowConfig:
         cx_prob = st.slider("Crossover probability", 0.0, 1.0, 0.7)
         mut_prob = st.slider("Mutation probability", 0.0, 1.0, 0.2)
 
+    with st.sidebar.expander("Hyperparameter Optimization", expanded=True):
+        hpo_enabled = st.checkbox("Enable HPO", value=True)
+        max_hpo_rounds = st.number_input("Max HPO rounds", 1, 3, 3)
+        max_candidates = st.number_input("Max grid candidates per round", 20, 300, 120)
+        min_cv_r2 = st.slider("Minimum acceptable CV R²", 0.0, 1.0, 0.50, 0.05)
+        overfit_gap = st.slider("Overfit gap threshold", 0.05, 0.5, 0.15, 0.01)
+        severe_overfit_gap = st.slider("Severe overfit gap threshold", 0.1, 0.6, 0.25, 0.01)
+        cv_std_thresh = st.slider("CV std threshold", 0.05, 0.5, 0.15, 0.01)
+        min_cv_improvement = st.slider("Min CV improvement to stop", 0.0, 0.2, 0.02, 0.01)
+        hpo_n_jobs = st.number_input("HPO parallel jobs (-1 = all cores)", -1, 16, -1)
+        hpo_openai_model = st.text_input(
+            "OpenAI model for HPO grids",
+            value=get_openai_model(),
+        )
+
     return WorkflowConfig(
         test_fraction=test_fraction,
         random_seed=int(random_seed),
@@ -104,6 +123,19 @@ def render_sidebar_config() -> WorkflowConfig:
             cv_folds=int(cv_folds),
         ),
         sfs=SFSConfig(max_features=int(max_sfs), cv_folds=int(cv_folds)),
+        hpo=HPOSettings(
+            enabled=hpo_enabled,
+            max_hpo_rounds=int(max_hpo_rounds),
+            cv_folds=int(cv_folds),
+            max_candidates_per_round=int(max_candidates),
+            minimum_cv_r2=float(min_cv_r2),
+            overfit_gap_threshold=float(overfit_gap),
+            severe_overfit_gap_threshold=float(severe_overfit_gap),
+            cv_std_threshold=float(cv_std_thresh),
+            min_cv_improvement=float(min_cv_improvement),
+            n_jobs=int(hpo_n_jobs),
+            openai_model=hpo_openai_model,
+        ),
     )
 
 
@@ -253,6 +285,7 @@ def render_results_dashboard() -> None:
             "Descriptors",
             "Split",
             "Feature Selection",
+            "Hyperparameter Optimization",
             "Model",
             "Applicability Domain",
             "Downloads",
@@ -286,26 +319,76 @@ def render_results_dashboard() -> None:
             st.json(pd.read_json(artifacts["ga_selected_features"]))
 
     with tabs[4]:
+        run_dir = Path(artifacts.get("run_manifest", "")).parent if artifacts.get("run_manifest") else None
+        if run_dir and run_dir.exists():
+            baseline_json = run_dir / "baseline_overfitting_assessment.json"
+            if baseline_json.exists():
+                st.subheader("Baseline overfitting assessment")
+                st.json(json.loads(baseline_json.read_text(encoding="utf-8")))
+            baseline_csv = run_dir / "baseline_cv_metrics.csv"
+            if baseline_csv.exists():
+                st.subheader("Baseline CV metrics")
+                st.dataframe(pd.read_csv(baseline_csv), use_container_width=True)
+            hpo_log = run_dir / "hpo_iteration_log.md"
+            if hpo_log.exists():
+                st.subheader("HPO iteration log")
+                st.markdown(hpo_log.read_text(encoding="utf-8"))
+            final_sel = run_dir / "hpo_final_selection.json"
+            if final_sel.exists():
+                st.subheader("Final selected configuration")
+                st.json(json.loads(final_sel.read_text(encoding="utf-8")))
+            summary_plot = artifacts.get("hpo_summary_plot") or str(run_dir / "hpo_summary.png")
+            if Path(summary_plot).exists():
+                st.image(summary_plot)
+            for i in (1, 2, 3):
+                perf = run_dir / f"hpo_round_{i}_performance.png"
+                if perf.exists():
+                    st.subheader(f"HPO round {i} performance")
+                    st.image(str(perf))
+            hpo_downloads = [
+                "baseline_cv_metrics.csv",
+                "baseline_overfitting_assessment.json",
+                "final_overfitting_assessment.json",
+                "hpo_iteration_log.json",
+                "hpo_iteration_log.md",
+                "hpo_final_selection.json",
+                "hpo_final_selection_explanation.md",
+                "hpo_all_rounds_summary.csv",
+                "hpo_summary.png",
+                "hpo_summary.csv",
+            ]
+            for name in hpo_downloads:
+                p = run_dir / name
+                if p.exists():
+                    file_download_button(f"Download {name}", str(p))
+        else:
+            st.info("HPO artifacts will appear here after a workflow run with HPO enabled.")
+
+    with tabs[5]:
         scatter = artifacts.get("prediction_scatter")
         if scatter and Path(scatter).exists():
             st.image(scatter)
         st.write("Training:", report.train_metrics)
         st.write("External test:", report.test_metrics)
+        if hasattr(report, "train_metrics"):
+            ws = st.session_state.get("workflow_state")
+            if ws and ws.config_snapshot.get("hpo", {}).get("enabled"):
+                st.caption("Final model selected using training CV only before external-test evaluation.")
 
-    with tabs[5]:
+    with tabs[6]:
         williams = artifacts.get("williams_plot")
         if williams and Path(williams).exists():
             st.image(williams)
         st.write(report.applicability_domain_summary)
 
-    with tabs[6]:
+    with tabs[7]:
         for name, path in artifacts.items():
             file_download_button(f"Download {name}", path)
         ws = st.session_state.get("workflow_state")
         if ws and ws.zip_path:
             file_download_button("Download complete run ZIP", ws.zip_path, "application/zip")
 
-    with tabs[7]:
+    with tabs[8]:
         ws = st.session_state.get("workflow_state")
         if ws and ws.logs:
             st.text("\n".join(ws.logs))

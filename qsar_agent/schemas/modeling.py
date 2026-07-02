@@ -22,3 +22,6 @@ class ModelingResult(BaseModel):
     scatter_png_path: str
     scatter_svg_path: str
     manifest_path: str
+    hpo_enabled: bool = False
+    hpo_rounds_completed: int = 0
+    final_model_source: str = "baseline"

@@ -98,6 +98,70 @@ def plot_ga_convergence(history_df, png_path: Path, svg_path: Path) -> None:
     save_figure(fig, png_path, svg_path)
 
 
+def plot_hpo_round_performance(
+    candidates,
+    png_path: Path,
+    svg_path: Path,
+    round_index: int,
+) -> None:
+    if not candidates:
+        return
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ranks = [c.rank for c in candidates]
+    train_r2 = [c.mean_train_r2 for c in candidates]
+    cv_r2 = [c.mean_cv_r2 for c in candidates]
+    cv_std = [c.std_cv_r2 for c in candidates]
+    ax.plot(ranks, train_r2, "o-", label="Mean train R²", color="blue", alpha=0.7)
+    ax.errorbar(
+        ranks,
+        cv_r2,
+        yerr=cv_std,
+        fmt="s-",
+        label="Mean CV R²",
+        color="green",
+        capsize=3,
+        alpha=0.8,
+    )
+    best = next((c for c in candidates if c.is_best), candidates[0])
+    ax.axvline(best.rank, color="red", linestyle="--", label=f"Best (rank {best.rank})")
+    ax.set_xlabel("Candidate rank")
+    ax.set_ylabel("R²")
+    ax.set_title(f"HPO Round {round_index}: Train vs CV Performance")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+    save_figure(fig, png_path, svg_path)
+
+
+def plot_hpo_summary(
+    summary_rows: list[dict],
+    png_path: Path,
+    svg_path: Path,
+    selected_source: str,
+) -> None:
+    if not summary_rows:
+        return
+    fig, ax = plt.subplots(figsize=(10, 5))
+    labels = [r["source"] for r in summary_rows]
+    x = np.arange(len(labels))
+    train_r2 = [r["mean_train_r2"] for r in summary_rows]
+    cv_r2 = [r["mean_cv_r2"] for r in summary_rows]
+    cv_std = [r["std_cv_r2"] for r in summary_rows]
+    ax.plot(x, train_r2, "o-", label="Mean train R²", color="blue")
+    ax.errorbar(x, cv_r2, yerr=cv_std, fmt="s-", label="Mean CV R²", color="green", capsize=3)
+    for i, row in enumerate(summary_rows):
+        if row["source"] == selected_source:
+            ax.axvline(i, color="red", linestyle="--", alpha=0.6)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, rotation=20, ha="right")
+    ax.set_ylabel("R²")
+    ax.set_title("HPO Summary: Baseline and Rounds")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+    save_figure(fig, png_path, svg_path)
+
+
 def plot_prediction_scatter(
     train_true,
     train_pred,

@@ -14,6 +14,7 @@
 - Sequential forward feature selection (mlxtend) with CV R² curves
 - One-standard-error rule for optimal descriptor count (OpenAI explains the choice)
 - DEAP genetic algorithm for final descriptor subset optimization
+- Agent-guided hyperparameter optimization (up to 3 rounds, training CV only)
 - Random Forest final model with train and external-test metrics
 - Williams applicability-domain plot
 - Per-run artifact export and ZIP download
@@ -123,8 +124,64 @@ Invalid SMILES, missing activities, and duplicates are reported separately—not
 | 5. Sequential feature selection | Forward SFS for 1…N descriptors with mean training and CV R² |
 | 6. Feature count selection | One-standard-error rule on CV R²; OpenAI explains the choice |
 | 7. Genetic algorithm | DEAP GA optimizes CV R² for exactly the selected descriptor count |
-| 8. Final model | Random Forest trained on GA-selected features; external test evaluated once |
-| 9. Applicability domain | Williams plot (leverage vs standardized residuals) |
+| 8. Hyperparameter optimization | Baseline CV diagnostics, overfitting assessment, up to 3 agent-guided HPO rounds (training only) |
+| 9. Final model selection | Choose baseline or best HPO configuration using training CV only |
+| 10. Final model | Random Forest trained on selected features; external test evaluated once |
+| 11. Applicability domain | Williams plot (leverage vs standardized residuals) |
+
+## Hyperparameter optimization (HPO)
+
+After genetic feature selection, the workflow can tune Random Forest hyperparameters using **only the preprocessed training set**.
+
+### What overfitting means here
+
+Overfitting is detected from **training cross-validation** diagnostics, not external-test performance:
+
+- **Train–CV R² gap** = mean training-fold R² minus mean validation-fold R²
+- Large gap with high training R² → likely overfitting
+- Low training and CV R² → underfitting
+- High CV R² standard deviation → unstable model
+- CV R² below the minimum threshold → poor performance
+
+Default thresholds: gap > 0.15 (overfit), gap > 0.25 (severe warning), minimum CV R² = 0.50, CV std > 0.15 (unstable).
+
+### Why external test is excluded from HPO
+
+The external test set is **never** used to propose grids, score candidates, assess overfitting, or select the final model. It is evaluated **once** after the final configuration is chosen and the model is retrained on all training compounds.
+
+### Agent-guided grids
+
+When `OPENAI_API_KEY` is set, the agent proposes structured JSON hyperparameter grids (Random Forest only). Invalid responses trigger one repair attempt, then a deterministic fallback grid (regularization-focused for overfit, capacity-focused for underfit, stability-focused for unstable CV). The agent does **not** train models or invent metrics.
+
+### Maximum 3 HPO rounds
+
+If the baseline model is acceptable, HPO is skipped. Otherwise the workflow runs up to **3 rounds** of grid search. Each round logs `HPO round X/3` in Streamlit and artifact logs. Search stops early when an acceptable model is found.
+
+### Disabling HPO
+
+In the Streamlit sidebar, uncheck **Enable HPO** or set `hpo.enabled: false` in configuration. The workflow uses the default Random Forest settings from the Model settings panel.
+
+### HPO artifacts
+
+| File | Description |
+|------|-------------|
+| `baseline_cv_metrics.csv` / `baseline_cv_summary.json` | Baseline K-fold CV on training set |
+| `baseline_overfitting_assessment.json` | Baseline overfitting classification |
+| `hpo_round_<i>_agent_grid.json` / `_agent_explanation.md` | Agent-proposed grid and rationale |
+| `hpo_round_<i>_grid_sanitization.json` | Sanitized grid and shrink log |
+| `hpo_round_<i>_search_results.csv` | All candidates scored in the round |
+| `hpo_round_<i>_best_params.json` / `_cv_summary.json` | Best candidate per round |
+| `hpo_round_<i>_overfitting_assessment.json` | Round best-model assessment |
+| `hpo_round_<i>_performance.png` / `.svg` | Train vs CV R² per candidate |
+| `hpo_iteration_log.json` / `.md` | Full HPO decision log |
+| `hpo_final_selection.json` / `_explanation.md` | Final model source and rationale |
+| `hpo_all_rounds_summary.csv` / `hpo_summary.png` | Cross-round summary |
+| `hpo_agent_fallback_log.json` | Agent/fallback events (if any) |
+| `final_overfitting_assessment.json` | Assessment of selected configuration |
+
+### Limitations
+
+Automated overfitting detection from CV metrics is a heuristic. High descriptor-to-sample ratios, activity noise, and small training sets can produce misleading gaps or unstable CV scores. HPO improves regularization but does not guarantee external-test performance.
 
 ## Methodological notes
 
@@ -186,6 +243,8 @@ Each run writes to `outputs/<run_id>/`:
 | `feature_count_selection_explanation.md` | Agent/rule explanation |
 | `ga_selected_features.json` / `ga_history.csv` | GA results |
 | `ga_convergence.png` / `.svg` | GA convergence plot |
+| `baseline_cv_metrics.csv` / `baseline_overfitting_assessment.json` | HPO baseline diagnostics |
+| `hpo_iteration_log.md` / `hpo_final_selection.json` | HPO decisions (when enabled) |
 | `predictions.csv` / `model_metrics.json` | Per-compound predictions and metrics |
 | `final_model.joblib` | Trained Random Forest |
 | `prediction_scatter.png` / `.svg` | Predicted vs experimental plot |
@@ -210,6 +269,11 @@ Key defaults (adjustable in the Streamlit sidebar):
 | SFS / GA / model `n_jobs` | -1 (all cores) |
 | Random Forest | 100 trees, max_depth=10 |
 | GA population / generations | 50 / 30 |
+| HPO enabled | true |
+| Max HPO rounds | 3 |
+| Max grid candidates / round | 120 |
+| Minimum acceptable CV R² | 0.50 |
+| Overfit gap threshold | 0.15 |
 
 ## Running tests
 

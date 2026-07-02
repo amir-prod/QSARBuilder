@@ -6,13 +6,144 @@ import json
 from pathlib import Path
 from typing import Any
 
+from pydantic import ValidationError
+
 from qsar_agent.config import WorkflowConfig, get_openai_api_key, get_openai_model
 from qsar_agent.schemas.feature_selection import FeatureCountSelection, SFSResult
+from qsar_agent.schemas.hyperparameter_optimization import AgentGridProposal
 from qsar_agent.schemas.workflow import AgentFinalReport
 from qsar_agent.tools.feature_count_selection import (
     save_feature_count_selection,
     select_feature_count_one_se_rule,
 )
+from qsar_agent.tools.hyperparameter_optimization import (
+    count_grid_combinations,
+    get_fallback_grid,
+)
+
+
+def _parse_agent_json(content: str) -> dict[str, Any]:
+    text = content.strip()
+    if text.startswith("```"):
+        lines = text.split("\n")
+        lines = [ln for ln in lines if not ln.strip().startswith("```")]
+        text = "\n".join(lines)
+    return json.loads(text)
+
+
+def propose_hyperparameter_grid(
+    round_index: int,
+    model_type: str,
+    baseline_assessment: Any,
+    previous_hpo_results: list[Any],
+    constraints: dict[str, Any],
+    openai_model: str | None = None,
+    use_openai: bool = True,
+) -> AgentGridProposal:
+    """
+    Ask OpenAI to propose a structured hyperparameter grid.
+
+    Falls back to deterministic grids when the API is unavailable or output is invalid.
+    """
+    max_candidates = constraints.get("max_candidates", 120)
+    n_features = constraints.get("n_features")
+    n_train_samples = constraints.get("n_train_samples")
+
+    def _fallback(reason: str) -> AgentGridProposal:
+        grid = get_fallback_grid(baseline_assessment.status)
+        return AgentGridProposal(
+            round_index=round_index,
+            reasoning_summary=f"Deterministic fallback: {reason}",
+            search_strategy="fallback",
+            proposed_grid=grid,
+            expected_effect_on_overfitting="Template grid for detected issue.",
+            expected_effect_on_underfitting="Template grid for detected issue.",
+            computational_cost_estimate=str(count_grid_combinations(grid)),
+            warnings=[reason],
+        )
+
+    api_key = get_openai_api_key() if use_openai else None
+    if not api_key:
+        return _fallback("OpenAI API key not configured.")
+
+    prev_summary = []
+    for rr in previous_hpo_results:
+        prev_summary.append(
+            {
+                "round": rr.round_index,
+                "best_params": rr.best_params,
+                "mean_cv_r2": rr.best_cv_summary.mean_cv_r2,
+                "gap": rr.assessment.train_cv_r2_gap,
+                "status": rr.assessment.status,
+            }
+        )
+
+    system_prompt = (
+        "You are a QSAR modeling assistant. Propose ONLY a JSON hyperparameter search grid "
+        "for sklearn RandomForestRegressor. Do NOT train models or invent metrics. "
+        "Allowed params: n_estimators (100-1000), max_depth (2-50 or null), "
+        "min_samples_split (2-30), min_samples_leaf (1-20), "
+        "max_features (sqrt, log2, 0.3, 0.5, 0.7, 1.0), bootstrap (true/false), "
+        "max_samples (null or 0.5-1.0, only with bootstrap=true), "
+        "criterion (squared_error, absolute_error, friedman_mse). "
+        f"Keep total combinations near or below {max_candidates}. "
+        "Return JSON matching the AgentGridProposal schema fields."
+    )
+
+    user_prompt = (
+        f"Round: {round_index}\n"
+        f"Model type: {model_type}\n"
+        f"Baseline assessment: {baseline_assessment.model_dump_json()}\n"
+        f"Previous HPO rounds: {json.dumps(prev_summary)}\n"
+        f"Dataset: n_train={n_train_samples}, n_features={n_features}\n"
+        f"Max candidates: {max_candidates}\n"
+        "Respond with JSON only:\n"
+        "{"
+        '"round_index": int, "reasoning_summary": str, "search_strategy": str, '
+        '"proposed_grid": {param: [values]}, '
+        '"expected_effect_on_overfitting": str, '
+        '"expected_effect_on_underfitting": str, '
+        '"computational_cost_estimate": str, "warnings": [str]'
+        "}"
+    )
+
+    model = openai_model or get_openai_model()
+
+    def _call_and_validate(repair: bool = False) -> AgentGridProposal:
+        from openai import OpenAI
+
+        client = OpenAI(api_key=api_key)
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+        if repair:
+            messages.append(
+                {
+                    "role": "user",
+                    "content": (
+                        "Your previous response was invalid. Return valid JSON only, "
+                        "with allowed hyperparameter values."
+                    ),
+                }
+            )
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=0,
+        )
+        raw = response.choices[0].message.content or ""
+        data = _parse_agent_json(raw)
+        data["round_index"] = round_index
+        return AgentGridProposal.model_validate(data)
+
+    try:
+        return _call_and_validate()
+    except (json.JSONDecodeError, ValidationError, Exception):
+        try:
+            return _call_and_validate(repair=True)
+        except Exception as exc:
+            return _fallback(f"Agent grid validation failed: {exc}")
 
 
 def run_agent_feature_count_selection(

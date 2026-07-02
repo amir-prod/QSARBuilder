@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from qsar_agent.config import GAConfig, SFSConfig, WorkflowConfig
+from qsar_agent.config import GAConfig, HPOSettings, SFSConfig, WorkflowConfig
 from qsar_agent.services.workflow_runner import WorkflowRunner
 from qsar_agent.schemas.workflow import StageStatus
 
@@ -19,6 +19,7 @@ def test_workflow_smoke(synthetic_dataset, tmp_run_dir):
         min_valid_compounds=15,
         ga=GAConfig(population_size=15, n_generations=3, cv_folds=3),
         sfs=SFSConfig(max_features=5, cv_folds=3),
+        hpo=HPOSettings(enabled=False),
     )
 
     with patch("qsar_agent.agents.qsar_agent.get_openai_api_key", return_value=None):

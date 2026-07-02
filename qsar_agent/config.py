@@ -31,9 +31,30 @@ class PreprocessingConfig(BaseModel):
 class ModelConfig(BaseModel):
     estimator: str = "RandomForestRegressor"
     n_estimators: int = 100
-    max_depth: int = 10
+    max_depth: int | None = 10
+    min_samples_split: int = 2
+    min_samples_leaf: int = 1
+    max_features: str | float = "sqrt"
+    bootstrap: bool = True
+    max_samples: float | None = None
+    criterion: str = "squared_error"
     random_state: int = 42
     n_jobs: int = -1
+
+
+class HPOSettings(BaseModel):
+    enabled: bool = True
+    max_hpo_rounds: int = 3
+    cv_folds: int = 5
+    max_candidates_per_round: int = 120
+    min_cv_improvement: float = 0.02
+    overfit_gap_threshold: float = 0.15
+    severe_overfit_gap_threshold: float = 0.25
+    minimum_cv_r2: float = 0.50
+    cv_std_threshold: float = 0.15
+    minimum_train_r2: float = 0.40
+    n_jobs: int = -1
+    openai_model: str = ""
 
 
 class DescriptorConfig(BaseModel):
@@ -69,6 +90,7 @@ class WorkflowConfig(BaseModel):
     descriptors: DescriptorConfig = Field(default_factory=DescriptorConfig)
     ga: GAConfig = Field(default_factory=GAConfig)
     sfs: SFSConfig = Field(default_factory=SFSConfig)
+    hpo: HPOSettings = Field(default_factory=HPOSettings)
     smiles_column: str = ""
     activity_column: str = ""
     id_column: str | None = None

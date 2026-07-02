@@ -51,9 +51,10 @@ def file_hash(path: str | Path) -> str:
     return h.hexdigest()
 
 
-def save_json(path: Path, data: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
+def save_json(path: str | Path, data: dict[str, Any]) -> None:
+    out = Path(path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with open(out, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, default=str)
 
 
