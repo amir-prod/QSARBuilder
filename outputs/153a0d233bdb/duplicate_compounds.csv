@@ -1,0 +1,2 @@
+compound_id,smiles,pIC50,original_row_index,raw_smiles,raw_activity,canonical_smiles,invalid_smiles,activity
+compound_29,c1ccccc1O,5.9,29,c1ccccc1O,5.9,Oc1ccccc1,False,5.9

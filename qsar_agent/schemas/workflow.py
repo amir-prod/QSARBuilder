@@ -33,6 +33,7 @@ WORKFLOW_STAGES = [
     "hpo_round_2",
     "hpo_round_3",
     "final_model_selection",
+    "model_fallback",
     "final_model",
     "applicability_domain",
 ]
@@ -60,6 +61,8 @@ class AgentFinalReport(BaseModel):
     warnings: list[str] = Field(default_factory=list)
     artifact_paths: dict[str, str] = Field(default_factory=dict)
     agent_explanation: str = ""
+    estimator: str = "RandomForestRegressor"
+    model_comparison_summary: str = ""
 
 
 class WorkflowState(BaseModel):

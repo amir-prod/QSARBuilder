@@ -40,6 +40,7 @@ class ModelConfig(BaseModel):
     criterion: str = "squared_error"
     random_state: int = 42
     n_jobs: int = -1
+    params: dict[str, Any] = Field(default_factory=dict)
 
 
 class HPOSettings(BaseModel):
@@ -79,6 +80,18 @@ class SFSConfig(BaseModel):
     n_jobs: int = -1
 
 
+class ModelFallbackSettings(BaseModel):
+    enabled: bool = True
+    estimators: list[str] = Field(
+        default_factory=lambda: [
+            "PLSRegression",
+            "ExtraTreesRegressor",
+            "SVR",
+            "KNeighborsRegressor",
+        ]
+    )
+
+
 class WorkflowConfig(BaseModel):
     test_fraction: float = 0.20
     random_seed: int = 42
@@ -91,6 +104,7 @@ class WorkflowConfig(BaseModel):
     ga: GAConfig = Field(default_factory=GAConfig)
     sfs: SFSConfig = Field(default_factory=SFSConfig)
     hpo: HPOSettings = Field(default_factory=HPOSettings)
+    model_fallback: ModelFallbackSettings = Field(default_factory=ModelFallbackSettings)
     smiles_column: str = ""
     activity_column: str = ""
     id_column: str | None = None
@@ -100,20 +114,53 @@ class WorkflowConfig(BaseModel):
         return self.model_dump()
 
 
+def _project_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
+def load_env_file(env_path: Path | None = None) -> bool:
+    """
+    Load environment variables from a .env file.
+
+    Searches the project root by default. Returns True if a file was loaded.
+    Existing environment variables are not overwritten.
+    """
+    try:
+        from dotenv import load_dotenv
+    except ImportError:
+        return False
+
+    path = env_path or (_project_root() / ".env")
+    if not path.exists():
+        return False
+    load_dotenv(path, override=False)
+    return True
+
+
+# Load .env when this module is imported (Streamlit, CLI, tests).
+load_env_file()
+
+
 def get_openai_model() -> str:
-    return os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+    model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+    return model.strip().strip('"').strip("'")
 
 
 def get_openai_api_key() -> str | None:
     key = os.environ.get("OPENAI_API_KEY")
     if key:
-        return key
+        key = key.strip().strip('"').strip("'")
+        if key:
+            return key
     try:
         import streamlit as st
 
-        return st.secrets.get("OPENAI_API_KEY")
+        secret = st.secrets.get("OPENAI_API_KEY")
+        if secret:
+            return str(secret).strip()
     except Exception:
-        return None
+        pass
+    return None
 
 
 def default_output_dir() -> Path:

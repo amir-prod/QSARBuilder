@@ -1,0 +1,18 @@
+{
+  "status": "unstable",
+  "is_acceptable": false,
+  "is_overfit": true,
+  "is_underfit": false,
+  "is_unstable": true,
+  "is_severe_overfit": true,
+  "mean_train_r2": 0.6263011441247202,
+  "mean_cv_r2": -0.324565927667561,
+  "train_cv_r2_gap": 0.9508670717922811,
+  "cv_r2_std": 0.9291231553061383,
+  "warnings": [
+    "Severe overfitting: train-CV R\u00b2 gap (0.951) exceeds 0.25.",
+    "High CV R\u00b2 standard deviation: 0.929.",
+    "CV R\u00b2 (-0.325) is below minimum threshold."
+  ],
+  "explanation": "CV R\u00b2 variability is high (std=0.929 > 0.15). The model may be sensitive to training fold composition."
+}

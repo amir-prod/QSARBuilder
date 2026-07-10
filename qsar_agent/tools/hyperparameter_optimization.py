@@ -12,6 +12,14 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import GridSearchCV, KFold, RandomizedSearchCV
 
 from qsar_agent.config import ModelConfig
+from qsar_agent.models.registry import (
+    baseline_params_from_config,
+    count_grid_combinations,
+    get_fallback_grid,
+    model_simplicity_score,
+    params_to_model_config,
+    sanitize_param_grid,
+)
 from qsar_agent.schemas.hyperparameter_optimization import (
     AgentGridProposal,
     BaselineCVResult,
@@ -31,196 +39,17 @@ from qsar_agent.services.artifact_manager import save_json
 from qsar_agent.services.plotting import plot_hpo_round_performance, plot_hpo_summary
 from qsar_agent.tools.overfitting_assessment import assess_overfitting
 
-ALLOWED_RF_PARAMS = {
-    "n_estimators",
-    "max_depth",
-    "min_samples_split",
-    "min_samples_leaf",
-    "max_features",
-    "bootstrap",
-    "max_samples",
-    "criterion",
-}
-
-ALLOWED_RF_SPACE: dict[str, set[Any]] = {
-    "n_estimators": set(range(100, 1001)),
-    "max_depth": set(range(2, 51)) | {None},
-    "min_samples_split": set(range(2, 31)),
-    "min_samples_leaf": set(range(1, 21)),
-    "max_features": {"sqrt", "log2", 0.3, 0.5, 0.7, 1.0},
-    "bootstrap": {True, False},
-    "max_samples": {None} | {round(v, 2) for v in np.arange(0.5, 1.01, 0.05)},
-    "criterion": {"squared_error", "absolute_error", "friedman_mse"},
-}
-
-FALLBACK_GRID_OVERFIT = {
-    "n_estimators": [200, 500],
-    "max_depth": [3, 5, 8, 12],
-    "min_samples_split": [4, 8, 12],
-    "min_samples_leaf": [2, 4, 8],
-    "max_features": ["sqrt", 0.3, 0.5],
-    "bootstrap": [True],
-    "max_samples": [0.7, 0.9],
-}
-
-FALLBACK_GRID_UNDERFIT = {
-    "n_estimators": [300, 500, 800],
-    "max_depth": [None, 15, 25, 40],
-    "min_samples_split": [2, 4],
-    "min_samples_leaf": [1, 2],
-    "max_features": ["sqrt", 0.5, 0.7, 1.0],
-    "bootstrap": [True, False],
-}
-
-FALLBACK_GRID_UNSTABLE = {
-    "n_estimators": [500, 800, 1000],
-    "max_depth": [5, 8, 12, 20],
-    "min_samples_split": [4, 8],
-    "min_samples_leaf": [2, 4, 6],
-    "max_features": ["sqrt", 0.3, 0.5],
-    "bootstrap": [True],
-    "max_samples": [0.7, 0.85, 1.0],
-}
-
-FALLBACK_GRID_DEFAULT = {
-    "n_estimators": [200, 400],
-    "max_depth": [5, 10, 15],
-    "min_samples_split": [2, 4, 8],
-    "min_samples_leaf": [1, 2, 4],
-    "max_features": ["sqrt", 0.5],
-    "bootstrap": [True],
-    "max_samples": [0.8, 1.0],
-}
-
-
-def count_grid_combinations(grid: dict[str, list[Any]]) -> int:
-    if not grid:
-        return 0
-    total = 1
-    for values in grid.values():
-        total *= max(len(values), 1)
-    return total
-
-
-def _normalize_value(param: str, value: Any) -> Any:
-    if param == "max_depth" and value in ("None", "null"):
-        return None
-    if param in ("bootstrap",) and isinstance(value, str):
-        return value.lower() in ("true", "1", "yes")
-    if param == "max_features" and isinstance(value, (int, float)) and not isinstance(value, bool):
-        return float(value)
-    if param == "max_samples" and value is not None:
-        return float(value)
-    return value
-
-
-def _value_allowed(param: str, value: Any) -> bool:
-    value = _normalize_value(param, value)
-    allowed = ALLOWED_RF_SPACE.get(param)
-    if allowed is None:
-        return False
-    if value in allowed:
-        return True
-    if param == "max_samples" and value is not None:
-        return 0.5 <= float(value) <= 1.0
-    return False
-
-
-def sanitize_param_grid(
-    param_grid: dict[str, list[Any]],
-    max_candidates: int = 120,
-    random_seed: int = 42,
-) -> GridSanitizationResult:
-    """Validate, filter, and shrink a hyperparameter grid deterministically."""
-    removed_params: list[str] = []
-    removed_values: dict[str, list[Any]] = {}
-    shrink_steps: list[str] = []
-    warnings: list[str] = []
-
-    sanitized: dict[str, list[Any]] = {}
-    for param, values in param_grid.items():
-        if param not in ALLOWED_RF_PARAMS:
-            removed_params.append(param)
-            continue
-        clean: list[Any] = []
-        rejected: list[Any] = []
-        for v in values:
-            norm = _normalize_value(param, v)
-            if _value_allowed(param, norm):
-                if norm not in clean:
-                    clean.append(norm)
-            else:
-                rejected.append(v)
-        if rejected:
-            removed_values[param] = rejected
-        if clean:
-            sanitized[param] = clean
-
-    if "bootstrap" in sanitized and False in sanitized["bootstrap"] and "max_samples" in sanitized:
-        if sanitized["bootstrap"] == [False]:
-            removed_params.append("max_samples")
-            removed_values.setdefault("max_samples", sanitized.pop("max_samples", []))
-
-    if not sanitized:
-        warnings.append("Empty grid after sanitization; using default fallback grid.")
-        sanitized = {k: list(v) for k, v in FALLBACK_GRID_DEFAULT.items()}
-
-    def shrink_step(grid: dict[str, list[Any]]) -> dict[str, list[Any]]:
-        nonlocal shrink_steps
-        if count_grid_combinations(grid) <= max_candidates:
-            return grid
-        param = max(grid, key=lambda p: len(grid[p]))
-        if len(grid[param]) <= 1:
-            return grid
-        values = list(grid[param])
-        if len(values) > 2:
-            drop_idx = len(values) // 2
-        else:
-            drop_idx = -1
-        dropped = values.pop(drop_idx)
-        grid[param] = values
-        shrink_steps.append(
-            f"Removed {param}={dropped!r} to reduce candidates "
-            f"(remaining estimate={count_grid_combinations(grid)})."
-        )
-        return shrink_step(grid)
-
-    candidate_count = count_grid_combinations(sanitized)
-    if candidate_count > max_candidates:
-        warnings.append(
-            f"Grid has {candidate_count} combinations; shrinking to <= {max_candidates}."
-        )
-        sanitized = shrink_step(dict(sanitized))
-        candidate_count = count_grid_combinations(sanitized)
-
-    used_randomized = candidate_count > max_candidates
-    if used_randomized:
-        warnings.append(
-            f"Grid still exceeds cap after shrinking; RandomizedSearchCV will sample "
-            f"{max_candidates} candidates (seed={random_seed})."
-        )
-        candidate_count = max_candidates
-
-    return GridSanitizationResult(
-        original_grid=param_grid,
-        sanitized_grid=sanitized,
-        removed_params=removed_params,
-        removed_values=removed_values,
-        shrink_steps=shrink_steps,
-        candidate_count=candidate_count,
-        used_randomized_search=used_randomized,
-        warnings=warnings,
-    )
-
-
-def get_fallback_grid(assessment_status: str) -> dict[str, list[Any]]:
-    if assessment_status == "overfit":
-        return {k: list(v) for k, v in FALLBACK_GRID_OVERFIT.items()}
-    if assessment_status == "underfit":
-        return {k: list(v) for k, v in FALLBACK_GRID_UNDERFIT.items()}
-    if assessment_status == "unstable":
-        return {k: list(v) for k, v in FALLBACK_GRID_UNSTABLE.items()}
-    return {k: list(v) for k, v in FALLBACK_GRID_DEFAULT.items()}
+# Re-export registry helpers used by tests and agents.
+__all__ = [
+    "count_grid_combinations",
+    "get_fallback_grid",
+    "sanitize_param_grid",
+    "select_final_model_config",
+    "select_best_across_models",
+    "run_iterative_hyperparameter_optimization",
+    "run_hyperparameter_search",
+    "evaluate_baseline_model_cv",
+]
 
 
 def _load_xy(train_path: str | Path, selected_features: list[str]) -> tuple[pd.DataFrame, pd.Series]:
@@ -341,9 +170,12 @@ def run_hyperparameter_search(
     X, y = _load_xy(train_path, selected_features)
     base_cfg = model_config or ModelConfig()
     sanitization = sanitize_param_grid(
+        base_cfg.estimator,
         param_grid,
         max_candidates=hpo_config.max_candidates_per_round,
         random_seed=hpo_config.random_seed,
+        n_features=len(selected_features),
+        n_train_samples=len(X),
     )
 
     estimator = build_estimator(
@@ -417,36 +249,13 @@ def run_hyperparameter_search(
     return candidates, best_params, best_summary, sanitization
 
 
-def _model_simplicity_score(params: dict[str, Any]) -> float:
-    """Lower score = simpler / more regularized (preferred on ties)."""
-    max_depth = params.get("max_depth")
-    depth_score = 50.0 if max_depth is None else float(max_depth)
-    min_leaf = float(params.get("min_samples_leaf", 1))
-    min_split = float(params.get("min_samples_split", 2))
-    n_est = float(params.get("n_estimators", 100))
-    max_feat = params.get("max_features", "sqrt")
-    if isinstance(max_feat, str):
-        feat_score = {"sqrt": 0.3, "log2": 0.25}.get(max_feat, 0.5)
-    else:
-        feat_score = float(max_feat)
-    bootstrap = params.get("bootstrap", True)
-    max_samples = params.get("max_samples", 1.0)
-    reg_score = 0.0 if not bootstrap else (1.0 - float(max_samples or 1.0))
-    return depth_score - min_leaf - min_split + feat_score * 10 + n_est * 0.01 + reg_score * 5
-
-
-def _params_to_model_config(params: dict[str, Any], base: ModelConfig) -> ModelConfig:
-    data = base.model_dump()
-    data.update(params)
-    return ModelConfig(**data)
-
-
 def select_final_model_config(
     baseline_summary: CVSummary,
     baseline_params: dict[str, Any],
     baseline_assessment,
     round_results: list[HPORoundResult],
     thresholds: OverfittingThresholds,
+    estimator: str = "RandomForestRegressor",
 ) -> FinalModelSelection:
     """Choose final configuration using training CV only."""
     candidates: list[dict[str, Any]] = [
@@ -476,7 +285,10 @@ def select_final_model_config(
     within_se = [
         c for c in pool if c["summary"].mean_cv_r2 >= se_threshold - 1e-9
     ]
-    chosen = min(within_se, key=lambda c: _model_simplicity_score(c["params"]))
+    chosen = min(
+        within_se,
+        key=lambda c: model_simplicity_score(estimator, c["params"]),
+    )
 
     warning = ""
     if not acceptable:
@@ -521,6 +333,101 @@ def select_final_model_config(
     )
 
 
+def select_best_across_models(
+    candidates: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """
+    Pick the globally best model across RF and fallback branches.
+
+    Each candidate dict must include:
+      estimator, selected_features, final_selection (FinalModelSelection), model_config (ModelConfig)
+    """
+    pool_items: list[dict[str, Any]] = []
+    for cand in candidates:
+        fs = cand["final_selection"]
+        if fs is None:
+            continue
+        pool_items.append(
+            {
+                "estimator": cand["estimator"],
+                "selected_features": cand["selected_features"],
+                "model_config": cand["model_config"],
+                "source": fs.source,
+                "params": fs.params,
+                "summary": fs.cv_summary,
+                "assessment": fs.assessment,
+                "final_selection": fs,
+            }
+        )
+
+    if not pool_items:
+        raise ValueError("No model candidates available for cross-model selection.")
+
+    acceptable = [c for c in pool_items if c["assessment"].is_acceptable]
+    pool = acceptable if acceptable else pool_items
+    best_cv = max(c["summary"].mean_cv_r2 for c in pool)
+    best_std = next(
+        c["summary"].std_cv_r2 for c in pool if c["summary"].mean_cv_r2 == best_cv
+    )
+    se_threshold = best_cv - best_std
+
+    within_se = [c for c in pool if c["summary"].mean_cv_r2 >= se_threshold - 1e-9]
+    chosen = min(
+        within_se,
+        key=lambda c: model_simplicity_score(c["estimator"], c["params"]),
+    )
+
+    warning = ""
+    if not acceptable:
+        warning = (
+            "No acceptable model found across estimators; selected highest CV R² candidate. "
+            "Final model may still be overfit, unstable, or poor-performing."
+        )
+
+    rationale = (
+        f"Selected {chosen['estimator']} ({chosen['source']}) with "
+        f"mean CV R²={chosen['summary'].mean_cv_r2:.4f}, "
+        f"train-CV gap={chosen['summary'].train_cv_r2_gap:.4f}, "
+        f"status={chosen['assessment'].status}. "
+    )
+    if acceptable:
+        rationale += (
+            f"Compared {len(pool_items)} model branch(es); "
+            f"{len(acceptable)} acceptable; applied one-SE rule "
+            f"(threshold CV R² >= {se_threshold:.4f}) with simplicity tie-break."
+        )
+    else:
+        rationale += (
+            f"Compared {len(pool_items)} model branch(es); "
+            "no acceptable models; chose best CV R² with warning."
+        )
+
+    compared_models = [
+        {
+            "estimator": c["estimator"],
+            "source": c["source"],
+            "mean_cv_r2": c["summary"].mean_cv_r2,
+            "train_cv_r2_gap": c["summary"].train_cv_r2_gap,
+            "status": c["assessment"].status,
+            "acceptable": c["assessment"].is_acceptable,
+            "n_features": len(c["selected_features"]),
+        }
+        for c in pool_items
+    ]
+
+    final_config = params_to_model_config(chosen["params"], chosen["model_config"]).model_dump()
+
+    return {
+        "winning_estimator": chosen["estimator"],
+        "selected_features": chosen["selected_features"],
+        "final_model_config": final_config,
+        "final_selection": chosen["final_selection"],
+        "selection_rationale": rationale,
+        "warning": warning,
+        "compared_models": compared_models,
+    }
+
+
 def _should_stop_hpo(
     assessment,
     baseline_cv: float,
@@ -546,6 +453,7 @@ def run_iterative_hyperparameter_optimization(
     baseline_model_config: ModelConfig | None = None,
     hpo_config: HPOConfig | None = None,
     run_dir: Path | None = None,
+    output_subdir: Path | None = None,
     grid_proposer: Callable[..., AgentGridProposal] | None = None,
     log_callback: Callable[[str], None] | None = None,
     n_features: int | None = None,
@@ -554,7 +462,9 @@ def run_iterative_hyperparameter_optimization(
     """Full HPO controller: baseline CV, up to 3 agent-guided rounds, final selection."""
     cfg = hpo_config or HPOConfig()
     base = baseline_model_config or ModelConfig()
-    run_dir = Path(run_dir) if run_dir else Path(".")
+    parent_run_dir = Path(run_dir) if run_dir else Path(".")
+    run_dir = Path(output_subdir) if output_subdir else parent_run_dir
+    run_dir.mkdir(parents=True, exist_ok=True)
     logs: list[str] = []
     iteration_records: list[dict[str, Any]] = []
     fallback_events: list[dict[str, Any]] = []
@@ -585,29 +495,7 @@ def run_iterative_hyperparameter_optimization(
     )
     log("Baseline CV diagnostics completed.")
 
-    baseline_params = {
-        k: base.model_dump()[k]
-        for k in (
-            "n_estimators",
-            "max_depth",
-            "min_samples_split",
-            "min_samples_leaf",
-            "max_features",
-            "bootstrap",
-            "max_samples",
-            "criterion",
-        )
-        if k in base.model_dump()
-    }
-    for optional in (
-        "min_samples_split",
-        "min_samples_leaf",
-        "max_features",
-        "bootstrap",
-        "max_samples",
-        "criterion",
-    ):
-        baseline_params.setdefault(optional, getattr(ModelConfig(), optional, None))
+    baseline_params = baseline_params_from_config(base)
 
     baseline_assessment = assess_overfitting(baseline_cv.summary, cfg.thresholds)
     save_json(run_dir / "baseline_overfitting_assessment.json", baseline_assessment.model_dump())
@@ -628,6 +516,7 @@ def run_iterative_hyperparameter_optimization(
             baseline_assessment,
             [],
             cfg.thresholds,
+            estimator=base.estimator,
         )
         final_assessment = baseline_assessment
     else:
@@ -666,7 +555,7 @@ def run_iterative_hyperparameter_optimization(
 
             if proposal is None:
                 status = last_assessment.status
-                grid = get_fallback_grid(status)
+                grid = get_fallback_grid(base.estimator, status)
                 proposal = AgentGridProposal(
                     round_index=round_idx,
                     reasoning_summary=f"Deterministic fallback grid for status={status}.",
@@ -778,6 +667,7 @@ def run_iterative_hyperparameter_optimization(
             baseline_assessment,
             round_results,
             cfg.thresholds,
+            estimator=base.estimator,
         )
         if round_results:
             final_assessment = round_results[-1].assessment
@@ -873,7 +763,7 @@ def run_iterative_hyperparameter_optimization(
         save_json(fb_path, {"events": fallback_events})
         fallback_path = str(fb_path)
 
-    final_config = _params_to_model_config(final_selection.params, base).model_dump()
+    final_config = params_to_model_config(final_selection.params, base).model_dump()
     log(f"Final selected model: {final_selection.source}.")
 
     return HPOResult(

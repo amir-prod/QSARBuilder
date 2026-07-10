@@ -16,9 +16,10 @@ from qsar_agent.tools.feature_count_selection import (
     save_feature_count_selection,
     select_feature_count_one_se_rule,
 )
-from qsar_agent.tools.hyperparameter_optimization import (
+from qsar_agent.models.registry import (
     count_grid_combinations,
     get_fallback_grid,
+    get_hpo_prompt_spec,
 )
 
 
@@ -50,7 +51,7 @@ def propose_hyperparameter_grid(
     n_train_samples = constraints.get("n_train_samples")
 
     def _fallback(reason: str) -> AgentGridProposal:
-        grid = get_fallback_grid(baseline_assessment.status)
+        grid = get_fallback_grid(model_type, baseline_assessment.status)
         return AgentGridProposal(
             round_index=round_index,
             reasoning_summary=f"Deterministic fallback: {reason}",
@@ -78,14 +79,11 @@ def propose_hyperparameter_grid(
             }
         )
 
+    hpo_spec = get_hpo_prompt_spec(model_type) or get_hpo_prompt_spec("RandomForestRegressor")
     system_prompt = (
         "You are a QSAR modeling assistant. Propose ONLY a JSON hyperparameter search grid "
-        "for sklearn RandomForestRegressor. Do NOT train models or invent metrics. "
-        "Allowed params: n_estimators (100-1000), max_depth (2-50 or null), "
-        "min_samples_split (2-30), min_samples_leaf (1-20), "
-        "max_features (sqrt, log2, 0.3, 0.5, 0.7, 1.0), bootstrap (true/false), "
-        "max_samples (null or 0.5-1.0, only with bootstrap=true), "
-        "criterion (squared_error, absolute_error, friedman_mse). "
+        f"for sklearn {model_type}. Do NOT train models or invent metrics. "
+        f"{hpo_spec} "
         f"Keep total combinations near or below {max_candidates}. "
         "Return JSON matching the AgentGridProposal schema fields."
     )
@@ -211,6 +209,8 @@ def build_final_report(
     ad_result: Any,
     artifact_paths: dict[str, str],
     warnings: list[str],
+    estimator: str = "RandomForestRegressor",
+    model_comparison_summary: str = "",
 ) -> AgentFinalReport:
     return AgentFinalReport(
         run_id=run_id,
@@ -228,4 +228,6 @@ def build_final_report(
         warnings=warnings,
         artifact_paths=artifact_paths,
         agent_explanation=feature_selection.explanation,
+        estimator=estimator,
+        model_comparison_summary=model_comparison_summary,
     )

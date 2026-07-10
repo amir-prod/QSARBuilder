@@ -63,7 +63,7 @@ def test_grid_sanitizer_removes_invalid_hyperparameters():
         "invalid_param": [1, 2],
         "max_depth": [5, 10],
     }
-    result = sanitize_param_grid(grid, max_candidates=120)
+    result = sanitize_param_grid("RandomForestRegressor", grid, max_candidates=120)
     assert "invalid_param" not in result.sanitized_grid
     assert "n_estimators" in result.sanitized_grid
     assert 9999 not in result.sanitized_grid["n_estimators"]
@@ -75,7 +75,7 @@ def test_grid_sanitizer_respects_max_candidates():
         "max_depth": [3, 5, 8, 12, 20],
         "min_samples_split": [2, 4, 8],
     }
-    result = sanitize_param_grid(grid, max_candidates=30)
+    result = sanitize_param_grid("RandomForestRegressor", grid, max_candidates=30)
     assert result.candidate_count <= 30
 
 
@@ -86,8 +86,21 @@ def test_grid_sanitizer_bootstrap_max_samples():
         "n_estimators": [100, 200],
         "max_depth": [5, 10],
     }
-    result = sanitize_param_grid(grid, max_candidates=120)
+    result = sanitize_param_grid("RandomForestRegressor", grid, max_candidates=120)
     assert "max_samples" not in result.sanitized_grid
+
+
+def test_grid_sanitizer_drops_max_samples_when_bootstrap_mixed():
+    grid = {
+        "bootstrap": [True, False],
+        "max_samples": [0.7, 0.9],
+        "n_estimators": [100, 200],
+        "max_depth": [5, 10],
+    }
+    result = sanitize_param_grid("RandomForestRegressor", grid, max_candidates=120)
+    assert "max_samples" not in result.sanitized_grid
+    assert True in result.sanitized_grid["bootstrap"]
+    assert False in result.sanitized_grid["bootstrap"]
 
 
 def test_hpo_search_uses_training_data_only(tiny_train_csv, tmp_path):
@@ -191,7 +204,11 @@ def test_hpo_controller_runs_rounds_when_overfit(tiny_train_csv, tmp_path):
                     [],
                     {"n_estimators": 100, "max_depth": 5},
                     good_summary,
-                    sanitize_param_grid(get_fallback_grid("overfit"), max_candidates=10),
+                    sanitize_param_grid(
+                        "RandomForestRegressor",
+                        get_fallback_grid("RandomForestRegressor", "overfit"),
+                        max_candidates=10,
+                    ),
                 )
                 result = run_iterative_hyperparameter_optimization(
                     tiny_train_csv,

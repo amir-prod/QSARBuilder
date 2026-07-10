@@ -1,0 +1,44 @@
+{
+  "1": [
+    "BCUTdv-1h"
+  ],
+  "2": [
+    "BCUTdv-1h",
+    "SMR_VSA3"
+  ],
+  "3": [
+    "BCUTdv-1h",
+    "PEOE_VSA5",
+    "SMR_VSA3"
+  ],
+  "4": [
+    "BCUTdv-1h",
+    "SdO",
+    "PEOE_VSA5",
+    "SMR_VSA3"
+  ],
+  "5": [
+    "BCUTdv-1h",
+    "Xpc-4dv",
+    "SdO",
+    "PEOE_VSA5",
+    "SMR_VSA3"
+  ],
+  "6": [
+    "BCUTdv-1h",
+    "Xpc-4dv",
+    "SdO",
+    "PEOE_VSA5",
+    "SMR_VSA3",
+    "MID_N"
+  ],
+  "7": [
+    "BCUTdv-1h",
+    "Xpc-4dv",
+    "SdO",
+    "PEOE_VSA5",
+    "SMR_VSA3",
+    "SMR_VSA4",
+    "MID_N"
+  ]
+}

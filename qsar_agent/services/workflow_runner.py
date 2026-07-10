@@ -31,6 +31,8 @@ from qsar_agent.tools.hyperparameter_optimization import run_iterative_hyperpara
 from qsar_agent.tools.mordred_descriptors import calculate_mordred_descriptors
 from qsar_agent.tools.sequential_feature_selection import run_sequential_feature_selection
 from qsar_agent.tools.umap_split import create_umap_cluster_split
+from qsar_agent.schemas.model_fallback import ModelBranchResult
+from qsar_agent.tools.model_fallback import run_model_fallback_if_needed
 
 logger = get_logger()
 
@@ -332,13 +334,82 @@ class WorkflowRunner:
                         rr.search_results_path
                     )
 
+            # Build RF branch result and optionally try fallback models
+            rf_branch = ModelBranchResult(
+                estimator=self.config.model.estimator,
+                model_config_snapshot=hpo_result.final_model_config,
+                branch_dir=str(self.run_dir),
+                sfs=sfs,
+                feature_count=feature_count,
+                ga=ga,
+                hpo_result=hpo_result,
+            )
+
+            winning_estimator = self.config.model.estimator
+            winning_features = ga.selected_features
+            model_comparison_summary = ""
+            hpo_metadata.setdefault("winning_estimator", winning_estimator)
+            hpo_metadata.setdefault("model_fallback_triggered", False)
+            hpo_metadata.setdefault("fallback_models_tried", [])
+
+            if not self.config.model_fallback.enabled:
+                self._skip_stage("model_fallback", "Model fallback disabled")
+            elif not hpo_result.final_selection:
+                self._skip_stage("model_fallback", "No HPO selection available")
+            elif hpo_result.final_selection.assessment.is_acceptable:
+                self._skip_stage("model_fallback", "RF model acceptable")
+            else:
+                self._start_stage("model_fallback")
+
+                def grid_proposer_fallback(**kwargs):
+                    return propose_hyperparameter_grid(
+                        openai_model=hpo_cfg.openai_model or None,
+                        **kwargs,
+                    )
+
+                fallback_result = run_model_fallback_if_needed(
+                    rf_branch,
+                    train_path=preprocessing.preprocessed_train_path,
+                    run_dir=self.run_dir,
+                    workflow_config=self.config,
+                    hpo_config=hpo_cfg,
+                    grid_proposer=grid_proposer_fallback if hpo_cfg.enabled else None,
+                    log_callback=hpo_log,
+                )
+                cross = fallback_result.cross_model_selection
+                if cross:
+                    final_model_config = ModelConfig(**cross.final_model_config)
+                    winning_estimator = cross.winning_estimator
+                    winning_features = cross.selected_features
+                    model_comparison_summary = cross.selection_rationale
+                    if cross.warning:
+                        append_warning(self.warnings, cross.warning)
+                        model_comparison_summary += f" Warning: {cross.warning}"
+                    hpo_metadata["winning_estimator"] = winning_estimator
+                    hpo_metadata["fallback_models_tried"] = fallback_result.fallback_models_tried
+                    hpo_metadata["model_fallback_triggered"] = fallback_result.triggered
+                    if fallback_result.comparison_json_path:
+                        self.artifact_paths["model_comparison"] = (
+                            fallback_result.comparison_json_path
+                        )
+                        self.artifact_paths["model_comparison_csv"] = (
+                            fallback_result.comparison_csv_path
+                        )
+                msg = (
+                    f"Tried {len(fallback_result.fallback_models_tried)} fallback model(s); "
+                    f"winner: {winning_estimator}"
+                    if fallback_result.triggered
+                    else f"Winner: {winning_estimator}"
+                )
+                self._complete_stage("model_fallback", msg)
+
             # Final model (external test evaluated only here)
             self._start_stage("final_model")
             modeling = train_and_evaluate_final_model(
                 preprocessing.preprocessed_train_path,
                 preprocessing.preprocessed_test_path,
                 self.run_dir,
-                ga.selected_features,
+                winning_features,
                 final_model_config,
                 self.config.activity_column or "activity",
                 dataset_hash,
@@ -362,7 +433,7 @@ class WorkflowRunner:
                 preprocessing.preprocessed_test_path,
                 modeling.predictions_path,
                 self.run_dir,
-                ga.selected_features,
+                winning_features,
             )
             self.artifact_paths["williams_plot"] = ad.williams_png_path
             self._complete_stage("applicability_domain")
@@ -381,6 +452,8 @@ class WorkflowRunner:
                 ad,
                 self.artifact_paths,
                 self.warnings,
+                estimator=winning_estimator,
+                model_comparison_summary=model_comparison_summary,
             )
 
             zip_path = create_zip_archive(self.run_dir, self.run_id)

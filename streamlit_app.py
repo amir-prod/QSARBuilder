@@ -16,11 +16,13 @@ from qsar_agent.config import (
     GAConfig,
     HPOSettings,
     ModelConfig,
+    ModelFallbackSettings,
     PreprocessingConfig,
     SFSConfig,
     UMAPConfig,
     WorkflowConfig,
     get_openai_model,
+    load_env_file,
 )
 from qsar_agent.schemas.workflow import StageStatus
 from qsar_agent.services.artifact_manager import generate_run_id, get_run_dir
@@ -29,7 +31,10 @@ from qsar_agent.tools.dataset_validation import validate_dataset
 
 MAX_UPLOAD_MB = 50
 APP_TITLE = "QSAR Agent"
-TOTAL_STAGES = 15
+TOTAL_STAGES = 16
+
+# Ensure .env is loaded before the app reads OpenAI settings.
+load_env_file()
 
 st.set_page_config(page_title=APP_TITLE, page_icon="🧪", layout="wide")
 init_session_state()
@@ -46,7 +51,8 @@ def render_header() -> None:
     st.markdown(
         "Build regression QSAR models from SMILES and experimental activity using "
         "Mordred descriptors, UMAP-based cluster splitting, sequential and genetic "
-        "feature selection, and Random Forest modeling."
+        "feature selection, Random Forest modeling with automatic fallback to other "
+        "regressors when HPO fails."
     )
     st.warning(
         "External-test performance is evaluated only after feature selection, "
@@ -99,6 +105,12 @@ def render_sidebar_config() -> WorkflowConfig:
             value=get_openai_model(),
         )
 
+    model_fallback_enabled = st.sidebar.checkbox(
+        "Try other models if RF HPO fails",
+        value=True,
+        help="Runs PLS, ExtraTrees, SVR, and KNN with per-model feature selection and HPO.",
+    )
+
     return WorkflowConfig(
         test_fraction=test_fraction,
         random_seed=int(random_seed),
@@ -136,6 +148,7 @@ def render_sidebar_config() -> WorkflowConfig:
             n_jobs=int(hpo_n_jobs),
             openai_model=hpo_openai_model,
         ),
+        model_fallback=ModelFallbackSettings(enabled=model_fallback_enabled),
     )
 
 
@@ -361,10 +374,20 @@ def render_results_dashboard() -> None:
                 p = run_dir / name
                 if p.exists():
                     file_download_button(f"Download {name}", str(p))
+            comparison_csv = artifacts.get("model_comparison_csv")
+            if comparison_csv and Path(comparison_csv).exists():
+                st.subheader("Model comparison (RF + fallbacks)")
+                st.dataframe(pd.read_csv(comparison_csv), use_container_width=True)
+            comparison_md = run_dir / "model_comparison_summary.md"
+            if comparison_md.exists():
+                st.markdown(comparison_md.read_text(encoding="utf-8"))
         else:
             st.info("HPO artifacts will appear here after a workflow run with HPO enabled.")
 
     with tabs[5]:
+        st.write(f"**Estimator:** {getattr(report, 'estimator', 'RandomForestRegressor')}")
+        if getattr(report, "model_comparison_summary", ""):
+            st.info(report.model_comparison_summary)
         scatter = artifacts.get("prediction_scatter")
         if scatter and Path(scatter).exists():
             st.image(scatter)
