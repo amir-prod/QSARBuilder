@@ -1,0 +1,42 @@
+{
+  "original_grid": {
+    "n_components": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "scale": [
+      true,
+      false
+    ],
+    "max_iter": [
+      100,
+      500,
+      1000
+    ]
+  },
+  "sanitized_grid": {
+    "n_components": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "scale": [
+      true,
+      false
+    ],
+    "max_iter": [
+      100,
+      500,
+      1000
+    ]
+  },
+  "removed_params": [],
+  "removed_values": {},
+  "shrink_steps": [],
+  "candidate_count": 24,
+  "used_randomized_search": false,
+  "warnings": []
+}

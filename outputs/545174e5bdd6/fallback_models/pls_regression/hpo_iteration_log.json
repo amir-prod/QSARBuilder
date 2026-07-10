@@ -1,0 +1,74 @@
+{
+  "max_hpo_rounds": 3,
+  "rounds_completed": 3,
+  "baseline_acceptable": false,
+  "hpo_triggered": true,
+  "hpo_trigger_reason": "CV R\u00b2 variability is high (std=0.197 > 0.15). The model may be sensitive to training fold composition.",
+  "iteration_records": [
+    {
+      "round": 1,
+      "phase": "start",
+      "baseline_cv_r2": 0.6732360757665038
+    },
+    {
+      "round": 1,
+      "candidates": 24,
+      "best_cv_r2": 0.6732360757665038,
+      "gap": 0.2079712494292718,
+      "status": "unstable",
+      "best_params": {
+        "max_iter": 100,
+        "n_components": 4,
+        "scale": true
+      }
+    },
+    {
+      "round": 2,
+      "phase": "start",
+      "baseline_cv_r2": 0.6732360757665038
+    },
+    {
+      "round": 2,
+      "candidates": 32,
+      "best_cv_r2": 0.6732360757665038,
+      "gap": 0.2079712494292718,
+      "status": "unstable",
+      "best_params": {
+        "max_iter": 100,
+        "n_components": 4,
+        "scale": true
+      }
+    },
+    {
+      "round": 3,
+      "phase": "start",
+      "baseline_cv_r2": 0.6732360757665038
+    },
+    {
+      "round": 3,
+      "candidates": 24,
+      "best_cv_r2": 0.6732360757665038,
+      "gap": 0.2079712494292718,
+      "status": "unstable",
+      "best_params": {
+        "max_iter": 100,
+        "n_components": 4,
+        "scale": true
+      }
+    }
+  ],
+  "logs": [
+    "Baseline CV diagnostics started.",
+    "Baseline CV diagnostics completed.",
+    "Overfitting assessment: unstable. Train-CV R\u00b2 gap = 0.208.",
+    "Model appears unstable. Starting HPO.",
+    "HPO round 1/3 started.",
+    "HPO round 1/3 completed. Best CV R\u00b2 = 0.673. Gap = 0.208.",
+    "HPO round 2/3 started.",
+    "HPO round 2/3 completed. Best CV R\u00b2 = 0.673. Gap = 0.208.",
+    "HPO round 3/3 started.",
+    "HPO round 3/3 completed. Best CV R\u00b2 = 0.673. Gap = 0.208.",
+    "HPO round 3/3 completed. Maximum HPO rounds reached."
+  ],
+  "final_source": "hpo_round_1"
+}

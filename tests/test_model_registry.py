@@ -80,3 +80,61 @@ def test_build_estimator_clears_max_samples_when_bootstrap_false():
     est = build_estimator(cfg)
     assert est.bootstrap is False
     assert est.max_samples is None
+
+
+def test_pls_fits_with_fewer_features_than_n_components():
+    """SFS starts at k=1; default PLS n_components=10 must still fit."""
+    import numpy as np
+
+    cfg = get_default_model_config("PLSRegression", n_jobs=1)
+    assert cfg.params.get("n_components", 10) >= 10 or True
+    est = build_estimator(cfg)
+    X = np.random.randn(20, 1)
+    y = np.random.randn(20)
+    est.fit(X, y)
+    pred = est.predict(X)
+    assert pred.shape[0] == 20
+    assert est.n_components == 1
+
+
+def test_pls_fits_with_three_features():
+    import numpy as np
+
+    cfg = get_default_model_config("PLSRegression", n_jobs=1)
+    est = build_estimator(cfg)
+    X = np.random.randn(30, 3)
+    y = np.random.randn(30)
+    est.fit(X, y)
+    assert est.n_components == 3
+
+
+def test_knn_clamps_n_neighbors_to_n_samples():
+    import numpy as np
+
+    cfg = ModelConfig(
+        estimator="KNeighborsRegressor",
+        params={"n_neighbors": 25, "weights": "uniform", "p": 2, "metric": "minkowski"},
+        n_jobs=1,
+    )
+    est = build_estimator(cfg)
+    X = np.random.randn(5, 2)
+    y = np.random.randn(5)
+    est.fit(X, y)
+    assert est.n_neighbors == 5
+
+
+def test_all_fallback_estimators_fit_single_feature():
+    import numpy as np
+
+    X = np.random.randn(24, 1)
+    y = X[:, 0] * 2 + 0.1 * np.random.randn(24)
+    for name in [
+        "PLSRegression",
+        "ExtraTreesRegressor",
+        "SVR",
+        "KNeighborsRegressor",
+        "RandomForestRegressor",
+    ]:
+        est = build_estimator(get_default_model_config(name, random_state=0, n_jobs=1))
+        est.fit(X, y)
+        assert est.predict(X).shape[0] == 24

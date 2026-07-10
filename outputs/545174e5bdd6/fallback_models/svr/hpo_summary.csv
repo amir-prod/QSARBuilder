@@ -1,0 +1,2 @@
+source,mean_train_r2,mean_cv_r2,std_cv_r2,train_cv_r2_gap,selected
+baseline,0.7218172535256512,0.5765556161560494,0.1498485968602087,0.14526163736960174,True

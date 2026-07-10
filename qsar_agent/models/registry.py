@@ -13,6 +13,34 @@ from sklearn.svm import SVR
 from qsar_agent.config import ModelConfig
 from qsar_agent.schemas.hyperparameter_optimization import GridSanitizationResult
 
+
+class AdaptivePLSRegression(PLSRegression):
+    """PLSRegression that clamps n_components to fit-time data shape.
+
+    Required for SFS/GA, which evaluate subsets with fewer features than the
+    configured n_components (sklearn requires n_components <= min(n_features, n_samples-1)).
+    """
+
+    def fit(self, X, y=None):
+        X_arr = np.asarray(X)
+        if X_arr.ndim == 1:
+            X_arr = X_arr.reshape(-1, 1)
+        n_samples, n_features = X_arr.shape
+        max_comp = max(1, min(int(n_features), max(1, int(n_samples) - 1)))
+        self.n_components = min(int(self.n_components), max_comp)
+        return super().fit(X, y)
+
+
+class AdaptiveKNeighborsRegressor(KNeighborsRegressor):
+    """KNN that clamps n_neighbors to the number of training samples."""
+
+    def fit(self, X, y):
+        X_arr = np.asarray(X)
+        n_samples = X_arr.shape[0]
+        self.n_neighbors = min(int(self.n_neighbors), max(1, int(n_samples)))
+        return super().fit(X, y)
+
+
 DEFAULT_FALLBACK_ESTIMATORS = [
     "PLSRegression",
     "ExtraTreesRegressor",
@@ -415,7 +443,7 @@ def build_estimator_from_config(config: ModelConfig | dict[str, Any] | None = No
         return RandomForestRegressor(**kwargs)
 
     if estimator == "PLSRegression":
-        return PLSRegression(
+        return AdaptivePLSRegression(
             n_components=params["n_components"],
             scale=params["scale"],
             max_iter=params["max_iter"],
@@ -442,7 +470,7 @@ def build_estimator_from_config(config: ModelConfig | dict[str, Any] | None = No
         )
 
     if estimator == "KNeighborsRegressor":
-        return KNeighborsRegressor(
+        return AdaptiveKNeighborsRegressor(
             n_neighbors=params["n_neighbors"],
             weights=params["weights"],
             p=params["p"],

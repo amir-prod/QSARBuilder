@@ -1,0 +1,69 @@
+{
+  "source": "hpo_round_3",
+  "params": {
+    "bootstrap": true,
+    "criterion": "absolute_error",
+    "max_depth": 10,
+    "max_features": "sqrt",
+    "max_samples": 1.0,
+    "min_samples_leaf": 2,
+    "min_samples_split": 4,
+    "n_estimators": 200
+  },
+  "cv_summary": {
+    "mean_train_r2": 0.850409284435683,
+    "mean_cv_r2": 0.6412380869264037,
+    "std_cv_r2": 0.1518649062927624,
+    "mean_train_rmse": 0.0,
+    "mean_cv_rmse": 0.0,
+    "mean_train_mae": 0.0,
+    "mean_cv_mae": 0.0,
+    "train_cv_r2_gap": 0.20917119750927926,
+    "n_folds": 5
+  },
+  "assessment": {
+    "status": "unstable",
+    "is_acceptable": false,
+    "is_overfit": true,
+    "is_underfit": false,
+    "is_unstable": true,
+    "is_severe_overfit": false,
+    "mean_train_r2": 0.850409284435683,
+    "mean_cv_r2": 0.6412380869264037,
+    "train_cv_r2_gap": 0.20917119750927926,
+    "cv_r2_std": 0.1518649062927624,
+    "warnings": [
+      "High CV R\u00b2 standard deviation: 0.152.",
+      "Train-CV R\u00b2 gap (0.209) suggests overfitting."
+    ],
+    "explanation": "CV R\u00b2 variability is high (std=0.152 > 0.15). The model may be sensitive to training fold composition."
+  },
+  "selection_rationale": "Selected hpo_round_3 with mean CV R\u00b2=0.6412, train-CV gap=0.2092, status=unstable. No acceptable models; chose best CV R\u00b2 with warning.",
+  "warning": "No acceptable model found after HPO; selected highest CV R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.6129895913227573,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.6592457942841772,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.6890257785172181,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_3",
+      "mean_cv_r2": 0.6412380869264037,
+      "status": "unstable",
+      "acceptable": false
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "1": [
+    "AATS1Z"
+  ],
+  "2": [
+    "AATS1Z",
+    "Xpc-4d"
+  ],
+  "3": [
+    "AATS1Z",
+    "Xpc-4d",
+    "SMR_VSA4"
+  ],
+  "4": [
+    "AATS1Z",
+    "Xpc-4d",
+    "SMR_VSA4",
+    "piPC7"
+  ],
+  "5": [
+    "AATS0Z",
+    "AATS1Z",
+    "Xpc-4d",
+    "SMR_VSA4",
+    "piPC7"
+  ]
+}

@@ -1,0 +1,6 @@
+estimator,source,mean_cv_r2,train_cv_r2_gap,status,acceptable,n_features
+RandomForestRegressor,hpo_round_3,0.6412380869264037,0.20917119750927926,unstable,False,3
+PLSRegression,hpo_round_1,0.6732360757665038,0.2079712494292718,unstable,False,4
+ExtraTreesRegressor,baseline,0.19881307265592238,0.8011857102435266,unstable,False,4
+SVR,baseline,0.5765556161560494,0.14526163736960174,good,True,2
+KNeighborsRegressor,hpo_round_1,0.34582004810188244,0.38403223811382653,unstable,False,1

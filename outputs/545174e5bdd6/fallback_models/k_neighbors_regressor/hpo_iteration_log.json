@@ -1,0 +1,77 @@
+{
+  "max_hpo_rounds": 3,
+  "rounds_completed": 3,
+  "baseline_acceptable": false,
+  "hpo_triggered": true,
+  "hpo_trigger_reason": "CV R\u00b2 variability is high (std=0.954 > 0.15). The model may be sensitive to training fold composition.",
+  "iteration_records": [
+    {
+      "round": 1,
+      "phase": "start",
+      "baseline_cv_r2": 0.13678222864359577
+    },
+    {
+      "round": 1,
+      "candidates": 120,
+      "best_cv_r2": 0.34582004810188244,
+      "gap": 0.38403223811382653,
+      "status": "unstable",
+      "best_params": {
+        "metric": "minkowski",
+        "n_neighbors": 4,
+        "p": 1,
+        "weights": "uniform"
+      }
+    },
+    {
+      "round": 2,
+      "phase": "start",
+      "baseline_cv_r2": 0.13678222864359577
+    },
+    {
+      "round": 2,
+      "candidates": 120,
+      "best_cv_r2": 0.2762027903859128,
+      "gap": 0.10803567665976332,
+      "status": "unstable",
+      "best_params": {
+        "metric": "minkowski",
+        "n_neighbors": 9,
+        "p": 1,
+        "weights": "uniform"
+      }
+    },
+    {
+      "round": 3,
+      "phase": "start",
+      "baseline_cv_r2": 0.13678222864359577
+    },
+    {
+      "round": 3,
+      "candidates": 120,
+      "best_cv_r2": 0.2762027903859128,
+      "gap": 0.10803567665976332,
+      "status": "unstable",
+      "best_params": {
+        "metric": "minkowski",
+        "n_neighbors": 9,
+        "p": 1,
+        "weights": "uniform"
+      }
+    }
+  ],
+  "logs": [
+    "Baseline CV diagnostics started.",
+    "Baseline CV diagnostics completed.",
+    "Overfitting assessment: unstable. Train-CV R\u00b2 gap = 0.565.",
+    "Model appears unstable. Starting HPO.",
+    "HPO round 1/3 started.",
+    "HPO round 1/3 completed. Best CV R\u00b2 = 0.346. Gap = 0.384.",
+    "HPO round 2/3 started.",
+    "HPO round 2/3 completed. Best CV R\u00b2 = 0.276. Gap = 0.108.",
+    "HPO round 3/3 started.",
+    "HPO round 3/3 completed. Best CV R\u00b2 = 0.276. Gap = 0.108.",
+    "HPO round 3/3 completed. Maximum HPO rounds reached."
+  ],
+  "final_source": "hpo_round_1"
+}

@@ -1,0 +1,109 @@
+{
+  "original_grid": {
+    "n_estimators": [
+      200,
+      500,
+      800
+    ],
+    "max_depth": [
+      2,
+      3,
+      5,
+      8,
+      12,
+      null
+    ],
+    "min_samples_split": [
+      2,
+      5,
+      10,
+      20
+    ],
+    "min_samples_leaf": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "max_features": [
+      "sqrt",
+      "log2",
+      0.3,
+      0.5
+    ],
+    "bootstrap": [
+      true,
+      false
+    ],
+    "max_samples": [
+      0.5,
+      0.7,
+      0.9,
+      null
+    ],
+    "criterion": [
+      "squared_error",
+      "absolute_error"
+    ]
+  },
+  "sanitized_grid": {
+    "n_estimators": [
+      200
+    ],
+    "max_depth": [
+      2,
+      null
+    ],
+    "min_samples_split": [
+      2,
+      20
+    ],
+    "min_samples_leaf": [
+      1,
+      8
+    ],
+    "max_features": [
+      "sqrt",
+      0.5
+    ],
+    "bootstrap": [
+      true,
+      false
+    ],
+    "criterion": [
+      "squared_error",
+      "absolute_error"
+    ]
+  },
+  "removed_params": [
+    "max_samples"
+  ],
+  "removed_values": {
+    "max_samples": [
+      0.5,
+      0.7,
+      0.9,
+      null
+    ]
+  },
+  "shrink_steps": [
+    "Removed max_depth=8 to reduce candidates (remaining estimate=3840).",
+    "Removed max_depth=5 to reduce candidates (remaining estimate=3072).",
+    "Removed max_depth=12 to reduce candidates (remaining estimate=2304).",
+    "Removed min_samples_split=10 to reduce candidates (remaining estimate=1728).",
+    "Removed min_samples_leaf=4 to reduce candidates (remaining estimate=1296).",
+    "Removed max_features=0.3 to reduce candidates (remaining estimate=972).",
+    "Removed n_estimators=500 to reduce candidates (remaining estimate=648).",
+    "Removed max_depth=3 to reduce candidates (remaining estimate=432).",
+    "Removed min_samples_split=5 to reduce candidates (remaining estimate=288).",
+    "Removed min_samples_leaf=2 to reduce candidates (remaining estimate=192).",
+    "Removed max_features='log2' to reduce candidates (remaining estimate=128).",
+    "Removed n_estimators=800 to reduce candidates (remaining estimate=64)."
+  ],
+  "candidate_count": 64,
+  "used_randomized_search": false,
+  "warnings": [
+    "Removed max_samples because bootstrap includes False (incompatible with sklearn RandomForestRegressor).",
+    "Grid has 4608 combinations; shrinking to <= 120."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "1": [
+    "GATS1Z"
+  ],
+  "2": [
+    "ATSC3d",
+    "GATS1Z"
+  ],
+  "3": [
+    "AATS3i",
+    "ATSC3d",
+    "GATS1Z"
+  ],
+  "4": [
+    "AATS3i",
+    "ATSC3d",
+    "GATS1Z",
+    "EState_VSA4"
+  ],
+  "5": [
+    "AATS3i",
+    "ATSC3d",
+    "GATS1Z",
+    "EState_VSA4",
+    "EState_VSA10"
+  ]
+}

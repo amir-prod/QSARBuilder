@@ -1,0 +1,75 @@
+{
+  "train": {
+    "r2": 0.7269875448569348,
+    "rmse": 0.4383681579036335,
+    "mae": 0.28019192140440113,
+    "n_samples": 20
+  },
+  "test": {
+    "r2": 0.5470423488603284,
+    "rmse": 0.6643118007997407,
+    "mae": 0.6176937890549837,
+    "n_samples": 7
+  },
+  "selected_features": [
+    "AATS1Z",
+    "AATSC4Z"
+  ],
+  "hyperparameter_optimization": {
+    "enabled": true,
+    "max_rounds": 3,
+    "rounds_completed": 3,
+    "final_model_source": "hpo_round_3",
+    "final_params": {
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 10,
+      "max_features": "sqrt",
+      "max_samples": 1.0,
+      "min_samples_leaf": 2,
+      "min_samples_split": 4,
+      "n_estimators": 200
+    },
+    "baseline_assessment": {
+      "status": "overfit",
+      "is_acceptable": false,
+      "is_overfit": true,
+      "is_underfit": false,
+      "is_unstable": false,
+      "is_severe_overfit": true,
+      "mean_train_r2": 0.9603777717591504,
+      "mean_cv_r2": 0.6129895913227573,
+      "train_cv_r2_gap": 0.3473881804363931,
+      "cv_r2_std": 0.13790684888295004,
+      "warnings": [
+        "Severe overfitting: train-CV R\u00b2 gap (0.347) exceeds 0.25."
+      ],
+      "explanation": "Training R\u00b2 (0.960) is much higher than CV R\u00b2 (0.613); gap=0.347 exceeds 0.15."
+    },
+    "final_assessment": {
+      "status": "unstable",
+      "is_acceptable": false,
+      "is_overfit": true,
+      "is_underfit": false,
+      "is_unstable": true,
+      "is_severe_overfit": false,
+      "mean_train_r2": 0.850409284435683,
+      "mean_cv_r2": 0.6412380869264037,
+      "train_cv_r2_gap": 0.20917119750927926,
+      "cv_r2_std": 0.1518649062927624,
+      "warnings": [
+        "High CV R\u00b2 standard deviation: 0.152.",
+        "Train-CV R\u00b2 gap (0.209) suggests overfitting."
+      ],
+      "explanation": "CV R\u00b2 variability is high (std=0.152 > 0.15). The model may be sensitive to training fold composition."
+    },
+    "winning_estimator": "SVR",
+    "model_fallback_triggered": true,
+    "fallback_models_tried": [
+      "PLSRegression",
+      "ExtraTreesRegressor",
+      "SVR",
+      "KNeighborsRegressor"
+    ]
+  }
+}

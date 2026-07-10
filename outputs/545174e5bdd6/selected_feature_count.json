@@ -1,0 +1,7 @@
+{
+  "best_cv_r2": 0.84657966835389,
+  "best_feature_count": 5,
+  "selected_feature_count": 3,
+  "selected_cv_r2": 0.8152215259040204,
+  "explanation": "The highest mean cross-validation R\u00b2 was 0.8466 at 5 descriptor(s). Applying the one-standard-error rule (threshold = 0.7520), the smallest feature count within one SE of the best is 3 descriptor(s) with CV R\u00b2 = 0.8152. Training R\u00b2 exceeds validation R\u00b2, suggesting some overfitting may be present.\n\nUsing the one-standard-error rule, the selected model is the **3-feature** model, not the 5-feature model with the highest mean CV R\u00b2.\n\n- **Best mean CV R\u00b2:** 0.8466 at **5 features**\n- **One-SE threshold:** 0.7520\n- The **smallest** feature count with mean CV R\u00b2 within that threshold is **3 features**\n- **Selected mean CV R\u00b2:** 0.8152\n\nSelected descriptors:\n- **AATS3i**\n- **ATSC3d**\n- **GATS1Z**\n\nFor reference, the training R\u00b2 is higher than the CV R\u00b2 at the selected size, which suggests some overfitting may still be present."
+}

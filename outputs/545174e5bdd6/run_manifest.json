@@ -1,0 +1,167 @@
+{
+  "python_version": "3.11.15 | packaged by conda-forge | (main, Jun 11 2026, 03:34:02) [GCC 14.3.0]",
+  "platform": "Linux-4.4.0-19041-Microsoft-x86_64-with-glibc2.31",
+  "sklearn_version": "1.9.0",
+  "model_config": {
+    "estimator": "SVR",
+    "n_estimators": 100,
+    "max_depth": 10,
+    "min_samples_split": 2,
+    "min_samples_leaf": 1,
+    "max_features": "sqrt",
+    "bootstrap": true,
+    "max_samples": null,
+    "criterion": "squared_error",
+    "random_state": 42,
+    "n_jobs": -1,
+    "params": {
+      "C": 1.0,
+      "epsilon": 0.1,
+      "gamma": "scale",
+      "kernel": "rbf"
+    }
+  },
+  "selected_features": [
+    "AATS1Z",
+    "AATSC4Z"
+  ],
+  "dataset_hash": "e744cee7b2366a83e69a2894cc109189daf03d76e212aba2592496a15c1d9d28",
+  "workflow_config": {
+    "test_fraction": 0.2,
+    "random_seed": 42,
+    "output_dir": "outputs",
+    "umap": {
+      "n_neighbors": 15,
+      "n_components": 2,
+      "min_dist": 0.1,
+      "metric": "euclidean"
+    },
+    "clustering": {
+      "min_clusters": 2,
+      "max_clusters": 10,
+      "random_state": 60
+    },
+    "preprocessing": {
+      "missing_value_threshold": 0.2,
+      "near_constant_std_threshold": 0.01,
+      "correlation_threshold": 0.95
+    },
+    "model": {
+      "estimator": "RandomForestRegressor",
+      "n_estimators": 100,
+      "max_depth": 10,
+      "min_samples_split": 2,
+      "min_samples_leaf": 1,
+      "max_features": "sqrt",
+      "bootstrap": true,
+      "max_samples": null,
+      "criterion": "squared_error",
+      "random_state": 42,
+      "n_jobs": -1,
+      "params": {}
+    },
+    "descriptors": {
+      "enable_3d": false
+    },
+    "ga": {
+      "population_size": 50,
+      "n_generations": 30,
+      "crossover_prob": 0.7,
+      "mutation_prob": 0.2,
+      "tournament_size": 3,
+      "cv_folds": 5,
+      "n_jobs": -1,
+      "random_seed": 42
+    },
+    "sfs": {
+      "max_features": 5,
+      "cv_folds": 5,
+      "random_seed": 42,
+      "n_jobs": -1
+    },
+    "hpo": {
+      "enabled": true,
+      "max_hpo_rounds": 3,
+      "cv_folds": 5,
+      "max_candidates_per_round": 120,
+      "min_cv_improvement": 0.02,
+      "overfit_gap_threshold": 0.15,
+      "severe_overfit_gap_threshold": 0.25,
+      "minimum_cv_r2": 0.5,
+      "cv_std_threshold": 0.15,
+      "minimum_train_r2": 0.4,
+      "n_jobs": -1,
+      "openai_model": "gpt-5.4-mini"
+    },
+    "model_fallback": {
+      "enabled": true,
+      "estimators": [
+        "PLSRegression",
+        "ExtraTreesRegressor",
+        "SVR",
+        "KNeighborsRegressor"
+      ]
+    },
+    "smiles_column": "smiles",
+    "activity_column": "activity",
+    "id_column": null,
+    "min_valid_compounds": 20
+  },
+  "hyperparameter_optimization": {
+    "enabled": true,
+    "max_rounds": 3,
+    "rounds_completed": 3,
+    "final_model_source": "hpo_round_3",
+    "final_params": {
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 10,
+      "max_features": "sqrt",
+      "max_samples": 1.0,
+      "min_samples_leaf": 2,
+      "min_samples_split": 4,
+      "n_estimators": 200
+    },
+    "baseline_assessment": {
+      "status": "overfit",
+      "is_acceptable": false,
+      "is_overfit": true,
+      "is_underfit": false,
+      "is_unstable": false,
+      "is_severe_overfit": true,
+      "mean_train_r2": 0.9603777717591504,
+      "mean_cv_r2": 0.6129895913227573,
+      "train_cv_r2_gap": 0.3473881804363931,
+      "cv_r2_std": 0.13790684888295004,
+      "warnings": [
+        "Severe overfitting: train-CV R\u00b2 gap (0.347) exceeds 0.25."
+      ],
+      "explanation": "Training R\u00b2 (0.960) is much higher than CV R\u00b2 (0.613); gap=0.347 exceeds 0.15."
+    },
+    "final_assessment": {
+      "status": "unstable",
+      "is_acceptable": false,
+      "is_overfit": true,
+      "is_underfit": false,
+      "is_unstable": true,
+      "is_severe_overfit": false,
+      "mean_train_r2": 0.850409284435683,
+      "mean_cv_r2": 0.6412380869264037,
+      "train_cv_r2_gap": 0.20917119750927926,
+      "cv_r2_std": 0.1518649062927624,
+      "warnings": [
+        "High CV R\u00b2 standard deviation: 0.152.",
+        "Train-CV R\u00b2 gap (0.209) suggests overfitting."
+      ],
+      "explanation": "CV R\u00b2 variability is high (std=0.152 > 0.15). The model may be sensitive to training fold composition."
+    },
+    "winning_estimator": "SVR",
+    "model_fallback_triggered": true,
+    "fallback_models_tried": [
+      "PLSRegression",
+      "ExtraTreesRegressor",
+      "SVR",
+      "KNeighborsRegressor"
+    ]
+  }
+}

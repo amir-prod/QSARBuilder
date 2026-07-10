@@ -1,0 +1,6 @@
+{
+  "metric": "minkowski",
+  "n_neighbors": 4,
+  "p": 1,
+  "weights": "uniform"
+}
