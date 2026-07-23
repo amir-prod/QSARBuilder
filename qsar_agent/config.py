@@ -92,6 +92,14 @@ class ModelFallbackSettings(BaseModel):
     )
 
 
+class SFSFixedGAExpansionSettings(BaseModel):
+    """When a model is not acceptable, freeze SFS features and GA-add extras."""
+
+    enabled: bool = True
+    extra_features: int = 2
+    output_subdir: str = "sfs_fixed_ga_plus2"
+
+
 class WorkflowConfig(BaseModel):
     test_fraction: float = 0.20
     random_seed: int = 42
@@ -105,6 +113,9 @@ class WorkflowConfig(BaseModel):
     sfs: SFSConfig = Field(default_factory=SFSConfig)
     hpo: HPOSettings = Field(default_factory=HPOSettings)
     model_fallback: ModelFallbackSettings = Field(default_factory=ModelFallbackSettings)
+    sfs_fixed_ga_expansion: SFSFixedGAExpansionSettings = Field(
+        default_factory=SFSFixedGAExpansionSettings
+    )
     smiles_column: str = ""
     activity_column: str = ""
     id_column: str | None = None

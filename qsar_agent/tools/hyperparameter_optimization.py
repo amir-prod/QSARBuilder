@@ -341,15 +341,19 @@ def select_best_across_models(
 
     Each candidate dict must include:
       estimator, selected_features, final_selection (FinalModelSelection), model_config (ModelConfig)
+
+    Optional: base_estimator (for simplicity scoring), is_expansion, expansion_label.
     """
     pool_items: list[dict[str, Any]] = []
     for cand in candidates:
         fs = cand["final_selection"]
         if fs is None:
             continue
+        base_est = cand.get("base_estimator") or cand["estimator"]
         pool_items.append(
             {
                 "estimator": cand["estimator"],
+                "base_estimator": base_est,
                 "selected_features": cand["selected_features"],
                 "model_config": cand["model_config"],
                 "source": fs.source,
@@ -357,6 +361,8 @@ def select_best_across_models(
                 "summary": fs.cv_summary,
                 "assessment": fs.assessment,
                 "final_selection": fs,
+                "is_expansion": bool(cand.get("is_expansion", False)),
+                "expansion_label": str(cand.get("expansion_label", "")),
             }
         )
 
@@ -374,7 +380,7 @@ def select_best_across_models(
     within_se = [c for c in pool if c["summary"].mean_cv_r2 >= se_threshold - 1e-9]
     chosen = min(
         within_se,
-        key=lambda c: model_simplicity_score(c["estimator"], c["params"]),
+        key=lambda c: model_simplicity_score(c["base_estimator"], c["params"]),
     )
 
     warning = ""
@@ -411,6 +417,7 @@ def select_best_across_models(
             "status": c["assessment"].status,
             "acceptable": c["assessment"].is_acceptable,
             "n_features": len(c["selected_features"]),
+            "is_expansion": c["is_expansion"],
         }
         for c in pool_items
     ]
@@ -425,6 +432,8 @@ def select_best_across_models(
         "selection_rationale": rationale,
         "warning": warning,
         "compared_models": compared_models,
+        "winner_is_expansion": chosen["is_expansion"],
+        "winner_expansion_label": chosen["expansion_label"],
     }
 
 

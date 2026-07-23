@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Callable
 
-from qsar_agent.config import GAConfig, ModelConfig, SFSConfig
+from qsar_agent.config import GAConfig, ModelConfig, SFSConfig, SFSFixedGAExpansionSettings
 from qsar_agent.schemas.hyperparameter_optimization import AgentGridProposal, HPOConfig
 from qsar_agent.schemas.model_fallback import ModelBranchResult
 from qsar_agent.services.plotting import plot_sfs_r2
@@ -16,6 +16,7 @@ from qsar_agent.tools.feature_count_selection import (
 from qsar_agent.tools.genetic_algorithm import run_genetic_algorithm
 from qsar_agent.tools.hyperparameter_optimization import run_iterative_hyperparameter_optimization
 from qsar_agent.tools.sequential_feature_selection import run_sequential_feature_selection
+from qsar_agent.tools.sfs_fixed_ga_expansion import run_sfs_fixed_ga_expansion
 
 
 def run_model_branch(
@@ -30,6 +31,7 @@ def run_model_branch(
     grid_proposer: Callable[..., AgentGridProposal] | None = None,
     log_callback: Callable[[str], None] | None = None,
     explain_feature_count: bool = True,
+    expansion_settings: SFSFixedGAExpansionSettings | None = None,
 ) -> ModelBranchResult:
     """Run SFS → feature count → GA → HPO for a single estimator."""
     branch_dir = output_subdir if output_subdir is not None else run_dir
@@ -87,7 +89,7 @@ def run_model_branch(
         n_train_samples=n_train,
     )
 
-    return ModelBranchResult(
+    branch = ModelBranchResult(
         estimator=model_config.estimator,
         model_config_snapshot=hpo_result.final_model_config,
         branch_dir=str(branch_dir),
@@ -96,3 +98,19 @@ def run_model_branch(
         ga=ga,
         hpo_result=hpo_result,
     )
+
+    expansion = run_sfs_fixed_ga_expansion(
+        branch,
+        train_path=train_path,
+        run_dir=run_dir,
+        model_config=model_config,
+        ga_config=ga_config,
+        hpo_config=hpo_config,
+        expansion_settings=expansion_settings,
+        grid_proposer=grid_proposer,
+        log_callback=log_callback,
+    )
+    if expansion is not None:
+        branch = branch.model_copy(update={"expansion": expansion})
+
+    return branch

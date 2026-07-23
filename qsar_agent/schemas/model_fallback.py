@@ -19,6 +19,11 @@ class ModelBranchResult(BaseModel):
     feature_count: FeatureCountSelection
     ga: GAResult
     hpo_result: HPOResult
+    # Optional SFS-fixed + GA expansion branch (separate folder artifacts).
+    expansion: ModelBranchResult | None = None
+    # True when this branch itself is an expansion (for comparison labels).
+    is_expansion: bool = False
+    expansion_label: str = ""
 
 
 class CrossModelSelection(BaseModel):
@@ -29,6 +34,8 @@ class CrossModelSelection(BaseModel):
     selection_rationale: str
     warning: str = ""
     compared_models: list[dict[str, Any]] = Field(default_factory=list)
+    winner_is_expansion: bool = False
+    winner_expansion_label: str = ""
 
 
 class ModelFallbackResult(BaseModel):

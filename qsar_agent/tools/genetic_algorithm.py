@@ -36,9 +36,14 @@ def run_genetic_algorithm(
     number_of_features: int,
     ga_config: GAConfig | None = None,
     model_config: ModelConfig | None = None,
+    fixed_features: list[str] | None = None,
 ) -> GAResult:
     """
     GA feature selection optimizing CV R² on training data only.
+
+    When ``fixed_features`` is provided, those descriptors are always included
+    and GA selects exactly ``number_of_features`` additional descriptors from
+    the remaining pool. Fitness evaluates fixed ∪ selected.
 
     Corrected from examples/ga_feature_selection_regression.py which used the
     external test set for fitness (data leakage).
@@ -49,22 +54,48 @@ def run_genetic_algorithm(
 
     df = pd.read_csv(train_path)
     X, y = _get_xy(df)
-    feature_names = X.columns.tolist()
-    n_features = len(feature_names)
-    n_select = number_of_features
+    all_feature_names = X.columns.tolist()
+    fixed = list(fixed_features or [])
 
-    if n_select > n_features:
-        raise ValueError(
-            f"Cannot select {n_select} features from {n_features} available descriptors."
-        )
+    missing_fixed = [f for f in fixed if f not in all_feature_names]
+    if missing_fixed:
+        raise ValueError(f"Fixed features not in training data: {missing_fixed}")
 
+    # Chromosome indexes the variable (non-fixed) pool only when fixed features are set.
+    if fixed:
+        variable_names = [f for f in all_feature_names if f not in set(fixed)]
+        n_select = number_of_features  # extras to pick from the variable pool
+        if n_select > len(variable_names):
+            raise ValueError(
+                f"Cannot select {n_select} extra features from "
+                f"{len(variable_names)} remaining descriptors "
+                f"(fixed={len(fixed)})."
+            )
+        if n_select < 1:
+            raise ValueError("number_of_features must be >= 1 when using fixed_features.")
+        chromosome_names = variable_names
+    else:
+        chromosome_names = all_feature_names
+        n_select = number_of_features
+        if n_select > len(chromosome_names):
+            raise ValueError(
+                f"Cannot select {n_select} features from "
+                f"{len(chromosome_names)} available descriptors."
+            )
+
+    n_chromosome = len(chromosome_names)
     estimator_template = model_config or ModelConfig()
+
+    def _column_indices_for_fitness(selected_variable_indices: list[int]) -> list[int]:
+        names = list(fixed) + [chromosome_names[i] for i in selected_variable_indices]
+        return [all_feature_names.index(n) for n in names]
 
     def evaluate_individual(individual):
         selected = [i for i, bit in enumerate(individual) if bit == 1]
         if len(selected) != n_select or len(set(selected)) != n_select:
             return (-1000.0,)
-        X_sel = X.iloc[:, selected]
+        col_idx = _column_indices_for_fitness(selected)
+        X_sel = X.iloc[:, col_idx]
         model = build_estimator(estimator_template)
         scores = cross_val_score(
             model,
@@ -79,8 +110,8 @@ def run_genetic_algorithm(
     toolbox = base.Toolbox()
 
     def create_individual():
-        individual = [0] * n_features
-        selected_indices = random.sample(range(n_features), n_select)
+        individual = [0] * n_chromosome
+        selected_indices = random.sample(range(n_chromosome), n_select)
         for idx in selected_indices:
             individual[idx] = 1
         return creator.Individual(individual)
@@ -164,18 +195,29 @@ def run_genetic_algorithm(
             f"GA final chromosome has {len(selected_indices)} features, expected {n_select}."
         )
 
-    selected_names = [feature_names[i] for i in selected_indices]
+    extra_names = [chromosome_names[i] for i in selected_indices]
+    selected_names = list(fixed) + extra_names
 
     history_df = pd.DataFrame(history)
     history_path = run_dir / "ga_history.csv"
     history_df.to_csv(history_path, index=False)
 
     selected_path = run_dir / "ga_selected_features.json"
+    payload: dict = {"selected_features": selected_names}
+    if fixed:
+        payload["fixed_features"] = fixed
+        payload["extra_features"] = extra_names
     with open(selected_path, "w", encoding="utf-8") as f:
-        json.dump({"selected_features": selected_names}, f, indent=2)
+        json.dump(payload, f, indent=2)
 
     config_path = run_dir / "ga_configuration.json"
-    save_json(config_path, {**cfg.model_dump(), "number_of_features": n_select})
+    config_payload = {
+        **cfg.model_dump(),
+        "number_of_features": n_select if not fixed else len(selected_names),
+        "extra_features": n_select if fixed else None,
+        "fixed_features": fixed if fixed else None,
+    }
+    save_json(config_path, config_payload)
 
     png_path = run_dir / "ga_convergence.png"
     svg_path = run_dir / "ga_convergence.svg"

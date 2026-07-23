@@ -334,7 +334,7 @@ class WorkflowRunner:
                         rr.search_results_path
                     )
 
-            # Build RF branch result and optionally try fallback models
+            # Build RF branch result and optionally try fallback / SFS-fixed GA expansion
             rf_branch = ModelBranchResult(
                 estimator=self.config.model.estimator,
                 model_config_snapshot=hpo_result.final_model_config,
@@ -351,14 +351,20 @@ class WorkflowRunner:
             hpo_metadata.setdefault("winning_estimator", winning_estimator)
             hpo_metadata.setdefault("model_fallback_triggered", False)
             hpo_metadata.setdefault("fallback_models_tried", [])
+            hpo_metadata.setdefault("winner_is_expansion", False)
+            hpo_metadata.setdefault("winner_expansion_label", "")
 
-            if not self.config.model_fallback.enabled:
-                self._skip_stage("model_fallback", "Model fallback disabled")
-            elif not hpo_result.final_selection:
+            rf_acceptable = (
+                hpo_result.final_selection is not None
+                and hpo_result.final_selection.assessment.is_acceptable
+            )
+
+            if not hpo_result.final_selection:
                 self._skip_stage("model_fallback", "No HPO selection available")
-            elif hpo_result.final_selection.assessment.is_acceptable:
+            elif rf_acceptable:
                 self._skip_stage("model_fallback", "RF model acceptable")
             else:
+                # RF not acceptable: run expansion (+ fallbacks if enabled) and compete.
                 self._start_stage("model_fallback")
 
                 def grid_proposer_fallback(**kwargs):
@@ -376,6 +382,7 @@ class WorkflowRunner:
                     grid_proposer=grid_proposer_fallback if hpo_cfg.enabled else None,
                     log_callback=hpo_log,
                 )
+                rf_branch = fallback_result.rf_branch
                 cross = fallback_result.cross_model_selection
                 if cross:
                     final_model_config = ModelConfig(**cross.final_model_config)
@@ -388,6 +395,8 @@ class WorkflowRunner:
                     hpo_metadata["winning_estimator"] = winning_estimator
                     hpo_metadata["fallback_models_tried"] = fallback_result.fallback_models_tried
                     hpo_metadata["model_fallback_triggered"] = fallback_result.triggered
+                    hpo_metadata["winner_is_expansion"] = cross.winner_is_expansion
+                    hpo_metadata["winner_expansion_label"] = cross.winner_expansion_label
                     if fallback_result.comparison_json_path:
                         self.artifact_paths["model_comparison"] = (
                             fallback_result.comparison_json_path
