@@ -59,7 +59,11 @@ class HPOSettings(BaseModel):
 
 
 class DescriptorConfig(BaseModel):
-    enable_3d: bool = False
+    backends: list[str] = Field(default_factory=lambda: ["RDKit", "Mordred"])
+    run_geometry_optimization: bool = False
+    num_workers: int = 4
+    xtb_timeout: int = 600
+    external_descriptors_path: str | None = None
 
 
 class GAConfig(BaseModel):

@@ -1,0 +1,67 @@
+{
+  "source": "baseline",
+  "params": {
+    "min_samples_split": 2,
+    "min_samples_leaf": 1,
+    "bootstrap": false,
+    "max_features": "sqrt",
+    "max_depth": 10,
+    "n_estimators": 100
+  },
+  "cv_summary": {
+    "mean_train_r2": 0.9999658978541628,
+    "mean_cv_r2": 0.7879278290704652,
+    "std_cv_r2": 0.1554330688688,
+    "mean_train_rmse": 0.004151586042620656,
+    "mean_cv_rmse": 0.31511468522711195,
+    "mean_train_mae": 0.0025068627451002067,
+    "mean_cv_mae": 0.26711166666666675,
+    "train_cv_r2_gap": 0.21203806878369758,
+    "n_folds": 5
+  },
+  "assessment": {
+    "status": "unstable",
+    "is_acceptable": false,
+    "is_overfit": true,
+    "is_underfit": false,
+    "is_unstable": true,
+    "is_severe_overfit": false,
+    "mean_train_r2": 0.9999658978541628,
+    "mean_cv_r2": 0.7879278290704652,
+    "train_cv_r2_gap": 0.21203806878369758,
+    "cv_r2_std": 0.1554330688688,
+    "warnings": [
+      "High CV R\u00b2 standard deviation: 0.155.",
+      "Train-CV R\u00b2 gap (0.212) suggests overfitting."
+    ],
+    "explanation": "CV R\u00b2 variability is high (std=0.155 > 0.15). The model may be sensitive to training fold composition."
+  },
+  "selection_rationale": "Selected baseline with mean CV R\u00b2=0.7879, train-CV gap=0.2120, status=unstable. No acceptable models; chose best CV R\u00b2 with warning.",
+  "warning": "No acceptable model found after HPO; selected highest CV R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.7879278290704652,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.7917989601409692,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.7917989601409692,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_3",
+      "mean_cv_r2": 0.7901339595136931,
+      "status": "overfit",
+      "acceptable": false
+    }
+  ]
+}

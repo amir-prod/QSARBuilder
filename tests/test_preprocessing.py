@@ -6,7 +6,7 @@ import pytest
 
 from qsar_agent.config import PreprocessingConfig
 from qsar_agent.tools.descriptor_preprocessing import DescriptorPreprocessor, fit_descriptor_preprocessor
-from qsar_agent.tools.mordred_descriptors import META_COLUMNS
+from qsar_agent.tools.descriptor_calculation import META_COLUMNS
 
 
 def _make_train_test(n_features=10, n_train=30, n_test=10):

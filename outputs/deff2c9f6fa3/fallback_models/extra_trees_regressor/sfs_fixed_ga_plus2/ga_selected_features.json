@@ -1,0 +1,20 @@
+{
+  "selected_features": [
+    "Mordred_ATSC3v",
+    "Mordred_GATS1v",
+    "Mordred_GATS4se",
+    "Mordred_SdssC",
+    "Mordred_MATS1m",
+    "RDKit_PEOE_VSA12"
+  ],
+  "fixed_features": [
+    "Mordred_ATSC3v",
+    "Mordred_GATS1v",
+    "Mordred_GATS4se",
+    "Mordred_SdssC"
+  ],
+  "extra_features": [
+    "Mordred_MATS1m",
+    "RDKit_PEOE_VSA12"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "population_size": 50,
+  "n_generations": 30,
+  "crossover_prob": 0.7,
+  "mutation_prob": 0.2,
+  "tournament_size": 3,
+  "cv_folds": 5,
+  "n_jobs": -1,
+  "random_seed": 42,
+  "number_of_features": 7,
+  "extra_features": 2,
+  "fixed_features": [
+    "Mordred_ATSC4c",
+    "Mordred_AXp-0dv",
+    "Mordred_GATS2Z",
+    "Mordred_GATS4dv",
+    "RDKit_SPS"
+  ]
+}

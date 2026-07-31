@@ -1,0 +1,83 @@
+{
+  "original_grid": {
+    "n_estimators": [
+      200,
+      500,
+      800
+    ],
+    "max_depth": [
+      2,
+      3,
+      5,
+      8,
+      null
+    ],
+    "min_samples_split": [
+      2,
+      5,
+      10,
+      20
+    ],
+    "min_samples_leaf": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "max_features": [
+      "sqrt",
+      "log2",
+      0.3,
+      0.5
+    ],
+    "bootstrap": [
+      true,
+      false
+    ]
+  },
+  "sanitized_grid": {
+    "n_estimators": [
+      200,
+      800
+    ],
+    "max_depth": [
+      2,
+      null
+    ],
+    "min_samples_split": [
+      2,
+      20
+    ],
+    "min_samples_leaf": [
+      1,
+      8
+    ],
+    "max_features": [
+      "sqrt",
+      "log2",
+      0.5
+    ],
+    "bootstrap": [
+      true,
+      false
+    ]
+  },
+  "removed_params": [],
+  "removed_values": {},
+  "shrink_steps": [
+    "Removed max_depth=5 to reduce candidates (remaining estimate=1536).",
+    "Removed max_depth=8 to reduce candidates (remaining estimate=1152).",
+    "Removed min_samples_split=10 to reduce candidates (remaining estimate=864).",
+    "Removed min_samples_leaf=4 to reduce candidates (remaining estimate=648).",
+    "Removed max_features=0.3 to reduce candidates (remaining estimate=486).",
+    "Removed n_estimators=500 to reduce candidates (remaining estimate=324).",
+    "Removed max_depth=3 to reduce candidates (remaining estimate=216).",
+    "Removed min_samples_split=5 to reduce candidates (remaining estimate=144).",
+    "Removed min_samples_leaf=2 to reduce candidates (remaining estimate=96)."
+  ],
+  "candidate_count": 96,
+  "used_randomized_search": false,
+  "warnings": [
+    "Grid has 1920 combinations; shrinking to <= 120."
+  ]
+}

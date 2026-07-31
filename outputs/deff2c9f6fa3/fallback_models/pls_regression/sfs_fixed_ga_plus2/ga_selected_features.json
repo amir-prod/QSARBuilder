@@ -1,0 +1,24 @@
+{
+  "selected_features": [
+    "Mordred_AATS4se",
+    "Mordred_ATSC1v",
+    "Mordred_ATSC5dv",
+    "Mordred_MATS4s",
+    "RDKit_PEOE_VSA12",
+    "RDKit_VSA_EState6",
+    "Mordred_ATSC3i",
+    "Mordred_SpMAD_Dzp"
+  ],
+  "fixed_features": [
+    "Mordred_AATS4se",
+    "Mordred_ATSC1v",
+    "Mordred_ATSC5dv",
+    "Mordred_MATS4s",
+    "RDKit_PEOE_VSA12",
+    "RDKit_VSA_EState6"
+  ],
+  "extra_features": [
+    "Mordred_ATSC3i",
+    "Mordred_SpMAD_Dzp"
+  ]
+}

@@ -17,7 +17,7 @@ from qsar_agent.schemas.model_fallback import ModelBranchResult
 from qsar_agent.services.artifact_manager import save_json
 from qsar_agent.tools.genetic_algorithm import run_genetic_algorithm
 from qsar_agent.tools.hyperparameter_optimization import run_iterative_hyperparameter_optimization
-from qsar_agent.tools.mordred_descriptors import META_COLUMNS
+from qsar_agent.tools.descriptor_calculation import META_COLUMNS
 
 
 def _sfs_features_at_count(branch: ModelBranchResult) -> list[str]:

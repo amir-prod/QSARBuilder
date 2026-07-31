@@ -1,0 +1,64 @@
+{
+  "source": "baseline",
+  "params": {
+    "kernel": "rbf",
+    "epsilon": 0.1,
+    "C": 1.0,
+    "gamma": "scale"
+  },
+  "cv_summary": {
+    "mean_train_r2": 0.9685565684467063,
+    "mean_cv_r2": 0.7729366931876733,
+    "std_cv_r2": 0.13789616108041342,
+    "mean_train_rmse": 0.14235063199881814,
+    "mean_cv_rmse": 0.32483163953739363,
+    "mean_train_mae": 0.12636111668896988,
+    "mean_cv_mae": 0.2876848069750584,
+    "train_cv_r2_gap": 0.19561987525903302,
+    "n_folds": 5
+  },
+  "assessment": {
+    "status": "overfit",
+    "is_acceptable": false,
+    "is_overfit": true,
+    "is_underfit": false,
+    "is_unstable": false,
+    "is_severe_overfit": false,
+    "mean_train_r2": 0.9685565684467063,
+    "mean_cv_r2": 0.7729366931876733,
+    "train_cv_r2_gap": 0.19561987525903302,
+    "cv_r2_std": 0.13789616108041342,
+    "warnings": [
+      "Train-CV R\u00b2 gap (0.196) suggests overfitting."
+    ],
+    "explanation": "Training R\u00b2 (0.969) is much higher than CV R\u00b2 (0.773); gap=0.196 exceeds 0.15."
+  },
+  "selection_rationale": "Selected baseline with mean CV R\u00b2=0.7729, train-CV gap=0.1956, status=overfit. No acceptable models; chose best CV R\u00b2 with warning.",
+  "warning": "No acceptable model found after HPO; selected highest CV R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.7729366931876733,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.8157571763768562,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.8157571763768562,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_3",
+      "mean_cv_r2": 0.809871387300455,
+      "status": "overfit",
+      "acceptable": false
+    }
+  ]
+}

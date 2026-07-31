@@ -1,0 +1,22 @@
+{
+  "selected_features": [
+    "Mordred_ATSC4c",
+    "Mordred_AXp-0dv",
+    "Mordred_GATS2Z",
+    "Mordred_GATS4dv",
+    "RDKit_SPS",
+    "Mordred_AATSC0i",
+    "Mordred_VSA_EState3"
+  ],
+  "fixed_features": [
+    "Mordred_ATSC4c",
+    "Mordred_AXp-0dv",
+    "Mordred_GATS2Z",
+    "Mordred_GATS4dv",
+    "RDKit_SPS"
+  ],
+  "extra_features": [
+    "Mordred_AATSC0i",
+    "Mordred_VSA_EState3"
+  ]
+}

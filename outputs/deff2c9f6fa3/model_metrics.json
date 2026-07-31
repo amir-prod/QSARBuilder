@@ -1,0 +1,84 @@
+{
+  "train": {
+    "r2": 0.9869574297326649,
+    "rmse": 0.09346898859977976,
+    "mae": 0.09164395539466205,
+    "n_samples": 21
+  },
+  "test": {
+    "r2": 0.6420714008180344,
+    "rmse": 0.6281849095593726,
+    "mae": 0.5592810400352158,
+    "n_samples": 6
+  },
+  "selected_features": [
+    "Mordred_ATSC4c",
+    "Mordred_AXp-0dv",
+    "Mordred_GATS2Z",
+    "Mordred_GATS4dv",
+    "RDKit_SPS",
+    "Mordred_AATSC0i",
+    "Mordred_VSA_EState3"
+  ],
+  "hyperparameter_optimization": {
+    "enabled": true,
+    "max_rounds": 3,
+    "rounds_completed": 3,
+    "final_model_source": "baseline",
+    "final_params": {
+      "min_samples_split": 2,
+      "min_samples_leaf": 1,
+      "bootstrap": true,
+      "max_features": "sqrt",
+      "criterion": "squared_error",
+      "max_depth": 10,
+      "n_estimators": 100,
+      "max_samples": null
+    },
+    "baseline_assessment": {
+      "status": "unstable",
+      "is_acceptable": false,
+      "is_overfit": true,
+      "is_underfit": false,
+      "is_unstable": true,
+      "is_severe_overfit": true,
+      "mean_train_r2": 0.9631334180374953,
+      "mean_cv_r2": 0.505229763026402,
+      "train_cv_r2_gap": 0.4579036550110933,
+      "cv_r2_std": 0.33863076403488623,
+      "warnings": [
+        "Severe overfitting: train-CV R\u00b2 gap (0.458) exceeds 0.25.",
+        "High CV R\u00b2 standard deviation: 0.339."
+      ],
+      "explanation": "CV R\u00b2 variability is high (std=0.339 > 0.15). The model may be sensitive to training fold composition."
+    },
+    "final_assessment": {
+      "status": "unstable",
+      "is_acceptable": false,
+      "is_overfit": true,
+      "is_underfit": false,
+      "is_unstable": true,
+      "is_severe_overfit": true,
+      "mean_train_r2": 0.9649552792957561,
+      "mean_cv_r2": 0.49376915640235375,
+      "train_cv_r2_gap": 0.47118612289340234,
+      "cv_r2_std": 0.3899011213072132,
+      "warnings": [
+        "Severe overfitting: train-CV R\u00b2 gap (0.471) exceeds 0.25.",
+        "High CV R\u00b2 standard deviation: 0.390.",
+        "CV R\u00b2 (0.494) is below minimum threshold."
+      ],
+      "explanation": "CV R\u00b2 variability is high (std=0.390 > 0.15). The model may be sensitive to training fold composition."
+    },
+    "winning_estimator": "SVR (sfs_fixed_ga_plus2)",
+    "model_fallback_triggered": true,
+    "fallback_models_tried": [
+      "PLSRegression",
+      "ExtraTreesRegressor",
+      "SVR",
+      "KNeighborsRegressor"
+    ],
+    "winner_is_expansion": true,
+    "winner_expansion_label": "sfs_fixed_ga_plus2"
+  }
+}

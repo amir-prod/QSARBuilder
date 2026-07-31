@@ -1,0 +1,29 @@
+{
+  "estimator": "ExtraTreesRegressor",
+  "fixed_features": [
+    "Mordred_ATSC3v",
+    "Mordred_GATS1v",
+    "Mordred_GATS4se",
+    "Mordred_SdssC"
+  ],
+  "extra_features": [
+    "Mordred_MATS1m",
+    "RDKit_PEOE_VSA12"
+  ],
+  "selected_features": [
+    "Mordred_ATSC3v",
+    "Mordred_GATS1v",
+    "Mordred_GATS4se",
+    "Mordred_SdssC",
+    "Mordred_MATS1m",
+    "RDKit_PEOE_VSA12"
+  ],
+  "n_fixed": 4,
+  "n_extra": 2,
+  "ga_best_fitness": 0.7724696979447676,
+  "acceptable_after_hpo": false,
+  "final_source": "baseline",
+  "mean_cv_r2": 0.7879278290704652,
+  "status": "unstable",
+  "expansion_dir": "outputs/deff2c9f6fa3/fallback_models/extra_trees_regressor/sfs_fixed_ga_plus2"
+}

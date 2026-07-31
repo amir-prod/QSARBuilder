@@ -1,0 +1,68 @@
+{
+  "source": "hpo_round_3",
+  "params": {
+    "bootstrap": true,
+    "criterion": "absolute_error",
+    "max_depth": 3,
+    "max_features": "sqrt",
+    "max_samples": 1.0,
+    "min_samples_leaf": 2,
+    "min_samples_split": 4,
+    "n_estimators": 200
+  },
+  "cv_summary": {
+    "mean_train_r2": 0.9109514504204181,
+    "mean_cv_r2": 0.6284082629191059,
+    "std_cv_r2": 0.14892773553876218,
+    "mean_train_rmse": 0.0,
+    "mean_cv_rmse": 0.0,
+    "mean_train_mae": 0.0,
+    "mean_cv_mae": 0.0,
+    "train_cv_r2_gap": 0.28254318750131224,
+    "n_folds": 5
+  },
+  "assessment": {
+    "status": "overfit",
+    "is_acceptable": false,
+    "is_overfit": true,
+    "is_underfit": false,
+    "is_unstable": false,
+    "is_severe_overfit": true,
+    "mean_train_r2": 0.9109514504204181,
+    "mean_cv_r2": 0.6284082629191059,
+    "train_cv_r2_gap": 0.28254318750131224,
+    "cv_r2_std": 0.14892773553876218,
+    "warnings": [
+      "Severe overfitting: train-CV R\u00b2 gap (0.283) exceeds 0.25."
+    ],
+    "explanation": "Training R\u00b2 (0.911) is much higher than CV R\u00b2 (0.628); gap=0.283 exceeds 0.15."
+  },
+  "selection_rationale": "Selected hpo_round_3 with mean CV R\u00b2=0.6284, train-CV gap=0.2825, status=overfit. No acceptable models; chose best CV R\u00b2 with warning.",
+  "warning": "No acceptable model found after HPO; selected highest CV R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.6338568763155601,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.6539199785304073,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.6539199785304073,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_3",
+      "mean_cv_r2": 0.6284082629191059,
+      "status": "overfit",
+      "acceptable": false
+    }
+  ]
+}

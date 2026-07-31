@@ -1,0 +1,56 @@
+{
+  "source": "hpo_round_2",
+  "params": {
+    "C": 10.0,
+    "epsilon": 0.1,
+    "gamma": "auto",
+    "kernel": "rbf"
+  },
+  "cv_summary": {
+    "mean_train_r2": 0.9868862401747392,
+    "mean_cv_r2": 0.8494455133354734,
+    "std_cv_r2": 0.06205536034564578,
+    "mean_train_rmse": 0.0,
+    "mean_cv_rmse": 0.0,
+    "mean_train_mae": 0.0,
+    "mean_cv_mae": 0.0,
+    "train_cv_r2_gap": 0.1374407268392659,
+    "n_folds": 5
+  },
+  "assessment": {
+    "status": "good",
+    "is_acceptable": true,
+    "is_overfit": false,
+    "is_underfit": false,
+    "is_unstable": false,
+    "is_severe_overfit": false,
+    "mean_train_r2": 0.9868862401747392,
+    "mean_cv_r2": 0.8494455133354734,
+    "train_cv_r2_gap": 0.1374407268392659,
+    "cv_r2_std": 0.06205536034564578,
+    "warnings": [],
+    "explanation": "CV R\u00b2 (0.849) is acceptable, train-CV gap (0.137) is within limits, and CV variability (std=0.062) is acceptable."
+  },
+  "selection_rationale": "Selected hpo_round_2 with mean CV R\u00b2=0.8494, train-CV gap=0.1374, status=good. Preferred acceptable models (1); applied one-SE rule (threshold CV R\u00b2 >= 0.7874) with simplicity tie-break.",
+  "warning": "",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.8236021448270117,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.8409949005796189,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.8494455133354734,
+      "status": "good",
+      "acceptable": true
+    }
+  ]
+}

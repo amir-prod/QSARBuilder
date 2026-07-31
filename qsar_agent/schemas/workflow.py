@@ -21,7 +21,7 @@ class StageStatus(str, Enum):
 
 WORKFLOW_STAGES = [
     "dataset_validation",
-    "mordred_descriptors",
+    "descriptor_calculation",
     "umap_split",
     "descriptor_preprocessing",
     "sequential_feature_selection",
@@ -51,7 +51,7 @@ class AgentFinalReport(BaseModel):
     valid_compounds: int
     train_size: int
     test_size: int
-    initial_mordred_descriptors: int
+    initial_descriptor_count: int
     final_preprocessed_descriptors: int
     selected_descriptor_count: int
     ga_selected_descriptors: list[str]

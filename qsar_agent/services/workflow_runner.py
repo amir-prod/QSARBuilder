@@ -28,7 +28,7 @@ from qsar_agent.tools.descriptor_preprocessing import fit_descriptor_preprocesso
 from qsar_agent.tools.final_model import train_and_evaluate_final_model
 from qsar_agent.tools.genetic_algorithm import run_genetic_algorithm
 from qsar_agent.tools.hyperparameter_optimization import run_iterative_hyperparameter_optimization
-from qsar_agent.tools.mordred_descriptors import calculate_mordred_descriptors
+from qsar_agent.tools.descriptor_calculation import calculate_descriptors
 from qsar_agent.tools.sequential_feature_selection import run_sequential_feature_selection
 from qsar_agent.tools.umap_split import create_umap_cluster_split
 from qsar_agent.schemas.model_fallback import ModelBranchResult
@@ -126,21 +126,41 @@ class WorkflowRunner:
             )
             self._complete_stage("dataset_validation")
 
-            # 2. Mordred descriptors
-            self._start_stage("mordred_descriptors")
-            mordred = calculate_mordred_descriptors(
+            # 2. Descriptor calculation (DescJocky + optional external merge)
+            self._start_stage("descriptor_calculation")
+            descriptors = calculate_descriptors(
                 validation.cleaned_dataset_path,
                 self.run_dir,
                 self.config.descriptors,
             )
-            self.warnings.extend(mordred.warnings)
-            self.artifact_paths["mordred_descriptors"] = mordred.raw_descriptors_path
-            self._complete_stage("mordred_descriptors")
+            self.warnings.extend(descriptors.warnings)
+            self.artifact_paths["descriptors_raw"] = descriptors.raw_descriptors_path
+            if descriptors.generated_descriptors_path:
+                self.artifact_paths["generated_descriptors"] = (
+                    descriptors.generated_descriptors_path
+                )
+            if descriptors.calculation_report_path:
+                self.artifact_paths["descriptor_calculation_report"] = (
+                    descriptors.calculation_report_path
+                )
+            if descriptors.calculation_report_md_path:
+                self.artifact_paths["descriptor_calculation_report_md"] = (
+                    descriptors.calculation_report_md_path
+                )
+            if descriptors.external_descriptors_path:
+                self.artifact_paths["external_descriptors"] = (
+                    descriptors.external_descriptors_path
+                )
+            self._complete_stage(
+                "descriptor_calculation",
+                f"backends={','.join(descriptors.backends)}; "
+                f"3D_descriptors={descriptors.three_d_descriptors_included}",
+            )
 
             # 3. UMAP split
             self._start_stage("umap_split")
             split = create_umap_cluster_split(
-                mordred.raw_descriptors_path,
+                descriptors.raw_descriptors_path,
                 self.run_dir,
                 self.config.test_fraction,
                 self.config.random_seed,
@@ -452,7 +472,7 @@ class WorkflowRunner:
             self.state.final_report = build_final_report(
                 self.run_id,
                 validation,
-                mordred,
+                descriptors,
                 preprocessing,
                 split,
                 feature_count,

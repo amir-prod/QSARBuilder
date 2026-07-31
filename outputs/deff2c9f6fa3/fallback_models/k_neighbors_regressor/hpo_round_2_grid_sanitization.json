@@ -1,0 +1,85 @@
+{
+  "original_grid": {
+    "n_neighbors": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+      22,
+      24,
+      26,
+      28,
+      30
+    ],
+    "weights": [
+      "uniform",
+      "distance"
+    ],
+    "p": [
+      1,
+      2
+    ],
+    "metric": [
+      "minkowski",
+      "euclidean",
+      "manhattan"
+    ]
+  },
+  "sanitized_grid": {
+    "n_neighbors": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      22,
+      24,
+      26,
+      28,
+      30
+    ],
+    "weights": [
+      "uniform",
+      "distance"
+    ],
+    "p": [
+      1,
+      2
+    ],
+    "metric": [
+      "minkowski",
+      "euclidean",
+      "manhattan"
+    ]
+  },
+  "removed_params": [],
+  "removed_values": {},
+  "shrink_steps": [
+    "Removed n_neighbors=12 to reduce candidates (remaining estimate=228).",
+    "Removed n_neighbors=10 to reduce candidates (remaining estimate=216).",
+    "Removed n_neighbors=14 to reduce candidates (remaining estimate=204).",
+    "Removed n_neighbors=9 to reduce candidates (remaining estimate=192).",
+    "Removed n_neighbors=16 to reduce candidates (remaining estimate=180).",
+    "Removed n_neighbors=8 to reduce candidates (remaining estimate=168).",
+    "Removed n_neighbors=18 to reduce candidates (remaining estimate=156).",
+    "Removed n_neighbors=7 to reduce candidates (remaining estimate=144).",
+    "Removed n_neighbors=20 to reduce candidates (remaining estimate=132).",
+    "Removed n_neighbors=6 to reduce candidates (remaining estimate=120)."
+  ],
+  "candidate_count": 120,
+  "used_randomized_search": false,
+  "warnings": [
+    "Grid has 240 combinations; shrinking to <= 120."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "estimator": "SVR",
+  "fixed_features": [
+    "Mordred_ATSC4c",
+    "Mordred_AXp-0dv",
+    "Mordred_GATS2Z",
+    "Mordred_GATS4dv",
+    "RDKit_SPS"
+  ],
+  "extra_features": [
+    "Mordred_AATSC0i",
+    "Mordred_VSA_EState3"
+  ],
+  "selected_features": [
+    "Mordred_ATSC4c",
+    "Mordred_AXp-0dv",
+    "Mordred_GATS2Z",
+    "Mordred_GATS4dv",
+    "RDKit_SPS",
+    "Mordred_AATSC0i",
+    "Mordred_VSA_EState3"
+  ],
+  "n_fixed": 5,
+  "n_extra": 2,
+  "ga_best_fitness": 0.818910341931869,
+  "acceptable_after_hpo": true,
+  "final_source": "hpo_round_2",
+  "mean_cv_r2": 0.8494455133354734,
+  "status": "good",
+  "expansion_dir": "outputs/deff2c9f6fa3/fallback_models/svr/sfs_fixed_ga_plus2"
+}

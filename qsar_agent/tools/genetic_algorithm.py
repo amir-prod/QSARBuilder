@@ -16,7 +16,7 @@ from qsar_agent.schemas.feature_selection import GAResult
 from qsar_agent.services import build_estimator
 from qsar_agent.services.artifact_manager import save_json
 from qsar_agent.services.plotting import plot_ga_convergence
-from qsar_agent.tools.mordred_descriptors import META_COLUMNS
+from qsar_agent.tools.descriptor_calculation import META_COLUMNS
 
 # DEAP creator can only be registered once per process
 if not hasattr(creator, "FitnessMax"):

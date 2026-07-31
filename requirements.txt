@@ -1,4 +1,7 @@
 streamlit>=1.32.0
+# PyArrow 25.0.0 segfaults with Streamlit's script threads (mimalloc); keep <25.
+# See https://github.com/apache/arrow/issues/50471
+pyarrow>=14.0.0,<25.0.0
 openai>=1.30.0
 pydantic>=2.0.0
 pandas>=2.0.0
@@ -6,6 +9,8 @@ numpy>=1.24.0
 scikit-learn>=1.3.0
 rdkit>=2023.9.1
 mordred>=1.2.0
+# Upstream DescJocky uses invalid requires-python ("=3.11"); install the patched vendor copy.
+./vendor/descjocky
 umap-learn>=0.5.5
 matplotlib>=3.7.0
 seaborn>=0.13.0

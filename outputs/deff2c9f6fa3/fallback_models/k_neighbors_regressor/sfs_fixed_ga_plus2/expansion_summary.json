@@ -1,0 +1,31 @@
+{
+  "estimator": "KNeighborsRegressor",
+  "fixed_features": [
+    "Mordred_AATSC3m",
+    "Mordred_ATSC3Z",
+    "Mordred_GATS2dv",
+    "Mordred_GATS3i",
+    "RDKit_Chi4v"
+  ],
+  "extra_features": [
+    "Mordred_AATSC2d",
+    "Mordred_MATS3s"
+  ],
+  "selected_features": [
+    "Mordred_AATSC3m",
+    "Mordred_ATSC3Z",
+    "Mordred_GATS2dv",
+    "Mordred_GATS3i",
+    "RDKit_Chi4v",
+    "Mordred_AATSC2d",
+    "Mordred_MATS3s"
+  ],
+  "n_fixed": 5,
+  "n_extra": 2,
+  "ga_best_fitness": 0.7419388284126505,
+  "acceptable_after_hpo": false,
+  "final_source": "baseline",
+  "mean_cv_r2": 0.7334919780460287,
+  "status": "unstable",
+  "expansion_dir": "outputs/deff2c9f6fa3/fallback_models/k_neighbors_regressor/sfs_fixed_ga_plus2"
+}

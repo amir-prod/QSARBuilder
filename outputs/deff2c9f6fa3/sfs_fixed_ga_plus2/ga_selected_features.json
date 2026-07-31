@@ -1,0 +1,16 @@
+{
+  "selected_features": [
+    "Mordred_GATS1v",
+    "Mordred_GeomRadius",
+    "Mordred_AATS2Z",
+    "Mordred_MATS1se"
+  ],
+  "fixed_features": [
+    "Mordred_GATS1v",
+    "Mordred_GeomRadius"
+  ],
+  "extra_features": [
+    "Mordred_AATS2Z",
+    "Mordred_MATS1se"
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "max_hpo_rounds": 3,
+  "rounds_completed": 3,
+  "baseline_acceptable": false,
+  "hpo_triggered": true,
+  "hpo_trigger_reason": "CV R\u00b2 variability is high (std=0.339 > 0.15). The model may be sensitive to training fold composition.",
+  "iteration_records": [
+    {
+      "round": 1,
+      "phase": "start",
+      "baseline_cv_r2": 0.505229763026402
+    },
+    {
+      "round": 1,
+      "candidates": 64,
+      "best_cv_r2": 0.505229763026402,
+      "gap": 0.4579036550110931,
+      "status": "unstable",
+      "best_params": {
+        "bootstrap": true,
+        "criterion": "squared_error",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "n_estimators": 100
+      }
+    },
+    {
+      "round": 2,
+      "phase": "start",
+      "baseline_cv_r2": 0.505229763026402
+    },
+    {
+      "round": 2,
+      "candidates": 64,
+      "best_cv_r2": 0.5046483533095183,
+      "gap": 0.4953515560587096,
+      "status": "unstable",
+      "best_params": {
+        "bootstrap": false,
+        "criterion": "squared_error",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "n_estimators": 200
+      }
+    },
+    {
+      "round": 3,
+      "phase": "start",
+      "baseline_cv_r2": 0.505229763026402
+    },
+    {
+      "round": 3,
+      "candidates": 64,
+      "best_cv_r2": 0.49376915640235375,
+      "gap": 0.47118612289340234,
+      "status": "unstable",
+      "best_params": {
+        "bootstrap": true,
+        "criterion": "squared_error",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "max_samples": 1.0,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "n_estimators": 200
+      }
+    }
+  ],
+  "logs": [
+    "Baseline CV diagnostics started.",
+    "Baseline CV diagnostics completed.",
+    "Overfitting assessment: unstable. Train-CV R\u00b2 gap = 0.458.",
+    "Model appears unstable. Starting HPO.",
+    "HPO round 1/3 started.",
+    "HPO round 1/3 completed. Best CV R\u00b2 = 0.505. Gap = 0.458.",
+    "HPO round 2/3 started.",
+    "HPO round 2/3 completed. Best CV R\u00b2 = 0.505. Gap = 0.495.",
+    "HPO round 3/3 started.",
+    "HPO round 3/3 completed. Best CV R\u00b2 = 0.494. Gap = 0.471.",
+    "HPO round 3/3 completed. Maximum HPO rounds reached."
+  ],
+  "final_source": "baseline"
+}

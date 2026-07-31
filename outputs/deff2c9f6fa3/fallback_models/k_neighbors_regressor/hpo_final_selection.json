@@ -1,0 +1,64 @@
+{
+  "source": "hpo_round_1",
+  "params": {
+    "metric": "minkowski",
+    "n_neighbors": 2,
+    "p": 1,
+    "weights": "distance"
+  },
+  "cv_summary": {
+    "mean_train_r2": 1.0,
+    "mean_cv_r2": 0.7957802496991404,
+    "std_cv_r2": 0.05664245283296978,
+    "mean_train_rmse": 0.0,
+    "mean_cv_rmse": 0.0,
+    "mean_train_mae": 0.0,
+    "mean_cv_mae": 0.0,
+    "train_cv_r2_gap": 0.2042197503008596,
+    "n_folds": 5
+  },
+  "assessment": {
+    "status": "overfit",
+    "is_acceptable": false,
+    "is_overfit": true,
+    "is_underfit": false,
+    "is_unstable": false,
+    "is_severe_overfit": false,
+    "mean_train_r2": 1.0,
+    "mean_cv_r2": 0.7957802496991404,
+    "train_cv_r2_gap": 0.2042197503008596,
+    "cv_r2_std": 0.05664245283296978,
+    "warnings": [
+      "Train-CV R\u00b2 gap (0.204) suggests overfitting."
+    ],
+    "explanation": "Training R\u00b2 (1.000) is much higher than CV R\u00b2 (0.796); gap=0.204 exceeds 0.15."
+  },
+  "selection_rationale": "Selected hpo_round_1 with mean CV R\u00b2=0.7958, train-CV gap=0.2042, status=overfit. No acceptable models; chose best CV R\u00b2 with warning.",
+  "warning": "No acceptable model found after HPO; selected highest CV R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.5788598263631395,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.7957802496991404,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.7957802496991404,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_3",
+      "mean_cv_r2": 0.7957802496991404,
+      "status": "overfit",
+      "acceptable": false
+    }
+  ]
+}

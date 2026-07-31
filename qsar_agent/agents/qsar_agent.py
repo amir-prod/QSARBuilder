@@ -200,7 +200,7 @@ def run_agent_feature_count_selection(
 def build_final_report(
     run_id: str,
     validation_result: Any,
-    mordred_result: Any,
+    descriptor_result: Any,
     preprocessing_result: Any,
     split_result: Any,
     feature_selection: FeatureCountSelection,
@@ -218,7 +218,7 @@ def build_final_report(
         valid_compounds=validation_result.valid_compound_count,
         train_size=split_result.train_count,
         test_size=split_result.test_count,
-        initial_mordred_descriptors=mordred_result.descriptor_count,
+        initial_descriptor_count=descriptor_result.descriptor_count,
         final_preprocessed_descriptors=preprocessing_result.final_descriptor_count,
         selected_descriptor_count=feature_selection.selected_feature_count,
         ga_selected_descriptors=ga_result.selected_features,

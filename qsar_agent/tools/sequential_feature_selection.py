@@ -16,7 +16,7 @@ from qsar_agent.config import ModelConfig, SFSConfig
 from qsar_agent.schemas.feature_selection import SFSResult, SFSResultRow
 from qsar_agent.services.plotting import plot_sfs_r2
 from qsar_agent.services import build_estimator
-from qsar_agent.tools.mordred_descriptors import META_COLUMNS
+from qsar_agent.tools.descriptor_calculation import META_COLUMNS
 
 logger = logging.getLogger(__name__)
 

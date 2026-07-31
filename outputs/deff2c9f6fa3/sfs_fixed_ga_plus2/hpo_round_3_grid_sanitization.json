@@ -1,0 +1,97 @@
+{
+  "original_grid": {
+    "n_estimators": [
+      200,
+      400,
+      600
+    ],
+    "max_depth": [
+      3,
+      5,
+      8,
+      12,
+      null
+    ],
+    "min_samples_split": [
+      4,
+      8,
+      12,
+      20
+    ],
+    "min_samples_leaf": [
+      2,
+      4,
+      6,
+      10
+    ],
+    "max_features": [
+      "sqrt",
+      0.3,
+      0.5
+    ],
+    "bootstrap": [
+      true
+    ],
+    "max_samples": [
+      0.6,
+      0.8,
+      1.0
+    ],
+    "criterion": [
+      "absolute_error",
+      "squared_error"
+    ]
+  },
+  "sanitized_grid": {
+    "n_estimators": [
+      200
+    ],
+    "max_depth": [
+      3,
+      null
+    ],
+    "min_samples_split": [
+      4,
+      20
+    ],
+    "min_samples_leaf": [
+      2,
+      10
+    ],
+    "max_features": [
+      "sqrt",
+      0.5
+    ],
+    "bootstrap": [
+      true
+    ],
+    "max_samples": [
+      0.6,
+      1.0
+    ],
+    "criterion": [
+      "absolute_error",
+      "squared_error"
+    ]
+  },
+  "removed_params": [],
+  "removed_values": {},
+  "shrink_steps": [
+    "Removed max_depth=8 to reduce candidates (remaining estimate=3456).",
+    "Removed max_depth=12 to reduce candidates (remaining estimate=2592).",
+    "Removed min_samples_split=12 to reduce candidates (remaining estimate=1944).",
+    "Removed min_samples_leaf=6 to reduce candidates (remaining estimate=1458).",
+    "Removed n_estimators=400 to reduce candidates (remaining estimate=972).",
+    "Removed max_depth=5 to reduce candidates (remaining estimate=648).",
+    "Removed min_samples_split=8 to reduce candidates (remaining estimate=432).",
+    "Removed min_samples_leaf=4 to reduce candidates (remaining estimate=288).",
+    "Removed max_features=0.3 to reduce candidates (remaining estimate=192).",
+    "Removed max_samples=0.8 to reduce candidates (remaining estimate=128).",
+    "Removed n_estimators=600 to reduce candidates (remaining estimate=64)."
+  ],
+  "candidate_count": 64,
+  "used_randomized_search": false,
+  "warnings": [
+    "Grid has 4320 combinations; shrinking to <= 120."
+  ]
+}

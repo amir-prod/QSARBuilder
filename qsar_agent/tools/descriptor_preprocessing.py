@@ -15,7 +15,7 @@ from sklearn.preprocessing import StandardScaler
 from qsar_agent.config import PreprocessingConfig
 from qsar_agent.schemas.preprocessing import PreprocessingResult
 from qsar_agent.services.artifact_manager import save_json
-from qsar_agent.tools.mordred_descriptors import META_COLUMNS
+from qsar_agent.tools.descriptor_calculation import META_COLUMNS
 
 
 class DescriptorPreprocessor(BaseEstimator, TransformerMixin):
@@ -196,6 +196,15 @@ def fit_descriptor_preprocessor(
     cfg = preprocessing_config or PreprocessingConfig()
     train_df = pd.read_csv(train_path)
     test_df = pd.read_csv(test_path)
+    if len(train_df) == 0:
+        raise ValueError(
+            "Training descriptor set is empty; check UMAP split and descriptor calculation."
+        )
+    if len(test_df) == 0:
+        raise ValueError(
+            "External test descriptor set is empty; check UMAP split "
+            "(small clusters were previously assigned entirely to train)."
+        )
 
     initial_count = len([c for c in train_df.columns if c not in META_COLUMNS])
 

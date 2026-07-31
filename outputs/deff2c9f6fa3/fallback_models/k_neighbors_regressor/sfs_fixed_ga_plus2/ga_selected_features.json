@@ -1,0 +1,22 @@
+{
+  "selected_features": [
+    "Mordred_AATSC3m",
+    "Mordred_ATSC3Z",
+    "Mordred_GATS2dv",
+    "Mordred_GATS3i",
+    "RDKit_Chi4v",
+    "Mordred_AATSC2d",
+    "Mordred_MATS3s"
+  ],
+  "fixed_features": [
+    "Mordred_AATSC3m",
+    "Mordred_ATSC3Z",
+    "Mordred_GATS2dv",
+    "Mordred_GATS3i",
+    "RDKit_Chi4v"
+  ],
+  "extra_features": [
+    "Mordred_AATSC2d",
+    "Mordred_MATS3s"
+  ]
+}

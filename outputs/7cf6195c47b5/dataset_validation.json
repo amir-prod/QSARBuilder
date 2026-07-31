@@ -1,0 +1,17 @@
+{
+  "original_row_count": 30,
+  "valid_compound_count": 27,
+  "invalid_smiles_count": 0,
+  "missing_or_invalid_activity_count": 0,
+  "duplicate_compound_count": 3,
+  "activity_stats": {
+    "min": 3.2,
+    "max": 6.3,
+    "mean": 4.970370370370371,
+    "median": 5.0,
+    "std": 0.8999208575522349
+  },
+  "smiles_column": "smiles",
+  "activity_column": "activity",
+  "id_column": "id"
+}

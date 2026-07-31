@@ -15,7 +15,7 @@ from qsar_agent.config import ClusteringConfig, UMAPConfig
 from qsar_agent.schemas.split import ClusterInfo, SplitResult
 from qsar_agent.services.artifact_manager import save_json
 from qsar_agent.services.plotting import plot_umap_split
-from qsar_agent.tools.mordred_descriptors import META_COLUMNS
+from qsar_agent.tools.descriptor_calculation import META_COLUMNS
 from qsar_agent.tools.provisional_preprocessing import provisional_preprocess_for_umap
 
 
@@ -107,6 +107,27 @@ def create_umap_cluster_split(
         train_indices.extend(train_idx)
         test_indices.extend(test_idx)
 
+    # Small datasets often yield clusters of size <=5, which previously put
+    # every compound in train and left an empty test set (breaks preprocessing).
+    n_total = len(df)
+    min_test = 1
+    if len(test_indices) == 0 and n_total >= 2:
+        warnings.append(
+            "No per-cluster test compounds were assigned (all clusters were small). "
+            f"Falling back to a global train/test split with test_fraction={test_fraction}."
+        )
+        all_idx = list(range(n_total))
+        train_indices, test_indices = train_test_split(
+            all_idx,
+            test_size=max(test_fraction, min_test / n_total),
+            random_state=random_seed,
+            shuffle=True,
+        )
+    elif len(test_indices) == 0:
+        raise RuntimeError(
+            f"Cannot create an external test set with only {n_total} compound(s)."
+        )
+
     umap_df["split"] = "train"
     umap_df.loc[test_indices, "split"] = "test"
 
@@ -116,6 +137,10 @@ def create_umap_cluster_split(
 
     train_df = df.iloc[train_indices].copy()
     test_df = df.iloc[test_indices].copy()
+    if len(test_df) == 0:
+        raise RuntimeError(
+            "External test set is empty after splitting; cannot continue preprocessing."
+        )
 
     train_path = run_dir / "train_set_raw_descriptors.csv"
     test_path = run_dir / "test_set_raw_descriptors.csv"
@@ -151,6 +176,7 @@ def create_umap_cluster_split(
         "random_seed": random_seed,
         "umap_config": umap_cfg.model_dump(),
         "clustering_config": cluster_cfg.model_dump(),
+        "warnings": warnings,
         "note": (
             "Activity distributions are reported for diagnostics only; "
             "split is based on descriptor-space clustering, not activity."

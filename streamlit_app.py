@@ -50,9 +50,9 @@ def render_header() -> None:
     st.title(f"🧪 {APP_TITLE}")
     st.markdown(
         "Build regression QSAR models from SMILES and experimental activity using "
-        "Mordred descriptors, UMAP-based cluster splitting, sequential and genetic "
-        "feature selection, Random Forest modeling with automatic fallback to other "
-        "regressors when HPO fails."
+        "DescJocky descriptors (optional external merge), UMAP-based cluster splitting, "
+        "sequential and genetic feature selection, Random Forest modeling with automatic "
+        "fallback to other regressors when HPO fails."
     )
     st.warning(
         "External-test performance is evaluated only after feature selection, "
@@ -79,6 +79,31 @@ def render_sidebar_config() -> WorkflowConfig:
     with st.sidebar.expander("Model settings"):
         n_estimators = st.number_input("RF n_estimators", 10, 500, 100)
         max_depth = st.number_input("RF max_depth", 2, 50, 10)
+
+    with st.sidebar.expander("Descriptors", expanded=True):
+        desc_backends = st.multiselect(
+            "DescJocky backends",
+            options=["RDKit", "Mordred", "Native", "Pybel"],
+            default=["RDKit", "Mordred"],
+            help="Mordred/Native/Pybel require their packages. Geometry uses xtb when enabled.",
+        )
+        run_geom = st.checkbox(
+            "Run geometry optimization (xtb)",
+            value=False,
+            help="Requires xtb on PATH. When off, RDKit SDFs are written and Phase 1 is skipped.",
+        )
+        desc_workers = st.number_input("Descriptor workers", 1, 32, 4)
+        xtb_timeout = st.number_input("xtb timeout (seconds)", 60, 3600, 600)
+        external_upload = st.file_uploader(
+            "External descriptors CSV (optional)",
+            type=["csv"],
+            key="external_descriptors_uploader",
+            help="Must include compound_id. Joined with generated descriptors.",
+        )
+        if external_upload is not None:
+            st.session_state._external_descriptor_bytes = external_upload.getvalue()
+        elif "_external_descriptor_bytes" not in st.session_state:
+            st.session_state._external_descriptor_bytes = None
 
     with st.sidebar.expander("UMAP settings"):
         n_neighbors = st.number_input("UMAP n_neighbors", 2, 50, 15)
@@ -126,7 +151,12 @@ def render_sidebar_config() -> WorkflowConfig:
             correlation_threshold=corr_thresh,
         ),
         model=ModelConfig(n_estimators=int(n_estimators), max_depth=int(max_depth)),
-        descriptors=DescriptorConfig(),
+        descriptors=DescriptorConfig(
+            backends=list(desc_backends) if desc_backends else ["RDKit"],
+            run_geometry_optimization=bool(run_geom),
+            num_workers=int(desc_workers),
+            xtb_timeout=int(xtb_timeout),
+        ),
         ga=GAConfig(
             population_size=int(pop_size),
             n_generations=int(n_gen),
@@ -242,6 +272,18 @@ def render_workflow_execution(config: WorkflowConfig, upload_bytes: bytes | None
         dataset_path = run_dir / "input_dataset.csv"
         dataset_path.write_bytes(upload_bytes)
 
+        external_bytes = st.session_state.get("_external_descriptor_bytes")
+        if external_bytes:
+            external_path = run_dir / "external_descriptors.csv"
+            external_path.write_bytes(external_bytes)
+            config = config.model_copy(
+                update={
+                    "descriptors": config.descriptors.model_copy(
+                        update={"external_descriptors_path": str(external_path)}
+                    )
+                }
+            )
+
         progress = st.progress(0.0)
         status_placeholder = st.empty()
         stage_table = st.empty()
@@ -312,10 +354,33 @@ def render_results_dashboard() -> None:
             st.dataframe(pd.read_csv(artifacts["cleaned_dataset"]).head())
 
     with tabs[1]:
+        initial = getattr(report, "initial_descriptor_count", None)
+        if initial is None:
+            initial = getattr(report, "initial_mordred_descriptors", "?")
         st.write(
-            f"Mordred: {report.initial_mordred_descriptors} | "
+            f"Descriptors (raw): {initial} | "
             f"Preprocessed: {report.final_preprocessed_descriptors}"
         )
+        calc_md = artifacts.get("descriptor_calculation_report_md")
+        if calc_md and Path(calc_md).exists():
+            st.markdown(Path(calc_md).read_text(encoding="utf-8"))
+        calc_json = artifacts.get("descriptor_calculation_report")
+        if not calc_json and artifacts.get("descriptors_raw"):
+            calc_json = str(
+                Path(artifacts["descriptors_raw"]).parent
+                / "descriptor_calculation_report.json"
+            )
+        if calc_json and Path(calc_json).exists():
+            with st.expander("Descriptor report JSON"):
+                st.json(json.loads(Path(calc_json).read_text(encoding="utf-8")))
+        if artifacts.get("generated_descriptors"):
+            file_download_button(
+                "Download generated descriptors CSV",
+                artifacts["generated_descriptors"],
+                "text/csv",
+            )
+        if artifacts.get("external_descriptors"):
+            st.caption(f"External descriptors: {artifacts['external_descriptors']}")
 
     with tabs[2]:
         umap_plot = artifacts.get("umap_plot")

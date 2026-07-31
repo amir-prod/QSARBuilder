@@ -1,6 +1,6 @@
 # QSAR Agent
 
-**QSAR Agent** is a Streamlit application for building regression QSAR models from SMILES and experimental activity data. It orchestrates a reproducible, leakage-aware workflow using Mordred descriptors, UMAP-based cluster splitting, sequential and genetic feature selection, and Random Forest modeling—with optional OpenAI agent coordination for feature-count decisions.
+**QSAR Agent** is a Streamlit application for building regression QSAR models from SMILES and experimental activity data. It orchestrates a reproducible, leakage-aware workflow using [DescJocky](https://github.com/StephenSzwiec/descjocky) molecular descriptors (with optional external descriptor merge), UMAP-based cluster splitting, sequential and genetic feature selection, and Random Forest modeling—with optional OpenAI agent coordination for feature-count decisions.
 
 > **Important:** External-test performance is evaluated only after feature selection and final model training. The test set is never used for preprocessing, tuning, or feature selection.
 
@@ -8,7 +8,8 @@
 
 - CSV upload with column mapping (SMILES, activity, optional compound ID)
 - RDKit validation and canonicalization of SMILES
-- Mordred 2D descriptor calculation
+- DescJocky descriptor calculation (selectable backends; optional xtb geometry optimization)
+- Optional external descriptor CSV merge on `compound_id`
 - UMAP + KMeans cluster-aware train/external-test split
 - Train-only descriptor preprocessing (imputation, variance/correlation filtering, scaling)
 - Sequential forward feature selection (mlxtend) with CV R² curves
@@ -55,6 +56,10 @@ pip install -r requirements.txt
 ```
 
 On Python 3.9, `eval_type_backport` (included in `requirements.txt`) is required for Pydantic type annotations.
+
+Descriptor calculation uses [DescJocky](https://github.com/StephenSzwiec/descjocky) via a patched vendor copy at `vendor/descjocky` (upstream `requires-python = "=3.11"` is invalid for pip; the vendor tree uses `>=3.11`). By default geometry optimization is **off**: the app writes RDKit SDFs and runs DescJocky with `skip_phase1=True`. Enable **Run geometry optimization (xtb)** in the Streamlit sidebar only if [`xtb`](https://github.com/grimme-lab/xtb) is installed and on `PATH`.
+
+Optional external descriptors: upload a CSV with a `compound_id` column (matching the cleaned dataset IDs) plus numeric descriptor columns. Colliding names are renamed with an `ext__` prefix.
 
 ### OpenAI configuration (optional)
 
@@ -118,7 +123,7 @@ Invalid SMILES, missing activities, and duplicates are reported separately—not
 | Stage | Description |
 |-------|-------------|
 | 1. Dataset validation | Column checks, SMILES parsing, activity cleaning, duplicate handling |
-| 2. Mordred descriptors | All 2D Mordred descriptors (`ignore_3D=True`) |
+| 2. Descriptor calculation | DescJocky backends (default RDKit+Mordred); optional xtb Phase 1; optional external CSV joined on `compound_id` |
 | 3. UMAP split | Provisional unsupervised preprocessing → UMAP embedding → KMeans clustering → per-cluster train/test split |
 | 4. Descriptor preprocessing | Train-only filtering, median imputation, StandardScaler; applied unchanged to test |
 | 5. Sequential feature selection | Forward SFS for 1…N descriptors with mean training and CV R² |
@@ -228,8 +233,14 @@ Each run writes to `outputs/<run_id>/`:
 | `invalid_rows.csv` | Invalid SMILES or activities (if any) |
 | `duplicate_compounds.csv` | Duplicate SMILES removed (if any) |
 | `dataset_validation.json` | Validation summary |
-| `mordred_descriptors_raw.csv` | Full Mordred descriptor matrix |
-| `mordred_calculation_report.json` | Descriptor calculation metadata |
+| `descriptors_raw.csv` | Combined generated (+ optional external) descriptor matrix |
+| `generated_descriptors.csv` | Final generated-only descriptor matrix (meta + DescJocky features) |
+| `generated_descriptors_raw.csv` | Same as generated (compatibility copy) |
+| `descjocky_descriptors.csv` | Native DescJocky output CSV copy |
+| `generated_descriptor_columns.json` | List of generated descriptor column names |
+| `external_descriptors.csv` | Copied user-provided external descriptors (if used) |
+| `descriptor_calculation_report.json` / `.md` | Backends used, 3D status, column list, warnings |
+| `descjocky/` | DescJocky working files (SMILES, SDFs, backend CSV) |
 | `train_set_raw_descriptors.csv` / `test_set_raw_descriptors.csv` | Post-split descriptor sets |
 | `split_assignments.csv` / `umap_coordinates.csv` | Split and embedding coordinates |
 | `umap_split.png` / `.svg` | UMAP split figure |

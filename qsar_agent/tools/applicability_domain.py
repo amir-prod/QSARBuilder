@@ -13,7 +13,7 @@ from qsar_agent.schemas.applicability_domain import (
 )
 from qsar_agent.services.artifact_manager import save_json
 from qsar_agent.services.plotting import plot_williams
-from qsar_agent.tools.mordred_descriptors import META_COLUMNS
+from qsar_agent.tools.descriptor_calculation import META_COLUMNS
 
 
 def calculate_applicability_domain(

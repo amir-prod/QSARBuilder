@@ -1,0 +1,25 @@
+{
+  "estimator": "RandomForestRegressor",
+  "fixed_features": [
+    "Mordred_GATS1v",
+    "Mordred_GeomRadius"
+  ],
+  "extra_features": [
+    "Mordred_AATS2Z",
+    "Mordred_MATS1se"
+  ],
+  "selected_features": [
+    "Mordred_GATS1v",
+    "Mordred_GeomRadius",
+    "Mordred_AATS2Z",
+    "Mordred_MATS1se"
+  ],
+  "n_fixed": 2,
+  "n_extra": 2,
+  "ga_best_fitness": 0.6543354156115213,
+  "acceptable_after_hpo": false,
+  "final_source": "hpo_round_3",
+  "mean_cv_r2": 0.6284082629191059,
+  "status": "overfit",
+  "expansion_dir": "outputs/deff2c9f6fa3/sfs_fixed_ga_plus2"
+}

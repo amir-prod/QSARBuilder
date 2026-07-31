@@ -1,0 +1,7 @@
+{
+  "best_cv_r2": 0.8095083334477255,
+  "best_feature_count": 10,
+  "selected_feature_count": 2,
+  "selected_cv_r2": 0.7516978265415112,
+  "explanation": "The highest mean cross-validation R\u00b2 was 0.8095 at 10 descriptor(s). Applying the one-standard-error rule (threshold = 0.7100), the smallest feature count within one SE of the best is 2 descriptor(s) with CV R\u00b2 = 0.7517. Training R\u00b2 exceeds validation R\u00b2, suggesting some overfitting may be present.\n\nThe one-standard-error rule chose **2 descriptors**.\n\nWhy:\n- The **best mean CV R\u00b2** is **0.8095** at **10 features**.\n- The reported one-standard-error threshold is **0.7100**.\n- Under this rule, we pick the **smallest feature count** whose mean CV R\u00b2 is still within that threshold.\n- **2 features** has **mean CV R\u00b2 = 0.7517**, which is above the threshold, so it is selected.\n\nSelected 2-feature set:\n- **Mordred_GATS1v**\n- **Mordred_GeomRadius**\n\nAdditional note:\n- The **training R\u00b2** is higher than the **validation R\u00b2** at the selected size, which suggests some overfitting may be present."
+}
