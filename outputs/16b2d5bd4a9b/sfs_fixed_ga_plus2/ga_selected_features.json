@@ -1,0 +1,18 @@
+{
+  "selected_features": [
+    "RDKit_Chi4n",
+    "RDKit_MaxPartialCharge",
+    "RDKit_PEOE_VSA12",
+    "RDKit_NumAmideBonds",
+    "RDKit_SlogP_VSA4"
+  ],
+  "fixed_features": [
+    "RDKit_Chi4n",
+    "RDKit_MaxPartialCharge",
+    "RDKit_PEOE_VSA12"
+  ],
+  "extra_features": [
+    "RDKit_NumAmideBonds",
+    "RDKit_SlogP_VSA4"
+  ]
+}

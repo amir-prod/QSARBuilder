@@ -1,0 +1,7 @@
+{
+  "selected_features": [
+    "RDKit_BCUT2D_MRHI",
+    "RDKit_MaxPartialCharge",
+    "RDKit_SlogP_VSA4"
+  ]
+}

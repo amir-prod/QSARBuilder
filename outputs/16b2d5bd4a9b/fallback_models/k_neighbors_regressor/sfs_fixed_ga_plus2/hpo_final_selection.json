@@ -1,0 +1,66 @@
+{
+  "source": "hpo_round_2",
+  "params": {
+    "metric": "minkowski",
+    "n_neighbors": 3,
+    "p": 1,
+    "weights": "distance"
+  },
+  "cv_summary": {
+    "mean_train_r2": 0.871576420461438,
+    "mean_cv_r2": 0.4970255852453877,
+    "std_cv_r2": 0.3604151448940813,
+    "mean_train_rmse": 0.0,
+    "mean_cv_rmse": 0.0,
+    "mean_train_mae": 0.0,
+    "mean_cv_mae": 0.0,
+    "train_cv_r2_gap": 0.3745508352160503,
+    "n_folds": 5
+  },
+  "assessment": {
+    "status": "unstable",
+    "is_acceptable": false,
+    "is_overfit": true,
+    "is_underfit": false,
+    "is_unstable": true,
+    "is_severe_overfit": true,
+    "mean_train_r2": 0.871576420461438,
+    "mean_cv_r2": 0.4970255852453877,
+    "train_cv_r2_gap": 0.3745508352160503,
+    "cv_r2_std": 0.3604151448940813,
+    "warnings": [
+      "Severe overfitting: train-CV R\u00b2 gap (0.375) exceeds 0.25.",
+      "High CV R\u00b2 standard deviation: 0.360.",
+      "CV R\u00b2 (0.497) is below minimum threshold."
+    ],
+    "explanation": "CV R\u00b2 variability is high (std=0.360 > 0.15). The model may be sensitive to training fold composition."
+  },
+  "selection_rationale": "Selected hpo_round_2 with mean CV R\u00b2=0.4970, train-CV gap=0.3746, status=unstable. No acceptable models; chose best CV R\u00b2 with warning.",
+  "warning": "No acceptable model found after HPO; selected highest CV R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.33580842600833327,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.4678637950133574,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.4970255852453877,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_3",
+      "mean_cv_r2": 0.4970255852453877,
+      "status": "unstable",
+      "acceptable": false
+    }
+  ]
+}

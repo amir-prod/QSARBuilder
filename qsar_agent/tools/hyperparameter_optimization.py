@@ -504,6 +504,16 @@ def run_iterative_hyperparameter_optimization(
     )
     log("Baseline CV diagnostics completed.")
 
+    # Always provide dataset size to the LLM grid proposer.
+    if n_features is None:
+        n_features = len(selected_features)
+    if n_train_samples is None:
+        n_train_samples = int(pd.read_csv(train_path).shape[0])
+    log(
+        f"HPO dataset context for grid proposals: "
+        f"n_train_samples={n_train_samples}, n_features={n_features}."
+    )
+
     baseline_params = baseline_params_from_config(base)
 
     baseline_assessment = assess_overfitting(baseline_cv.summary, cfg.thresholds)

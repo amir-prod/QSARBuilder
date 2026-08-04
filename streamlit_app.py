@@ -21,6 +21,7 @@ from qsar_agent.config import (
     SFSConfig,
     UMAPConfig,
     WorkflowConfig,
+    get_openai_api_key_source,
     get_openai_model,
     load_env_file,
 )
@@ -63,8 +64,42 @@ def render_header() -> None:
         st.info(f"Current run ID: `{st.session_state.run_id}`")
 
 
+def render_openai_api_key_controls() -> None:
+    """Show API key status; accept a paste fallback when .env/secrets have no key."""
+    with st.sidebar.expander("OpenAI API key", expanded=True):
+        key, source = get_openai_api_key_source()
+        if source in {"environment", "streamlit_secrets"}:
+            label = (
+                ".env / environment variable"
+                if source == "environment"
+                else "Streamlit secrets"
+            )
+            st.success(f"OpenAI API key loaded successfully from {label}.")
+            st.caption("Sidebar paste is only used when no key is found in .env or secrets.")
+            return
+
+        pasted = st.text_input(
+            "Paste OpenAI API key",
+            type="password",
+            help="Used for HPO grid proposals when OPENAI_API_KEY is not in .env.",
+            key="openai_api_key_input",
+        )
+        cleaned = pasted.strip().strip('"').strip("'") if pasted else ""
+        st.session_state.openai_api_key = cleaned or None
+
+        key, source = get_openai_api_key_source()
+        if key and source == "ui":
+            st.success("OpenAI API key loaded successfully from sidebar input.")
+        else:
+            st.warning(
+                "No OpenAI API key found. HPO will use deterministic fallback grids "
+                "unless you paste a key here or set OPENAI_API_KEY in .env."
+            )
+
+
 def render_sidebar_config() -> WorkflowConfig:
     st.sidebar.header("Configuration")
+    render_openai_api_key_controls()
     mapping = st.session_state.get("column_mapping", {})
 
     test_fraction = st.sidebar.slider("External test fraction", 0.1, 0.4, 0.2, 0.05)

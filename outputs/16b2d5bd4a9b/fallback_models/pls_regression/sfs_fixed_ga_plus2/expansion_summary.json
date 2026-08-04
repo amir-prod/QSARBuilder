@@ -1,0 +1,29 @@
+{
+  "estimator": "PLSRegression",
+  "fixed_features": [
+    "RDKit_BCUT2D_CHGLO",
+    "RDKit_BalabanJ",
+    "RDKit_HallKierAlpha",
+    "RDKit_NumRotatableBonds"
+  ],
+  "extra_features": [
+    "RDKit_FractionCSP3",
+    "RDKit_PEOE_VSA9"
+  ],
+  "selected_features": [
+    "RDKit_BCUT2D_CHGLO",
+    "RDKit_BalabanJ",
+    "RDKit_HallKierAlpha",
+    "RDKit_NumRotatableBonds",
+    "RDKit_FractionCSP3",
+    "RDKit_PEOE_VSA9"
+  ],
+  "n_fixed": 4,
+  "n_extra": 2,
+  "ga_best_fitness": -1.1460584939320742,
+  "acceptable_after_hpo": true,
+  "final_source": "baseline",
+  "mean_cv_r2": 0.7852232038763342,
+  "status": "good",
+  "expansion_dir": "outputs/16b2d5bd4a9b/fallback_models/pls_regression/sfs_fixed_ga_plus2"
+}

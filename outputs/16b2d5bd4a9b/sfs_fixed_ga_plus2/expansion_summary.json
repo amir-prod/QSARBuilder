@@ -1,0 +1,27 @@
+{
+  "estimator": "RandomForestRegressor",
+  "fixed_features": [
+    "RDKit_Chi4n",
+    "RDKit_MaxPartialCharge",
+    "RDKit_PEOE_VSA12"
+  ],
+  "extra_features": [
+    "RDKit_NumAmideBonds",
+    "RDKit_SlogP_VSA4"
+  ],
+  "selected_features": [
+    "RDKit_Chi4n",
+    "RDKit_MaxPartialCharge",
+    "RDKit_PEOE_VSA12",
+    "RDKit_NumAmideBonds",
+    "RDKit_SlogP_VSA4"
+  ],
+  "n_fixed": 3,
+  "n_extra": 2,
+  "ga_best_fitness": -0.9988772248845622,
+  "acceptable_after_hpo": false,
+  "final_source": "baseline",
+  "mean_cv_r2": 0.7658092383439168,
+  "status": "overfit",
+  "expansion_dir": "outputs/16b2d5bd4a9b/sfs_fixed_ga_plus2"
+}

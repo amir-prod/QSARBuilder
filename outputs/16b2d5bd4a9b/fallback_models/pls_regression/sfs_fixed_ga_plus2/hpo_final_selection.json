@@ -1,0 +1,43 @@
+{
+  "source": "baseline",
+  "params": {
+    "max_iter": 500,
+    "scale": false,
+    "n_components": 10
+  },
+  "cv_summary": {
+    "mean_train_r2": 0.9341360611629181,
+    "mean_cv_r2": 0.7852232038763342,
+    "std_cv_r2": 0.07607478548273573,
+    "mean_train_rmse": 0.21928922253813435,
+    "mean_cv_rmse": 0.356135466382791,
+    "mean_train_mae": 0.18377373612314798,
+    "mean_cv_mae": 0.3142848330805587,
+    "train_cv_r2_gap": 0.148912857286584,
+    "n_folds": 5
+  },
+  "assessment": {
+    "status": "good",
+    "is_acceptable": true,
+    "is_overfit": false,
+    "is_underfit": false,
+    "is_unstable": false,
+    "is_severe_overfit": false,
+    "mean_train_r2": 0.9341360611629181,
+    "mean_cv_r2": 0.7852232038763342,
+    "train_cv_r2_gap": 0.148912857286584,
+    "cv_r2_std": 0.07607478548273573,
+    "warnings": [],
+    "explanation": "CV R\u00b2 (0.785) is acceptable, train-CV gap (0.149) is within limits, and CV variability (std=0.076) is acceptable."
+  },
+  "selection_rationale": "Selected baseline with mean CV R\u00b2=0.7852, train-CV gap=0.1489, status=good. Preferred acceptable models (1); applied one-SE rule (threshold CV R\u00b2 >= 0.7091) with simplicity tie-break.",
+  "warning": "",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.7852232038763342,
+      "status": "good",
+      "acceptable": true
+    }
+  ]
+}

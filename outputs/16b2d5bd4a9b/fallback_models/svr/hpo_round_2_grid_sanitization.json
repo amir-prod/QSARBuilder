@@ -1,0 +1,47 @@
+{
+  "original_grid": {
+    "kernel": [
+      "linear"
+    ],
+    "C": [
+      1.5,
+      2.0,
+      3.0,
+      4.0,
+      6.0
+    ],
+    "epsilon": [
+      0.15,
+      0.2,
+      0.25,
+      0.3
+    ]
+  },
+  "sanitized_grid": {
+    "kernel": [
+      "linear"
+    ],
+    "C": [
+      1.5,
+      2.0,
+      3.0,
+      4.0,
+      6.0
+    ],
+    "epsilon": [
+      0.2
+    ]
+  },
+  "removed_params": [],
+  "removed_values": {
+    "epsilon": [
+      0.15,
+      0.25,
+      0.3
+    ]
+  },
+  "shrink_steps": [],
+  "candidate_count": 5,
+  "used_randomized_search": false,
+  "warnings": []
+}

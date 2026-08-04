@@ -1,0 +1,20 @@
+{
+  "selected_features": [
+    "RDKit_BCUT2D_CHGLO",
+    "RDKit_BalabanJ",
+    "RDKit_HallKierAlpha",
+    "RDKit_NumRotatableBonds",
+    "RDKit_FractionCSP3",
+    "RDKit_PEOE_VSA9"
+  ],
+  "fixed_features": [
+    "RDKit_BCUT2D_CHGLO",
+    "RDKit_BalabanJ",
+    "RDKit_HallKierAlpha",
+    "RDKit_NumRotatableBonds"
+  ],
+  "extra_features": [
+    "RDKit_FractionCSP3",
+    "RDKit_PEOE_VSA9"
+  ]
+}

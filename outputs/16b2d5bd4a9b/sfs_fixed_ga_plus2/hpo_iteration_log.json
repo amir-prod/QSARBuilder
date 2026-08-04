@@ -1,0 +1,90 @@
+{
+  "max_hpo_rounds": 3,
+  "rounds_completed": 3,
+  "baseline_acceptable": false,
+  "hpo_triggered": true,
+  "hpo_trigger_reason": "Training R\u00b2 (0.965) is much higher than CV R\u00b2 (0.766); gap=0.199 exceeds 0.15.",
+  "iteration_records": [
+    {
+      "round": 1,
+      "phase": "start",
+      "baseline_cv_r2": 0.7658092383439168
+    },
+    {
+      "round": 1,
+      "candidates": 32,
+      "best_cv_r2": 0.6635227190075064,
+      "gap": 0.1748163992756091,
+      "status": "unstable",
+      "best_params": {
+        "bootstrap": true,
+        "criterion": "squared_error",
+        "max_depth": 8,
+        "max_features": 0.7,
+        "max_samples": 1.0,
+        "min_samples_leaf": 2,
+        "min_samples_split": 4,
+        "n_estimators": 200
+      }
+    },
+    {
+      "round": 2,
+      "phase": "start",
+      "baseline_cv_r2": 0.7658092383439168
+    },
+    {
+      "round": 2,
+      "candidates": 18,
+      "best_cv_r2": 0.6635227190075064,
+      "gap": 0.1748163992756091,
+      "status": "unstable",
+      "best_params": {
+        "bootstrap": true,
+        "criterion": "squared_error",
+        "max_depth": 5,
+        "max_features": 0.7,
+        "max_samples": 1.0,
+        "min_samples_leaf": 2,
+        "min_samples_split": 4,
+        "n_estimators": 200
+      }
+    },
+    {
+      "round": 3,
+      "phase": "start",
+      "baseline_cv_r2": 0.7658092383439168
+    },
+    {
+      "round": 3,
+      "candidates": 16,
+      "best_cv_r2": 0.6635227190075061,
+      "gap": 0.17481639927560932,
+      "status": "unstable",
+      "best_params": {
+        "bootstrap": true,
+        "criterion": "squared_error",
+        "max_depth": 5,
+        "max_features": 0.7,
+        "max_samples": 1.0,
+        "min_samples_leaf": 2,
+        "min_samples_split": 4,
+        "n_estimators": 200
+      }
+    }
+  ],
+  "logs": [
+    "Baseline CV diagnostics started.",
+    "Baseline CV diagnostics completed.",
+    "HPO dataset context for grid proposals: n_train_samples=20, n_features=5.",
+    "Overfitting assessment: overfit. Train-CV R\u00b2 gap = 0.199.",
+    "Model appears overfit. Starting HPO.",
+    "HPO round 1/3 started.",
+    "HPO round 1/3 completed. Best CV R\u00b2 = 0.664. Gap = 0.175.",
+    "HPO round 2/3 started.",
+    "HPO round 2/3 completed. Best CV R\u00b2 = 0.664. Gap = 0.175.",
+    "HPO round 3/3 started.",
+    "HPO round 3/3 completed. Best CV R\u00b2 = 0.664. Gap = 0.175.",
+    "HPO round 3/3 completed. Maximum HPO rounds reached."
+  ],
+  "final_source": "baseline"
+}

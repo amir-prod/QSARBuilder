@@ -1,0 +1,11 @@
+# HPO Round 3 Agent Grid Proposal
+
+**Strategy:** Tight local refinement around the round-2 best configuration with a variance-reduction emphasis: preserve the strongest neighborhood, test only small regularization increases, and avoid broad capacity expansion on this very small dataset.
+
+Using the latest round-2 feedback as the primary signal, I centered the grid on the current best_params {bootstrap:false, max_depth:5, max_features:0.7, min_samples_leaf:2, min_samples_split:4, n_estimators:150}. Because the dataset is extremely small (20 training samples, 3 features, ~6.7 samples/feature) and the status remains unstable with mild overfitting and high CV variance, I kept the proven neighborhood from top candidates (max_depth 4/5/null, min_samples_split 4/5, n_estimators 150) and made only small local regularization adjustments. I dropped broader or clearly weaker regions such as larger n_estimators that previously increased variance, and I added slightly stronger regularization via min_samples_leaf 3 and max_features values just below 0.7 to target instability without moving far from the best region.
+
+**Expected overfitting effect:** Slight decrease via marginally smaller feature subsampling and modestly larger leaf size while retaining the current best core settings.
+
+**Expected underfitting effect:** Low to mild risk of increased underfitting; grid stays close to the current best to limit performance loss.
+
+**Cost estimate:** Low; 48 combinations total.

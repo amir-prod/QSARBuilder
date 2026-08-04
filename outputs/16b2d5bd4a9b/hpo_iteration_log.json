@@ -1,0 +1,90 @@
+{
+  "max_hpo_rounds": 3,
+  "rounds_completed": 3,
+  "baseline_acceptable": false,
+  "hpo_triggered": true,
+  "hpo_trigger_reason": "CV R\u00b2 variability is high (std=0.293 > 0.15). The model may be sensitive to training fold composition.",
+  "iteration_records": [
+    {
+      "round": 1,
+      "phase": "start",
+      "baseline_cv_r2": 0.534214930982267
+    },
+    {
+      "round": 1,
+      "candidates": 32,
+      "best_cv_r2": 0.46890532862679357,
+      "gap": 0.28074952079830984,
+      "status": "unstable",
+      "best_params": {
+        "bootstrap": true,
+        "criterion": "squared_error",
+        "max_depth": null,
+        "max_features": 1.0,
+        "max_samples": 0.6,
+        "min_samples_leaf": 2,
+        "min_samples_split": 4,
+        "n_estimators": 200
+      }
+    },
+    {
+      "round": 2,
+      "phase": "start",
+      "baseline_cv_r2": 0.534214930982267
+    },
+    {
+      "round": 2,
+      "candidates": 32,
+      "best_cv_r2": 0.4889083583748362,
+      "gap": 0.23574522237844658,
+      "status": "unstable",
+      "best_params": {
+        "bootstrap": true,
+        "criterion": "squared_error",
+        "max_depth": null,
+        "max_features": 1.0,
+        "max_samples": 0.5,
+        "min_samples_leaf": 2,
+        "min_samples_split": 4,
+        "n_estimators": 200
+      }
+    },
+    {
+      "round": 3,
+      "phase": "start",
+      "baseline_cv_r2": 0.534214930982267
+    },
+    {
+      "round": 3,
+      "candidates": 32,
+      "best_cv_r2": 0.4889083583748361,
+      "gap": 0.2357452223784467,
+      "status": "unstable",
+      "best_params": {
+        "bootstrap": true,
+        "criterion": "squared_error",
+        "max_depth": null,
+        "max_features": 1.0,
+        "max_samples": 0.5,
+        "min_samples_leaf": 2,
+        "min_samples_split": 4,
+        "n_estimators": 200
+      }
+    }
+  ],
+  "logs": [
+    "Baseline CV diagnostics started.",
+    "Baseline CV diagnostics completed.",
+    "HPO dataset context for grid proposals: n_train_samples=20, n_features=3.",
+    "Overfitting assessment: unstable. Train-CV R\u00b2 gap = 0.397.",
+    "Model appears unstable. Starting HPO.",
+    "HPO round 1/3 started.",
+    "HPO round 1/3 completed. Best CV R\u00b2 = 0.469. Gap = 0.281.",
+    "HPO round 2/3 started.",
+    "HPO round 2/3 completed. Best CV R\u00b2 = 0.489. Gap = 0.236.",
+    "HPO round 3/3 started.",
+    "HPO round 3/3 completed. Best CV R\u00b2 = 0.489. Gap = 0.236.",
+    "HPO round 3/3 completed. Maximum HPO rounds reached."
+  ],
+  "final_source": "baseline"
+}

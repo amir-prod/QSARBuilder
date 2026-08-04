@@ -1,0 +1,68 @@
+{
+  "original_grid": {
+    "n_estimators": [
+      200,
+      400
+    ],
+    "max_depth": [
+      3,
+      5
+    ],
+    "min_samples_split": [
+      4,
+      5
+    ],
+    "min_samples_leaf": [
+      2,
+      3
+    ],
+    "max_features": [
+      0.7
+    ],
+    "bootstrap": [
+      true
+    ],
+    "max_samples": [
+      1.0
+    ],
+    "criterion": [
+      "squared_error"
+    ]
+  },
+  "sanitized_grid": {
+    "n_estimators": [
+      200,
+      400
+    ],
+    "max_depth": [
+      3,
+      5
+    ],
+    "min_samples_split": [
+      4,
+      5
+    ],
+    "min_samples_leaf": [
+      2,
+      3
+    ],
+    "max_features": [
+      0.7
+    ],
+    "bootstrap": [
+      true
+    ],
+    "max_samples": [
+      1.0
+    ],
+    "criterion": [
+      "squared_error"
+    ]
+  },
+  "removed_params": [],
+  "removed_values": {},
+  "shrink_steps": [],
+  "candidate_count": 16,
+  "used_randomized_search": false,
+  "warnings": []
+}

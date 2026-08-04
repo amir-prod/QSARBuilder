@@ -24,6 +24,7 @@ def init_session_state() -> None:
         "artifact_paths": {},
         "validation_result": None,
         "workflow_running": False,
+        "openai_api_key": None,
     }
     for key, value in defaults.items():
         if key not in st.session_state:

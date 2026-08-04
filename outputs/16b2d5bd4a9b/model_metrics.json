@@ -1,0 +1,80 @@
+{
+  "train": {
+    "r2": 0.9331563452824858,
+    "rmse": 0.22338036674386658,
+    "mae": 0.20317840703500362,
+    "n_samples": 20
+  },
+  "test": {
+    "r2": 0.41479497999309756,
+    "rmse": 0.6864904846386701,
+    "mae": 0.5773432862561693,
+    "n_samples": 7
+  },
+  "selected_features": [
+    "RDKit_SPS",
+    "RDKit_EState_VSA8",
+    "RDKit_HallKierAlpha"
+  ],
+  "hyperparameter_optimization": {
+    "enabled": true,
+    "max_rounds": 3,
+    "rounds_completed": 3,
+    "final_model_source": "baseline",
+    "final_params": {
+      "min_samples_split": 2,
+      "bootstrap": true,
+      "max_depth": 10,
+      "n_estimators": 100,
+      "min_samples_leaf": 1,
+      "max_features": "sqrt",
+      "criterion": "squared_error",
+      "max_samples": null
+    },
+    "baseline_assessment": {
+      "status": "unstable",
+      "is_acceptable": false,
+      "is_overfit": true,
+      "is_underfit": false,
+      "is_unstable": true,
+      "is_severe_overfit": true,
+      "mean_train_r2": 0.9311204695684525,
+      "mean_cv_r2": 0.534214930982267,
+      "train_cv_r2_gap": 0.3969055385861855,
+      "cv_r2_std": 0.2931837388488725,
+      "warnings": [
+        "Severe overfitting: train-CV R\u00b2 gap (0.397) exceeds 0.25.",
+        "High CV R\u00b2 standard deviation: 0.293."
+      ],
+      "explanation": "CV R\u00b2 variability is high (std=0.293 > 0.15). The model may be sensitive to training fold composition."
+    },
+    "final_assessment": {
+      "status": "unstable",
+      "is_acceptable": false,
+      "is_overfit": true,
+      "is_underfit": false,
+      "is_unstable": true,
+      "is_severe_overfit": false,
+      "mean_train_r2": 0.7246535807532828,
+      "mean_cv_r2": 0.4889083583748361,
+      "train_cv_r2_gap": 0.2357452223784467,
+      "cv_r2_std": 0.2765498558087343,
+      "warnings": [
+        "High CV R\u00b2 standard deviation: 0.277.",
+        "Train-CV R\u00b2 gap (0.236) suggests overfitting.",
+        "CV R\u00b2 (0.489) is below minimum threshold."
+      ],
+      "explanation": "CV R\u00b2 variability is high (std=0.277 > 0.15). The model may be sensitive to training fold composition."
+    },
+    "winning_estimator": "SVR (sfs_fixed_ga_plus2)",
+    "model_fallback_triggered": true,
+    "fallback_models_tried": [
+      "PLSRegression",
+      "ExtraTreesRegressor",
+      "SVR",
+      "KNeighborsRegressor"
+    ],
+    "winner_is_expansion": true,
+    "winner_expansion_label": "sfs_fixed_ga_plus2"
+  }
+}

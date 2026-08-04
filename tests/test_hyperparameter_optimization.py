@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from unittest.mock import patch
 
@@ -271,6 +272,146 @@ def test_agent_invalid_grid_falls_back():
         )
     assert proposal.search_strategy == "fallback"
     assert proposal.proposed_grid
+
+
+def _fake_round_result(round_index: int = 1):
+    from qsar_agent.schemas.hyperparameter_optimization import (
+        CandidateResult,
+        GridSanitizationResult,
+        HPORoundResult,
+    )
+
+    summary = _cv_summary(0.92, 0.55, 0.08)
+    assessment = assess_overfitting(summary, OverfittingThresholds(minimum_cv_r2=0.50))
+    best_params = {"n_estimators": 200, "max_depth": 4, "min_samples_leaf": 4}
+    return HPORoundResult(
+        round_index=round_index,
+        agent_proposal=AgentGridProposal(
+            round_index=round_index,
+            reasoning_summary="prior",
+            search_strategy="regularize",
+            proposed_grid={"n_estimators": [100, 200], "max_depth": [3, 4]},
+            expected_effect_on_overfitting="reduce",
+            expected_effect_on_underfitting="neutral",
+            computational_cost_estimate="4",
+        ),
+        sanitization=GridSanitizationResult(
+            original_grid={"n_estimators": [100, 200], "max_depth": [3, 4]},
+            sanitized_grid={"n_estimators": [100, 200], "max_depth": [3, 4]},
+            candidate_count=4,
+        ),
+        candidates=[
+            CandidateResult(
+                rank=1,
+                params=best_params,
+                mean_train_r2=0.92,
+                mean_cv_r2=0.55,
+                std_cv_r2=0.08,
+                mean_train_rmse=0.1,
+                mean_cv_rmse=0.2,
+                mean_train_mae=0.1,
+                mean_cv_mae=0.2,
+                train_cv_r2_gap=0.37,
+                is_best=True,
+            ),
+            CandidateResult(
+                rank=2,
+                params={"n_estimators": 100, "max_depth": 3, "min_samples_leaf": 4},
+                mean_train_r2=0.88,
+                mean_cv_r2=0.50,
+                std_cv_r2=0.09,
+                mean_train_rmse=0.12,
+                mean_cv_rmse=0.22,
+                mean_train_mae=0.11,
+                mean_cv_mae=0.21,
+                train_cv_r2_gap=0.38,
+            ),
+        ],
+        best_params=best_params,
+        best_cv_summary=summary,
+        assessment=assessment,
+        candidates_searched=2,
+    )
+
+
+def test_summarize_hpo_round_includes_rich_feedback():
+    from qsar_agent.agents.qsar_agent import _summarize_hpo_round_for_prompt
+
+    summary = _summarize_hpo_round_for_prompt(_fake_round_result())
+    assert summary["best_params"]["max_depth"] == 4
+    assert "assessment" in summary and "status" in summary["assessment"]
+    assert "top_candidates" in summary and len(summary["top_candidates"]) == 2
+    assert summary["sanitized_grid"] is not None
+    assert summary["proposed_grid"] is not None
+
+
+def test_followup_round_prompt_uses_prior_feedback_and_dataset_size():
+    from qsar_agent.agents.qsar_agent import propose_hyperparameter_grid
+
+    assessment = assess_overfitting(_cv_summary(0.95, 0.40, 0.06))
+    captured: dict = {}
+
+    class _FakeCompletions:
+        def create(self, **kwargs):
+            captured["messages"] = kwargs["messages"]
+
+            class _Msg:
+                content = json.dumps(
+                    {
+                        "round_index": 2,
+                        "reasoning_summary": "Refine around prior best with stronger leaves.",
+                        "search_strategy": "local_refinement",
+                        "proposed_grid": {
+                            "n_estimators": [150, 200, 250],
+                            "max_depth": [3, 4, 5],
+                            "min_samples_leaf": [4, 6, 8],
+                        },
+                        "expected_effect_on_overfitting": "lower gap",
+                        "expected_effect_on_underfitting": "limited",
+                        "computational_cost_estimate": "27",
+                        "warnings": [],
+                    }
+                )
+
+            class _Choice:
+                message = _Msg()
+
+            class _Resp:
+                choices = [_Choice()]
+
+            return _Resp()
+
+    class _FakeClient:
+        def __init__(self, *args, **kwargs):
+            self.chat = type("C", (), {"completions": _FakeCompletions()})()
+
+    with (
+        patch("qsar_agent.agents.qsar_agent.get_openai_api_key", return_value="sk-test"),
+        patch("openai.OpenAI", _FakeClient),
+    ):
+        proposal = propose_hyperparameter_grid(
+            round_index=2,
+            model_type="RandomForestRegressor",
+            baseline_assessment=assessment,
+            previous_hpo_results=[_fake_round_result(1)],
+            constraints={
+                "max_candidates": 40,
+                "n_features": 4,
+                "n_train_samples": 21,
+            },
+        )
+
+    assert proposal.search_strategy == "local_refinement"
+    system = captured["messages"][0]["content"]
+    user = captured["messages"][1]["content"]
+    assert "do NOT start from scratch" in system
+    assert "Center the new grid around the previous best_params" in system
+    assert "LATEST ROUND FEEDBACK" in user
+    assert "n_train_samples (training compounds): 21" in user
+    assert "n_features (selected descriptors): 4" in user
+    assert "samples_per_feature" in user
+    assert '"max_depth": 4' in user or '"max_depth":4' in user.replace(" ", "")
+    assert "top_candidates" in user
 
 
 def test_missing_openai_key_allows_deterministic_hpo(tiny_train_csv, tmp_path):

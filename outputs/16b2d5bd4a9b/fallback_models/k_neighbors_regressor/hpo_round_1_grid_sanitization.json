@@ -1,0 +1,61 @@
+{
+  "original_grid": {
+    "n_neighbors": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      10,
+      12,
+      14,
+      16
+    ],
+    "weights": [
+      "uniform"
+    ],
+    "p": [
+      1,
+      2
+    ],
+    "metric": [
+      "minkowski",
+      "euclidean",
+      "manhattan"
+    ]
+  },
+  "sanitized_grid": {
+    "n_neighbors": [
+      4,
+      5,
+      6,
+      7,
+      10,
+      12,
+      14,
+      16
+    ],
+    "weights": [
+      "uniform"
+    ],
+    "p": [
+      1,
+      2
+    ],
+    "metric": [
+      "minkowski",
+      "euclidean",
+      "manhattan"
+    ]
+  },
+  "removed_params": [],
+  "removed_values": {},
+  "shrink_steps": [
+    "Removed n_neighbors=8 to reduce candidates (remaining estimate=48)."
+  ],
+  "candidate_count": 48,
+  "used_randomized_search": false,
+  "warnings": [
+    "Grid has 54 combinations; shrinking to <= 50."
+  ]
+}

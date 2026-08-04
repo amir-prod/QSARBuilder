@@ -1,0 +1,11 @@
+estimator,source,mean_cv_r2,train_cv_r2_gap,status,acceptable,n_features,is_expansion
+RandomForestRegressor,baseline,0.534214930982267,0.3969055385861855,unstable,False,3,False
+RandomForestRegressor (sfs_fixed_ga_plus2),baseline,0.7658092383439168,0.19879666557648523,overfit,False,5,True
+PLSRegression,hpo_round_1,0.6200838158805553,0.095494378918767,unstable,False,4,False
+PLSRegression (sfs_fixed_ga_plus2),baseline,0.7852232038763342,0.148912857286584,good,True,6,True
+ExtraTreesRegressor,baseline,0.19112954448752695,0.8080498120427828,unstable,False,1,False
+ExtraTreesRegressor (sfs_fixed_ga_plus2),baseline,0.7384270855903401,0.22739265543357212,unstable,False,3,True
+SVR,hpo_round_2,0.26184009765223315,0.11811874904063813,unstable,False,1,False
+SVR (sfs_fixed_ga_plus2),hpo_round_1,0.8306212289132923,0.10385698762276718,good,True,3,True
+KNeighborsRegressor,baseline,0.3196985724295639,0.2683831558239981,unstable,False,1,False
+KNeighborsRegressor (sfs_fixed_ga_plus2),hpo_round_2,0.4970255852453877,0.3745508352160503,unstable,False,3,True

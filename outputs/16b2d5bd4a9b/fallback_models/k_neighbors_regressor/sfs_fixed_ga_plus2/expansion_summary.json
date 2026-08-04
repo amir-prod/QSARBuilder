@@ -1,0 +1,23 @@
+{
+  "estimator": "KNeighborsRegressor",
+  "fixed_features": [
+    "RDKit_Chi4n"
+  ],
+  "extra_features": [
+    "RDKit_HallKierAlpha",
+    "RDKit_fr_NH0"
+  ],
+  "selected_features": [
+    "RDKit_Chi4n",
+    "RDKit_HallKierAlpha",
+    "RDKit_fr_NH0"
+  ],
+  "n_fixed": 1,
+  "n_extra": 2,
+  "ga_best_fitness": -2.7288624272381274,
+  "acceptable_after_hpo": false,
+  "final_source": "hpo_round_2",
+  "mean_cv_r2": 0.4970255852453877,
+  "status": "unstable",
+  "expansion_dir": "outputs/16b2d5bd4a9b/fallback_models/k_neighbors_regressor/sfs_fixed_ga_plus2"
+}

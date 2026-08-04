@@ -1,0 +1,8 @@
+{
+  "selected_features": [
+    "RDKit_FpDensityMorgan1",
+    "RDKit_HallKierAlpha",
+    "RDKit_SlogP_VSA3",
+    "RDKit_fr_Al_OH"
+  ]
+}

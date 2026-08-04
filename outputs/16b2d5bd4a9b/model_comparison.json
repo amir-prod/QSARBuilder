@@ -1,0 +1,183 @@
+{
+  "winning_estimator": "SVR (sfs_fixed_ga_plus2)",
+  "selected_features": [
+    "RDKit_SPS",
+    "RDKit_EState_VSA8",
+    "RDKit_HallKierAlpha"
+  ],
+  "final_model_config": {
+    "estimator": "SVR",
+    "n_estimators": 100,
+    "max_depth": 10,
+    "min_samples_split": 2,
+    "min_samples_leaf": 1,
+    "max_features": "sqrt",
+    "bootstrap": true,
+    "max_samples": null,
+    "criterion": "squared_error",
+    "random_state": 42,
+    "n_jobs": -1,
+    "params": {
+      "C": 5.0,
+      "epsilon": 0.2,
+      "gamma": "scale",
+      "kernel": "rbf"
+    }
+  },
+  "final_selection": {
+    "source": "hpo_round_1",
+    "params": {
+      "C": 5.0,
+      "epsilon": 0.2,
+      "gamma": "scale",
+      "kernel": "rbf"
+    },
+    "cv_summary": {
+      "mean_train_r2": 0.9344782165360594,
+      "mean_cv_r2": 0.8306212289132923,
+      "std_cv_r2": 0.08810836581020177,
+      "mean_train_rmse": 0.0,
+      "mean_cv_rmse": 0.0,
+      "mean_train_mae": 0.0,
+      "mean_cv_mae": 0.0,
+      "train_cv_r2_gap": 0.10385698762276718,
+      "n_folds": 5
+    },
+    "assessment": {
+      "status": "good",
+      "is_acceptable": true,
+      "is_overfit": false,
+      "is_underfit": false,
+      "is_unstable": false,
+      "is_severe_overfit": false,
+      "mean_train_r2": 0.9344782165360594,
+      "mean_cv_r2": 0.8306212289132923,
+      "train_cv_r2_gap": 0.10385698762276718,
+      "cv_r2_std": 0.08810836581020177,
+      "warnings": [],
+      "explanation": "CV R\u00b2 (0.831) is acceptable, train-CV gap (0.104) is within limits, and CV variability (std=0.088) is acceptable."
+    },
+    "selection_rationale": "Selected hpo_round_1 with mean CV R\u00b2=0.8306, train-CV gap=0.1039, status=good. Preferred acceptable models (1); applied one-SE rule (threshold CV R\u00b2 >= 0.7425) with simplicity tie-break.",
+    "warning": "",
+    "compared_candidates": [
+      {
+        "source": "baseline",
+        "mean_cv_r2": 0.7697699871635514,
+        "status": "overfit",
+        "acceptable": false
+      },
+      {
+        "source": "hpo_round_1",
+        "mean_cv_r2": 0.8306212289132923,
+        "status": "good",
+        "acceptable": true
+      }
+    ]
+  },
+  "selection_rationale": "Selected SVR (sfs_fixed_ga_plus2) (hpo_round_1) with mean CV R\u00b2=0.8306, train-CV gap=0.1039, status=good. Compared 10 model branch(es); 2 acceptable; applied one-SE rule (threshold CV R\u00b2 >= 0.7425) with simplicity tie-break.",
+  "warning": "",
+  "compared_models": [
+    {
+      "estimator": "RandomForestRegressor",
+      "source": "baseline",
+      "mean_cv_r2": 0.534214930982267,
+      "train_cv_r2_gap": 0.3969055385861855,
+      "status": "unstable",
+      "acceptable": false,
+      "n_features": 3,
+      "is_expansion": false
+    },
+    {
+      "estimator": "RandomForestRegressor (sfs_fixed_ga_plus2)",
+      "source": "baseline",
+      "mean_cv_r2": 0.7658092383439168,
+      "train_cv_r2_gap": 0.19879666557648523,
+      "status": "overfit",
+      "acceptable": false,
+      "n_features": 5,
+      "is_expansion": true
+    },
+    {
+      "estimator": "PLSRegression",
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.6200838158805553,
+      "train_cv_r2_gap": 0.095494378918767,
+      "status": "unstable",
+      "acceptable": false,
+      "n_features": 4,
+      "is_expansion": false
+    },
+    {
+      "estimator": "PLSRegression (sfs_fixed_ga_plus2)",
+      "source": "baseline",
+      "mean_cv_r2": 0.7852232038763342,
+      "train_cv_r2_gap": 0.148912857286584,
+      "status": "good",
+      "acceptable": true,
+      "n_features": 6,
+      "is_expansion": true
+    },
+    {
+      "estimator": "ExtraTreesRegressor",
+      "source": "baseline",
+      "mean_cv_r2": 0.19112954448752695,
+      "train_cv_r2_gap": 0.8080498120427828,
+      "status": "unstable",
+      "acceptable": false,
+      "n_features": 1,
+      "is_expansion": false
+    },
+    {
+      "estimator": "ExtraTreesRegressor (sfs_fixed_ga_plus2)",
+      "source": "baseline",
+      "mean_cv_r2": 0.7384270855903401,
+      "train_cv_r2_gap": 0.22739265543357212,
+      "status": "unstable",
+      "acceptable": false,
+      "n_features": 3,
+      "is_expansion": true
+    },
+    {
+      "estimator": "SVR",
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.26184009765223315,
+      "train_cv_r2_gap": 0.11811874904063813,
+      "status": "unstable",
+      "acceptable": false,
+      "n_features": 1,
+      "is_expansion": false
+    },
+    {
+      "estimator": "SVR (sfs_fixed_ga_plus2)",
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.8306212289132923,
+      "train_cv_r2_gap": 0.10385698762276718,
+      "status": "good",
+      "acceptable": true,
+      "n_features": 3,
+      "is_expansion": true
+    },
+    {
+      "estimator": "KNeighborsRegressor",
+      "source": "baseline",
+      "mean_cv_r2": 0.3196985724295639,
+      "train_cv_r2_gap": 0.2683831558239981,
+      "status": "unstable",
+      "acceptable": false,
+      "n_features": 1,
+      "is_expansion": false
+    },
+    {
+      "estimator": "KNeighborsRegressor (sfs_fixed_ga_plus2)",
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.4970255852453877,
+      "train_cv_r2_gap": 0.3745508352160503,
+      "status": "unstable",
+      "acceptable": false,
+      "n_features": 3,
+      "is_expansion": true
+    }
+  ],
+  "winner_is_expansion": true,
+  "winner_expansion_label": "sfs_fixed_ga_plus2"
+}

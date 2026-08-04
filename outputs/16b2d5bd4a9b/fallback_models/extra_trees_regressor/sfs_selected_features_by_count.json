@@ -1,0 +1,20 @@
+{
+  "1": [
+    "RDKit_Chi4n"
+  ],
+  "2": [
+    "RDKit_Chi4n",
+    "RDKit_PEOE_VSA12"
+  ],
+  "3": [
+    "RDKit_Chi4n",
+    "RDKit_PEOE_VSA12",
+    "RDKit_SlogP_VSA3"
+  ],
+  "4": [
+    "RDKit_Chi4n",
+    "RDKit_PEOE_VSA12",
+    "RDKit_SlogP_VSA3",
+    "RDKit_VSA_EState3"
+  ]
+}

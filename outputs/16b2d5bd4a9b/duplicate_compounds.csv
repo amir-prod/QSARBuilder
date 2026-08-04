@@ -1,0 +1,4 @@
+id,smiles,activity,original_row_index,compound_id,raw_smiles,raw_activity,canonical_smiles,invalid_smiles
+C028,c1ccc(O)cc1,6.4,27,compound_27,c1ccc(O)cc1,6.4,Oc1ccccc1,False
+C029,c1ccc(N)cc1,6.1,28,compound_28,c1ccc(N)cc1,6.1,Nc1ccccc1,False
+C030,c1ccc(Cl)cc1,5.8,29,compound_29,c1ccc(Cl)cc1,5.8,Clc1ccccc1,False

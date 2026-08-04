@@ -1,0 +1,14 @@
+{
+  "selected_features": [
+    "RDKit_Chi4n",
+    "RDKit_HallKierAlpha",
+    "RDKit_fr_NH0"
+  ],
+  "fixed_features": [
+    "RDKit_Chi4n"
+  ],
+  "extra_features": [
+    "RDKit_HallKierAlpha",
+    "RDKit_fr_NH0"
+  ]
+}

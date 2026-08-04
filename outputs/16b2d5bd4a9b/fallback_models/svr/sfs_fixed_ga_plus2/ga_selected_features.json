@@ -1,0 +1,14 @@
+{
+  "selected_features": [
+    "RDKit_SPS",
+    "RDKit_EState_VSA8",
+    "RDKit_HallKierAlpha"
+  ],
+  "fixed_features": [
+    "RDKit_SPS"
+  ],
+  "extra_features": [
+    "RDKit_EState_VSA8",
+    "RDKit_HallKierAlpha"
+  ]
+}

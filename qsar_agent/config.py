@@ -161,21 +161,44 @@ def get_openai_model() -> str:
     return model.strip().strip('"').strip("'")
 
 
-def get_openai_api_key() -> str | None:
-    key = os.environ.get("OPENAI_API_KEY")
+def _normalize_api_key(value: str | None) -> str | None:
+    if not value:
+        return None
+    key = str(value).strip().strip('"').strip("'")
+    return key or None
+
+
+def get_openai_api_key_source() -> tuple[str | None, str | None]:
+    """
+    Resolve OpenAI API key and where it came from.
+
+    Priority: environment / .env → Streamlit secrets → Streamlit sidebar paste.
+    Returns ``(key, source)`` where source is one of
+    ``environment``, ``streamlit_secrets``, ``ui``, or ``None``.
+    """
+    key = _normalize_api_key(os.environ.get("OPENAI_API_KEY"))
     if key:
-        key = key.strip().strip('"').strip("'")
-        if key:
-            return key
+        return key, "environment"
+
     try:
         import streamlit as st
 
-        secret = st.secrets.get("OPENAI_API_KEY")
+        secret = _normalize_api_key(st.secrets.get("OPENAI_API_KEY"))
         if secret:
-            return str(secret).strip()
+            return secret, "streamlit_secrets"
+
+        ui_key = _normalize_api_key(st.session_state.get("openai_api_key"))
+        if ui_key:
+            return ui_key, "ui"
     except Exception:
         pass
-    return None
+
+    return None, None
+
+
+def get_openai_api_key() -> str | None:
+    key, _source = get_openai_api_key_source()
+    return key
 
 
 def default_output_dir() -> Path:

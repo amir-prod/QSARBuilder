@@ -1,0 +1,6 @@
+{
+  "C": 3.0,
+  "epsilon": 0.2,
+  "gamma": "scale",
+  "kernel": "linear"
+}

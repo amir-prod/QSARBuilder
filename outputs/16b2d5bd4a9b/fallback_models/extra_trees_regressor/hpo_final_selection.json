@@ -1,0 +1,68 @@
+{
+  "source": "baseline",
+  "params": {
+    "min_samples_split": 2,
+    "bootstrap": false,
+    "max_depth": 10,
+    "n_estimators": 100,
+    "min_samples_leaf": 1,
+    "max_features": "sqrt"
+  },
+  "cv_summary": {
+    "mean_train_r2": 0.9991793565303098,
+    "mean_cv_r2": 0.19112954448752695,
+    "std_cv_r2": 0.3954562528005984,
+    "mean_train_rmse": 0.02049867710200859,
+    "mean_cv_rmse": 0.6737244600992005,
+    "mean_train_mae": 0.012150000000003153,
+    "mean_cv_mae": 0.6120124999999985,
+    "train_cv_r2_gap": 0.8080498120427828,
+    "n_folds": 5
+  },
+  "assessment": {
+    "status": "unstable",
+    "is_acceptable": false,
+    "is_overfit": true,
+    "is_underfit": false,
+    "is_unstable": true,
+    "is_severe_overfit": true,
+    "mean_train_r2": 0.9991793565303098,
+    "mean_cv_r2": 0.19112954448752695,
+    "train_cv_r2_gap": 0.8080498120427828,
+    "cv_r2_std": 0.3954562528005984,
+    "warnings": [
+      "Severe overfitting: train-CV R\u00b2 gap (0.808) exceeds 0.25.",
+      "High CV R\u00b2 standard deviation: 0.395.",
+      "CV R\u00b2 (0.191) is below minimum threshold."
+    ],
+    "explanation": "CV R\u00b2 variability is high (std=0.395 > 0.15). The model may be sensitive to training fold composition."
+  },
+  "selection_rationale": "Selected baseline with mean CV R\u00b2=0.1911, train-CV gap=0.8080, status=unstable. No acceptable models; chose best CV R\u00b2 with warning.",
+  "warning": "No acceptable model found after HPO; selected highest CV R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.19112954448752695,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.37363554157995776,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.3760756325342801,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_3",
+      "mean_cv_r2": 0.3760756325342804,
+      "status": "unstable",
+      "acceptable": false
+    }
+  ]
+}

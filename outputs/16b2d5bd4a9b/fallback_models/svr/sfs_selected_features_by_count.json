@@ -1,0 +1,20 @@
+{
+  "1": [
+    "RDKit_SPS"
+  ],
+  "2": [
+    "RDKit_EState_VSA1",
+    "RDKit_SPS"
+  ],
+  "3": [
+    "RDKit_BalabanJ",
+    "RDKit_EState_VSA1",
+    "RDKit_SPS"
+  ],
+  "4": [
+    "RDKit_BalabanJ",
+    "RDKit_EState_VSA1",
+    "RDKit_SPS",
+    "RDKit_VSA_EState3"
+  ]
+}

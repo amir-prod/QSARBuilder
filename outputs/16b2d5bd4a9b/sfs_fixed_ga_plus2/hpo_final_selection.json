@@ -1,0 +1,68 @@
+{
+  "source": "baseline",
+  "params": {
+    "min_samples_split": 2,
+    "bootstrap": true,
+    "max_depth": 10,
+    "n_estimators": 100,
+    "min_samples_leaf": 1,
+    "max_features": "sqrt",
+    "criterion": "squared_error",
+    "max_samples": null
+  },
+  "cv_summary": {
+    "mean_train_r2": 0.964605903920402,
+    "mean_cv_r2": 0.7658092383439168,
+    "std_cv_r2": 0.0679068359755653,
+    "mean_train_rmse": 0.15856708968732885,
+    "mean_cv_rmse": 0.375589241672478,
+    "mean_train_mae": 0.13248750000000095,
+    "mean_cv_mae": 0.3444999999999986,
+    "train_cv_r2_gap": 0.19879666557648523,
+    "n_folds": 5
+  },
+  "assessment": {
+    "status": "overfit",
+    "is_acceptable": false,
+    "is_overfit": true,
+    "is_underfit": false,
+    "is_unstable": false,
+    "is_severe_overfit": false,
+    "mean_train_r2": 0.964605903920402,
+    "mean_cv_r2": 0.7658092383439168,
+    "train_cv_r2_gap": 0.19879666557648523,
+    "cv_r2_std": 0.0679068359755653,
+    "warnings": [
+      "Train-CV R\u00b2 gap (0.199) suggests overfitting."
+    ],
+    "explanation": "Training R\u00b2 (0.965) is much higher than CV R\u00b2 (0.766); gap=0.199 exceeds 0.15."
+  },
+  "selection_rationale": "Selected baseline with mean CV R\u00b2=0.7658, train-CV gap=0.1988, status=overfit. No acceptable models; chose best CV R\u00b2 with warning.",
+  "warning": "No acceptable model found after HPO; selected highest CV R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.7658092383439168,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.6635227190075064,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.6635227190075064,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_3",
+      "mean_cv_r2": 0.6635227190075061,
+      "status": "unstable",
+      "acceptable": false
+    }
+  ]
+}

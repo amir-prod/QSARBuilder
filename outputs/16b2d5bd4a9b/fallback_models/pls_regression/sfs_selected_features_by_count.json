@@ -1,0 +1,20 @@
+{
+  "1": [
+    "RDKit_HallKierAlpha"
+  ],
+  "2": [
+    "RDKit_HallKierAlpha",
+    "RDKit_NumRotatableBonds"
+  ],
+  "3": [
+    "RDKit_BCUT2D_CHGLO",
+    "RDKit_HallKierAlpha",
+    "RDKit_NumRotatableBonds"
+  ],
+  "4": [
+    "RDKit_BCUT2D_CHGLO",
+    "RDKit_BalabanJ",
+    "RDKit_HallKierAlpha",
+    "RDKit_NumRotatableBonds"
+  ]
+}

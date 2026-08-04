@@ -1,0 +1,23 @@
+{
+  "estimator": "SVR",
+  "fixed_features": [
+    "RDKit_SPS"
+  ],
+  "extra_features": [
+    "RDKit_EState_VSA8",
+    "RDKit_HallKierAlpha"
+  ],
+  "selected_features": [
+    "RDKit_SPS",
+    "RDKit_EState_VSA8",
+    "RDKit_HallKierAlpha"
+  ],
+  "n_fixed": 1,
+  "n_extra": 2,
+  "ga_best_fitness": -0.10087854274156764,
+  "acceptable_after_hpo": true,
+  "final_source": "hpo_round_1",
+  "mean_cv_r2": 0.8306212289132923,
+  "status": "good",
+  "expansion_dir": "outputs/16b2d5bd4a9b/fallback_models/svr/sfs_fixed_ga_plus2"
+}

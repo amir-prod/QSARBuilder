@@ -1,0 +1,10 @@
+{
+  "bootstrap": true,
+  "criterion": "squared_error",
+  "max_depth": 5,
+  "max_features": 0.7,
+  "max_samples": 1.0,
+  "min_samples_leaf": 2,
+  "min_samples_split": 4,
+  "n_estimators": 200
+}
