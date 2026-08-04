@@ -38,6 +38,28 @@ class CrossModelSelection(BaseModel):
     winner_expansion_label: str = ""
 
 
+class BranchExternalArtifacts(BaseModel):
+    """Paths and metrics from train-fit + external-test eval of one branch."""
+
+    estimator: str
+    label: str
+    is_expansion: bool = False
+    expansion_label: str = ""
+    branch_dir: str = ""
+    selected_features: list[str] = Field(default_factory=list)
+    predictions_path: str = ""
+    model_path: str = ""
+    metrics_path: str = ""
+    scatter_png_path: str = ""
+    scatter_svg_path: str = ""
+    williams_png_path: str = ""
+    williams_svg_path: str = ""
+    ad_report_path: str = ""
+    ad_classifications_path: str = ""
+    train_r2: float = 0.0
+    test_r2: float = 0.0
+
+
 class ModelFallbackResult(BaseModel):
     triggered: bool
     fallback_models_tried: list[str] = Field(default_factory=list)
@@ -47,3 +69,4 @@ class ModelFallbackResult(BaseModel):
     comparison_json_path: str = ""
     comparison_md_path: str = ""
     comparison_csv_path: str = ""
+    branch_external_artifacts: list[BranchExternalArtifacts] = Field(default_factory=list)

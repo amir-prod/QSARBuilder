@@ -362,11 +362,62 @@ def render_workflow_execution(config: WorkflowConfig, upload_bytes: bytes | None
             st.warning(warning)
 
 
+def _load_branch_external_artifacts(run_dir: Path, artifacts: dict) -> list[dict]:
+    path = artifacts.get("branch_external_artifacts")
+    if not path:
+        path = str(run_dir / "branch_external_artifacts.json")
+    p = Path(path)
+    if not p.exists():
+        return []
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    return data if isinstance(data, list) else []
+
+
+def _render_branch_external_plots(
+    run_dir: Path, artifacts: dict, *, show: str
+) -> None:
+    """Show per-branch scatter or Williams plots from branch_external_artifacts.json."""
+    rows = _load_branch_external_artifacts(run_dir, artifacts)
+    # Prefer non-winner branch dirs; still show all for comparison.
+    if len(rows) <= 1:
+        return
+    st.subheader("All model branches (external test)")
+    labels = [r.get("label") or r.get("estimator") or f"branch_{i}" for i, r in enumerate(rows)]
+    choice = st.selectbox(
+        "Branch",
+        options=list(range(len(rows))),
+        format_func=lambda i: labels[i],
+        key=f"branch_plot_select_{show}",
+    )
+    row = rows[choice]
+    if show == "scatter":
+        path = row.get("scatter_png_path") or ""
+        caption = (
+            f"{row.get('label', '')}: train R²={row.get('train_r2', float('nan')):.3f}, "
+            f"test R²={row.get('test_r2', float('nan')):.3f}"
+        )
+    else:
+        path = row.get("williams_png_path") or ""
+        caption = f"{row.get('label', '')}: Williams plot"
+    if path and Path(path).exists():
+        st.image(path, caption=caption)
+    else:
+        st.caption(f"Plot not found for {row.get('label', 'branch')}.")
+
+
 def render_results_dashboard() -> None:
     report = st.session_state.get("final_report")
     artifacts = st.session_state.get("artifact_paths", {})
     if not report:
         return
+
+    run_id = st.session_state.get("run_id")
+    run_dir = Path("outputs") / run_id if run_id else Path("outputs")
+    if artifacts.get("prediction_scatter"):
+        run_dir = Path(artifacts["prediction_scatter"]).parent
 
     st.header("Results Dashboard")
     tabs = st.tabs(
@@ -488,6 +539,7 @@ def render_results_dashboard() -> None:
         st.write(f"**Estimator:** {getattr(report, 'estimator', 'RandomForestRegressor')}")
         if getattr(report, "model_comparison_summary", ""):
             st.info(report.model_comparison_summary)
+        st.subheader("Winning model")
         scatter = artifacts.get("prediction_scatter")
         if scatter and Path(scatter).exists():
             st.image(scatter)
@@ -497,12 +549,15 @@ def render_results_dashboard() -> None:
             ws = st.session_state.get("workflow_state")
             if ws and ws.config_snapshot.get("hpo", {}).get("enabled"):
                 st.caption("Final model selected using training CV only before external-test evaluation.")
+        _render_branch_external_plots(run_dir, artifacts, show="scatter")
 
     with tabs[6]:
+        st.subheader("Winning model")
         williams = artifacts.get("williams_plot")
         if williams and Path(williams).exists():
             st.image(williams)
         st.write(report.applicability_domain_summary)
+        _render_branch_external_plots(run_dir, artifacts, show="williams")
 
     with tabs[7]:
         for name, path in artifacts.items():

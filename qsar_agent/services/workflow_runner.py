@@ -20,18 +20,25 @@ from qsar_agent.services.artifact_manager import (
     file_hash,
     generate_run_id,
     get_run_dir,
+    save_json,
 )
 from qsar_agent.services.plotting import plot_sfs_r2
-from qsar_agent.tools.applicability_domain import calculate_applicability_domain
+from qsar_agent.tools.branch_external_evaluation import (
+    evaluate_branch_on_external_test,
+    find_winning_branch,
+    flatten_branches,
+    load_modeling_and_ad_from_artifacts,
+    modeling_result_with_run_dir_paths,
+    promote_branch_artifacts_to_run_dir,
+)
 from qsar_agent.tools.dataset_validation import validate_dataset
 from qsar_agent.tools.descriptor_preprocessing import fit_descriptor_preprocessor
-from qsar_agent.tools.final_model import train_and_evaluate_final_model
 from qsar_agent.tools.genetic_algorithm import run_genetic_algorithm
 from qsar_agent.tools.hyperparameter_optimization import run_iterative_hyperparameter_optimization
 from qsar_agent.tools.descriptor_calculation import calculate_descriptors
 from qsar_agent.tools.sequential_feature_selection import run_sequential_feature_selection
 from qsar_agent.tools.umap_split import create_umap_cluster_split
-from qsar_agent.schemas.model_fallback import ModelBranchResult
+from qsar_agent.schemas.model_fallback import BranchExternalArtifacts, ModelBranchResult
 from qsar_agent.tools.model_fallback import run_model_fallback_if_needed
 
 logger = get_logger()
@@ -368,6 +375,10 @@ class WorkflowRunner:
             winning_estimator = self.config.model.estimator
             winning_features = ga.selected_features
             model_comparison_summary = ""
+            winner_is_expansion = False
+            winner_expansion_label = ""
+            branch_external_artifacts: list[BranchExternalArtifacts] = []
+            fallback_branches: list[ModelBranchResult] = []
             hpo_metadata.setdefault("winning_estimator", winning_estimator)
             hpo_metadata.setdefault("model_fallback_triggered", False)
             hpo_metadata.setdefault("fallback_models_tried", [])
@@ -396,18 +407,26 @@ class WorkflowRunner:
                 fallback_result = run_model_fallback_if_needed(
                     rf_branch,
                     train_path=preprocessing.preprocessed_train_path,
+                    test_path=preprocessing.preprocessed_test_path,
                     run_dir=self.run_dir,
                     workflow_config=self.config,
                     hpo_config=hpo_cfg,
                     grid_proposer=grid_proposer_fallback if hpo_cfg.enabled else None,
                     log_callback=hpo_log,
+                    activity_label=self.config.activity_column or "activity",
+                    dataset_hash=dataset_hash,
+                    config_snapshot=self.config.to_dict(),
                 )
                 rf_branch = fallback_result.rf_branch
+                fallback_branches = list(fallback_result.fallback_branches)
+                branch_external_artifacts = list(fallback_result.branch_external_artifacts)
                 cross = fallback_result.cross_model_selection
                 if cross:
                     final_model_config = ModelConfig(**cross.final_model_config)
                     winning_estimator = cross.winning_estimator
                     winning_features = cross.selected_features
+                    winner_is_expansion = cross.winner_is_expansion
+                    winner_expansion_label = cross.winner_expansion_label
                     model_comparison_summary = cross.selection_rationale
                     if cross.warning:
                         append_warning(self.warnings, cross.warning)
@@ -432,18 +451,62 @@ class WorkflowRunner:
                 )
                 self._complete_stage("model_fallback", msg)
 
-            # Final model (external test evaluated only here)
+            # External evaluation: every completed branch gets scatter + Williams in its dir.
+            # Winner artifacts are promoted to run root (no second train for that branch).
             self._start_stage("final_model")
-            modeling = train_and_evaluate_final_model(
-                preprocessing.preprocessed_train_path,
-                preprocessing.preprocessed_test_path,
-                self.run_dir,
-                winning_features,
-                final_model_config,
-                self.config.activity_column or "activity",
-                dataset_hash,
-                self.config.to_dict(),
-                hpo_metadata=hpo_metadata,
+            activity_label = self.config.activity_column or "activity"
+            if not branch_external_artifacts:
+                art, modeling, ad = evaluate_branch_on_external_test(
+                    rf_branch,
+                    train_path=preprocessing.preprocessed_train_path,
+                    test_path=preprocessing.preprocessed_test_path,
+                    activity_label=activity_label,
+                    dataset_hash=dataset_hash,
+                    config_snapshot=self.config.to_dict(),
+                    hpo_metadata=hpo_metadata,
+                )
+                branch_external_artifacts = [art]
+            else:
+                branches = flatten_branches(rf_branch, *fallback_branches)
+                winner_branch = find_winning_branch(
+                    branches,
+                    winning_estimator=winning_estimator,
+                    selected_features=winning_features,
+                    winner_is_expansion=winner_is_expansion,
+                    winner_expansion_label=winner_expansion_label,
+                ) or rf_branch
+                winner_art = next(
+                    (
+                        a
+                        for a in branch_external_artifacts
+                        if Path(a.branch_dir).resolve()
+                        == Path(winner_branch.branch_dir).resolve()
+                    ),
+                    None,
+                )
+                if winner_art is None:
+                    _, modeling, ad = evaluate_branch_on_external_test(
+                        winner_branch,
+                        train_path=preprocessing.preprocessed_train_path,
+                        test_path=preprocessing.preprocessed_test_path,
+                        activity_label=activity_label,
+                        dataset_hash=dataset_hash,
+                        config_snapshot=self.config.to_dict(),
+                        hpo_metadata=hpo_metadata,
+                    )
+                else:
+                    modeling, ad = load_modeling_and_ad_from_artifacts(
+                        winner_art, hpo_metadata=hpo_metadata
+                    )
+                promote_branch_artifacts_to_run_dir(winner_branch.branch_dir, self.run_dir)
+                modeling, ad = modeling_result_with_run_dir_paths(modeling, ad, self.run_dir)
+
+            save_json(
+                self.run_dir / "branch_external_artifacts.json",
+                [a.model_dump() for a in branch_external_artifacts],
+            )
+            self.artifact_paths["branch_external_artifacts"] = str(
+                self.run_dir / "branch_external_artifacts.json"
             )
             self.artifact_paths.update(
                 {
@@ -455,15 +518,7 @@ class WorkflowRunner:
             )
             self._complete_stage("final_model")
 
-            # 9. Applicability domain
             self._start_stage("applicability_domain")
-            ad = calculate_applicability_domain(
-                preprocessing.preprocessed_train_path,
-                preprocessing.preprocessed_test_path,
-                modeling.predictions_path,
-                self.run_dir,
-                winning_features,
-            )
             self.artifact_paths["williams_plot"] = ad.williams_png_path
             self._complete_stage("applicability_domain")
 

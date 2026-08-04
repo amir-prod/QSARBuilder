@@ -3,15 +3,24 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 import pandas as pd
 
 from qsar_agent.config import WorkflowConfig
 from qsar_agent.models.registry import DEFAULT_FALLBACK_ESTIMATORS, estimator_slug, get_default_model_config
 from qsar_agent.schemas.hyperparameter_optimization import AgentGridProposal, HPOConfig
-from qsar_agent.schemas.model_fallback import CrossModelSelection, ModelBranchResult, ModelFallbackResult
+from qsar_agent.schemas.model_fallback import (
+    BranchExternalArtifacts,
+    CrossModelSelection,
+    ModelBranchResult,
+    ModelFallbackResult,
+)
 from qsar_agent.services.artifact_manager import save_json
+from qsar_agent.tools.branch_external_evaluation import (
+    evaluate_branches_on_external_test,
+    flatten_branches,
+)
 from qsar_agent.tools.hyperparameter_optimization import select_best_across_models
 from qsar_agent.tools.model_branch import run_model_branch
 from qsar_agent.tools.sfs_fixed_ga_expansion import run_sfs_fixed_ga_expansion
@@ -24,14 +33,20 @@ def run_model_fallback_if_needed(
     run_dir: Path,
     workflow_config: WorkflowConfig,
     hpo_config: HPOConfig,
+    test_path: str | Path | None = None,
     grid_proposer: Callable[..., AgentGridProposal] | None = None,
     log_callback: Callable[[str], None] | None = None,
+    activity_label: str = "activity",
+    dataset_hash: str = "",
+    config_snapshot: dict[str, Any] | None = None,
 ) -> ModelFallbackResult:
     """
     Try fallback estimators when RF HPO did not find an acceptable model.
 
     Compares RF + all fallback branches (and any SFS-fixed GA expansions) and
-    returns the globally best candidate.
+    returns the globally best candidate. When ``test_path`` is provided, also
+    fits each completed branch on train and writes scatter/Williams plots into
+    that branch directory.
     """
     rf_acceptable = (
         rf_branch.hpo_result.final_selection is not None
@@ -73,6 +88,15 @@ def run_model_fallback_if_needed(
             best = select_best_across_models(candidates)
             cross = _cross_from_best(best)
             _write_comparison(run_dir, cross)
+            artifacts = _maybe_evaluate_branches(
+                [rf_branch],
+                train_path=train_path,
+                test_path=test_path,
+                activity_label=activity_label,
+                dataset_hash=dataset_hash,
+                config_snapshot=config_snapshot,
+                log_callback=log_callback,
+            )
             return ModelFallbackResult(
                 triggered=False,
                 rf_branch=rf_branch,
@@ -80,12 +104,23 @@ def run_model_fallback_if_needed(
                 comparison_json_path=str(run_dir / "model_comparison.json"),
                 comparison_md_path=str(run_dir / "model_comparison_summary.md"),
                 comparison_csv_path=str(run_dir / "model_comparison.csv"),
+                branch_external_artifacts=artifacts,
             )
         cross = _cross_selection_from_branch(rf_branch, reason)
+        artifacts = _maybe_evaluate_branches(
+            [rf_branch],
+            train_path=train_path,
+            test_path=test_path,
+            activity_label=activity_label,
+            dataset_hash=dataset_hash,
+            config_snapshot=config_snapshot,
+            log_callback=log_callback,
+        )
         return ModelFallbackResult(
             triggered=False,
             rf_branch=rf_branch,
             cross_model_selection=cross,
+            branch_external_artifacts=artifacts,
         )
 
     estimators = fallback_settings.estimators or list(DEFAULT_FALLBACK_ESTIMATORS)
@@ -136,6 +171,17 @@ def run_model_fallback_if_needed(
             f"(CV R²={cross.final_selection.cv_summary.mean_cv_r2:.3f})."
         )
 
+    all_roots = [rf_branch, *fallback_branches]
+    artifacts = _maybe_evaluate_branches(
+        all_roots,
+        train_path=train_path,
+        test_path=test_path,
+        activity_label=activity_label,
+        dataset_hash=dataset_hash,
+        config_snapshot=config_snapshot,
+        log_callback=log_callback,
+    )
+
     return ModelFallbackResult(
         triggered=True,
         fallback_models_tried=estimators,
@@ -145,7 +191,35 @@ def run_model_fallback_if_needed(
         comparison_json_path=str(run_dir / "model_comparison.json"),
         comparison_md_path=str(run_dir / "model_comparison_summary.md"),
         comparison_csv_path=str(run_dir / "model_comparison.csv"),
+        branch_external_artifacts=artifacts,
     )
+
+
+def _maybe_evaluate_branches(
+    roots: list[ModelBranchResult],
+    *,
+    train_path: str | Path,
+    test_path: str | Path | None,
+    activity_label: str,
+    dataset_hash: str,
+    config_snapshot: dict[str, Any] | None,
+    log_callback: Callable[[str], None] | None,
+) -> list[BranchExternalArtifacts]:
+    if test_path is None:
+        return []
+    branches = flatten_branches(*roots)
+    if not branches:
+        return []
+    results = evaluate_branches_on_external_test(
+        branches,
+        train_path=train_path,
+        test_path=test_path,
+        activity_label=activity_label,
+        dataset_hash=dataset_hash,
+        config_snapshot=config_snapshot,
+        log_callback=log_callback,
+    )
+    return [art for art, _modeling, _ad in results]
 
 
 def _collect_candidates(branch: ModelBranchResult) -> list[dict]:
