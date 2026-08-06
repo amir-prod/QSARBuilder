@@ -133,7 +133,11 @@ def render_sidebar_config() -> WorkflowConfig:
             "External descriptors CSV (optional)",
             type=["csv"],
             key="external_descriptors_uploader",
-            help="Must include compound_id. Joined with generated descriptors.",
+            help=(
+                "Must include a compound_id column whose values match the dataset "
+                "Compound ID column (e.g. C001). If Compound ID is left as (none), "
+                "IDs become compound_0, compound_1, … and the merge will fail."
+            ),
         )
         if external_upload is not None:
             st.session_state._external_descriptor_bytes = external_upload.getvalue()
@@ -244,7 +248,25 @@ def render_upload_section() -> bytes | None:
         activity_col = st.selectbox("Activity column", cols, key="activity_col")
     with c3:
         id_options = ["(none)"] + cols
-        id_col = st.selectbox("Compound ID column (optional)", id_options, key="id_col")
+        # When external descriptors are uploaded, prefer a real ID column so merges
+        # do not silently join against auto-generated compound_0 / compound_1 IDs.
+        default_id_index = 0
+        if st.session_state.get("_external_descriptor_bytes"):
+            from qsar_agent.tools.descriptor_calculation import suggest_dataset_id_column
+
+            suggested = suggest_dataset_id_column(cols)
+            if suggested and suggested in cols:
+                default_id_index = id_options.index(suggested)
+        id_col = st.selectbox(
+            "Compound ID column (optional)",
+            id_options,
+            index=default_id_index,
+            key="id_col",
+            help=(
+                "Required for external descriptor merge. Values must match the "
+                "compound_id column in the external CSV."
+            ),
+        )
 
     st.session_state.column_mapping = {
         "smiles": smiles_col,
@@ -311,6 +333,20 @@ def render_workflow_execution(config: WorkflowConfig, upload_bytes: bytes | None
         if external_bytes:
             external_path = run_dir / "external_descriptors.csv"
             external_path.write_bytes(external_bytes)
+            # Auto-pick a dataset ID column if the user left it as (none).
+            if not config.id_column:
+                from qsar_agent.tools.descriptor_calculation import suggest_dataset_id_column
+
+                preview = st.session_state.get("dataset_preview")
+                cols = list(preview.columns) if preview is not None else []
+                suggested = suggest_dataset_id_column(cols)
+                if suggested:
+                    config = config.model_copy(update={"id_column": suggested})
+                    st.info(
+                        f"External descriptors detected: using dataset column "
+                        f"'{suggested}' as Compound ID so IDs align with the "
+                        f"external CSV (e.g. C001)."
+                    )
             config = config.model_copy(
                 update={
                     "descriptors": config.descriptors.model_copy(

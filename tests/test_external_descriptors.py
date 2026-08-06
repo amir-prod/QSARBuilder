@@ -72,6 +72,65 @@ def test_merge_requires_compound_id():
             merge_external_descriptors(generated, path)
 
 
+def test_merge_raises_when_no_id_overlap():
+    """Mirrors the C001 vs compound_0 mismatch that produced empty external columns."""
+    generated = pd.DataFrame(
+        {
+            "compound_id": ["compound_0", "compound_1"],
+            "canonical_smiles": ["CCO", "CCC"],
+            "activity": [1.0, 2.0],
+            "original_row_index": [0, 1],
+            "feat_a": [0.1, 0.2],
+        }
+    )
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "ext.csv"
+        pd.DataFrame(
+            {
+                "compound_id": ["C001", "C002"],
+                "MW": [46.0, 44.0],
+                "AMW": [5.0, 5.1],
+            }
+        ).to_csv(path, index=False)
+        with pytest.raises(ValueError, match="no matching compound_id"):
+            merge_external_descriptors(generated, path)
+
+
+def test_merge_strips_id_whitespace():
+    generated = pd.DataFrame(
+        {
+            "compound_id": ["C1", "C2"],
+            "canonical_smiles": ["CCO", "CCC"],
+            "activity": [1.0, 2.0],
+            "original_row_index": [0, 1],
+            "feat_a": [0.1, 0.2],
+        }
+    )
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "ext.csv"
+        pd.DataFrame(
+            {
+                "compound_id": [" C1 ", "C2"],
+                "MW": [10.0, 20.0],
+            }
+        ).to_csv(path, index=False)
+        merged, _, n_ext = merge_external_descriptors(generated, path)
+    assert n_ext == 1
+    assert merged.loc[merged["compound_id"] == "C1", "MW"].iloc[0] == 10.0
+
+
+def test_suggest_dataset_id_column():
+    from qsar_agent.tools.descriptor_calculation import suggest_dataset_id_column
+
+    assert suggest_dataset_id_column(["smiles", "activity", "id"]) == "id"
+    assert suggest_dataset_id_column(["compound_id", "smiles"]) == "compound_id"
+    assert suggest_dataset_id_column(["smiles", "activity"]) is None
+
+
 def test_calculate_descriptors_merges_external(synthetic_dataset, tmp_run_dir):
     cleaned = validate_dataset(
         synthetic_dataset,

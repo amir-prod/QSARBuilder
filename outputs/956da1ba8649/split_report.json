@@ -1,0 +1,35 @@
+{
+  "train_count": 21,
+  "test_count": 6,
+  "test_fraction_target": 0.2,
+  "test_fraction_actual": 0.2222222222222222,
+  "n_clusters": 2,
+  "cluster_sizes": [
+    {
+      "cluster_id": 0,
+      "size": 13
+    },
+    {
+      "cluster_id": 1,
+      "size": 14
+    }
+  ],
+  "train_activity_mean": 4.795238095238095,
+  "train_activity_std": 0.8777677315077096,
+  "test_activity_mean": 5.583333333333333,
+  "test_activity_std": 0.7413950813612581,
+  "random_seed": 42,
+  "umap_config": {
+    "n_neighbors": 15,
+    "n_components": 2,
+    "min_dist": 0.1,
+    "metric": "euclidean"
+  },
+  "clustering_config": {
+    "min_clusters": 2,
+    "max_clusters": 10,
+    "random_state": 60
+  },
+  "warnings": [],
+  "note": "Activity distributions are reported for diagnostics only; split is based on descriptor-space clustering, not activity."
+}

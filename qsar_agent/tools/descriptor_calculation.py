@@ -127,12 +127,40 @@ def write_light_sdfs(
     return warnings
 
 
+def _normalize_id_series(series: pd.Series) -> pd.Series:
+    """Stringify IDs and strip whitespace for reliable joins."""
+    return series.astype(str).str.strip()
+
+
+def suggest_dataset_id_column(columns: list[str]) -> str | None:
+    """
+    Suggest a dataset ID column name for aligning with external descriptors.
+
+    Prefers exact common names, then case-insensitive matches.
+    """
+    if not columns:
+        return None
+    preferred = ("compound_id", "id", "ID", "Id", "name", "Name", "NAME", "mol_id", "MolID")
+    col_set = set(columns)
+    for name in preferred:
+        if name in col_set:
+            return name
+    lower_map = {c.lower(): c for c in columns}
+    for name in preferred:
+        if name.lower() in lower_map:
+            return lower_map[name.lower()]
+    return None
+
+
 def merge_external_descriptors(
     generated_df: pd.DataFrame,
     external_path: str | Path,
 ) -> tuple[pd.DataFrame, list[str], int]:
     """
     Left-join external descriptors onto generated rows by compound_id.
+
+    IDs are stripped before joining. If no IDs match, raises ValueError instead of
+    silently producing empty external columns.
 
     Returns (merged_df, warnings, n_external_feature_cols).
     """
@@ -145,9 +173,10 @@ def merge_external_descriptors(
     if "compound_id" not in ext.columns:
         raise ValueError("External descriptors CSV must include a 'compound_id' column.")
 
-    ext["compound_id"] = ext["compound_id"].astype(str)
+    ext = ext.copy()
+    ext["compound_id"] = _normalize_id_series(ext["compound_id"])
     generated = generated_df.copy()
-    generated["compound_id"] = generated["compound_id"].astype(str)
+    generated["compound_id"] = _normalize_id_series(generated["compound_id"])
 
     # Drop external meta collisions (except join key).
     drop_meta = [c for c in ext.columns if c in META_COLUMNS and c != "compound_id"]
@@ -157,10 +186,14 @@ def merge_external_descriptors(
             f"Dropped external columns colliding with meta: {', '.join(drop_meta)}"
         )
 
+    # Optional SMILES column in external file (used only as fallback join key).
+    smiles_aliases = ("canonical_smiles", "smiles", "SMILES", "Smiles")
+    ext_smiles_col = next((c for c in smiles_aliases if c in ext.columns), None)
+
     gen_features = [c for c in generated.columns if c not in META_COLUMNS]
     rename_map: dict[str, str] = {}
     for col in ext.columns:
-        if col == "compound_id":
+        if col == "compound_id" or col == ext_smiles_col:
             continue
         if col in gen_features or col in generated.columns:
             rename_map[col] = f"ext__{col}"
@@ -171,7 +204,13 @@ def merge_external_descriptors(
             + ", ".join(f"{k}->{v}" for k, v in rename_map.items())
         )
 
-    feature_cols = [c for c in ext.columns if c != "compound_id"]
+    feature_cols = [
+        c for c in ext.columns if c != "compound_id" and c != ext_smiles_col
+    ]
+    if not feature_cols:
+        raise ValueError(
+            "External descriptors CSV has no numeric feature columns to merge."
+        )
     for col in feature_cols:
         ext[col] = pd.to_numeric(ext[col], errors="coerce")
     ext[feature_cols] = ext[feature_cols].replace([np.inf, -np.inf], np.nan)
@@ -184,8 +223,44 @@ def merge_external_descriptors(
 
     gen_ids = set(generated["compound_id"])
     ext_ids = set(ext["compound_id"])
-    unmatched_ext = sorted(ext_ids - gen_ids)
-    missing_ext = sorted(gen_ids - ext_ids)
+    n_matched = len(gen_ids & ext_ids)
+    join_key = "compound_id"
+    ext_for_merge = ext[["compound_id", *feature_cols]].copy()
+
+    if n_matched == 0 and ext_smiles_col and "canonical_smiles" in generated.columns:
+        # Fallback: join on SMILES when compound_id namespaces differ.
+        ext_smile = ext[[ext_smiles_col, *feature_cols]].copy()
+        ext_smile = ext_smile.rename(columns={ext_smiles_col: "canonical_smiles"})
+        ext_smile["canonical_smiles"] = ext_smile["canonical_smiles"].astype(str).str.strip()
+        if ext_smile["canonical_smiles"].duplicated().any():
+            ext_smile = ext_smile.drop_duplicates(subset=["canonical_smiles"], keep="first")
+        smile_matched = len(
+            set(generated["canonical_smiles"].astype(str))
+            & set(ext_smile["canonical_smiles"])
+        )
+        if smile_matched > 0:
+            warnings.append(
+                f"No compound_id overlap; joined external descriptors on SMILES "
+                f"({smile_matched}/{len(generated)} generated compounds matched)."
+            )
+            join_key = "canonical_smiles"
+            ext_for_merge = ext_smile
+            n_matched = smile_matched
+
+    if n_matched == 0:
+        gen_examples = ", ".join(sorted(gen_ids)[:5])
+        ext_examples = ", ".join(sorted(ext_ids)[:5])
+        raise ValueError(
+            "External descriptors could not be merged: no matching compound_id values "
+            "between the generated descriptor table and the external CSV. "
+            "External IDs must match the dataset Compound ID column "
+            "(not auto-generated compound_0, compound_1, … unless those are your IDs). "
+            f"Generated ID examples: [{gen_examples}]. "
+            f"External ID examples: [{ext_examples}]."
+        )
+
+    unmatched_ext = sorted(ext_ids - gen_ids) if join_key == "compound_id" else []
+    missing_ext = sorted(gen_ids - ext_ids) if join_key == "compound_id" else []
     if unmatched_ext:
         warnings.append(
             f"{len(unmatched_ext)} external compound_id(s) not in generated set "
@@ -196,8 +271,14 @@ def merge_external_descriptors(
             f"{len(missing_ext)} generated compound(s) have no external descriptors "
             f"(examples: {', '.join(missing_ext[:5])})."
         )
+    match_frac = n_matched / max(len(generated), 1)
+    if match_frac < 0.5:
+        warnings.append(
+            f"Only {n_matched}/{len(generated)} compounds matched on {join_key} "
+            f"({match_frac:.0%}); external columns will be mostly missing."
+        )
 
-    merged = generated.merge(ext, on="compound_id", how="left")
+    merged = generated.merge(ext_for_merge, on=join_key, how="left")
     return merged, warnings, len(feature_cols)
 
 
