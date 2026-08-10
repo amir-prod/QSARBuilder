@@ -1,0 +1,102 @@
+{
+  "project_id": "16b2d5bd4a9b_agentic_425787",
+  "initial_run_id": "16b2d5bd4a9b_agentic_425787",
+  "current_experiment_id": "exp_001",
+  "best_experiment_id": "exp_001",
+  "cycle_index": 0,
+  "experiment_count": 1,
+  "status": "completed",
+  "acceptance_criteria": {
+    "minimum_mean_cv_r2": 0.6,
+    "maximum_train_cv_gap": 0.15,
+    "maximum_cv_r2_std": 0.15,
+    "minimum_mean_train_r2": null,
+    "require_non_overfit_status": true,
+    "require_validation_agent_approval": true,
+    "minimum_agent_val_r2": null,
+    "maximum_cv_agent_val_gap": 0.2
+  },
+  "external_test_locked": true,
+  "pending_approval": null,
+  "locked_experiment_id": "exp_001",
+  "lock_record": {
+    "locked_experiment_id": "exp_001",
+    "configuration_hash": "eaa3261026a9c42d3ca670701d380f9f1341c1a281829313bc9d97d4cb50c646",
+    "locked_at": "2026-08-10T21:50:56.455707+00:00",
+    "selection_rationale": "Selected exp_001 from acceptable models: mean_cv_r2=0.8306, train_cv_gap=0.1039, cv_r2_std=0.0881, feature_count=3.0.",
+    "selection_record": {},
+    "dataset_hash": "e744cee7b2366a83e69a2894cc109189daf03d76e212aba2592496a15c1d9d28",
+    "cv_folds_hash": "bf1120d2fdad0796a3d51b09a3be7518923ddc7fd394651cec43654eadaddb50"
+  },
+  "external_test_accessed": true,
+  "cv_folds_hash": "bf1120d2fdad0796a3d51b09a3be7518923ddc7fd394651cec43654eadaddb50",
+  "agent_dev_indices_path": "outputs/16b2d5bd4a9b_agentic_425787/agent_workspace/protected_split/agent_dev_indices.json",
+  "agent_val_indices_path": "outputs/16b2d5bd4a9b_agentic_425787/agent_workspace/protected_split/agent_val_indices.json",
+  "stop_requested": false,
+  "stopping_reason": null,
+  "last_acceptance": {
+    "accepted": true,
+    "evidence": [
+      {
+        "name": "mean_cv_r2",
+        "value": 0.8306212289132923,
+        "source_artifact": "internal_metrics",
+        "source_field": "mean_cv_r2"
+      },
+      {
+        "name": "train_cv_gap",
+        "value": 0.10385698762276718,
+        "source_artifact": "internal_metrics",
+        "source_field": "train_cv_gap"
+      },
+      {
+        "name": "cv_r2_std",
+        "value": 0.08810836581020177,
+        "source_artifact": "internal_metrics",
+        "source_field": "cv_r2_std"
+      },
+      {
+        "name": "overfitting_status",
+        "value": "good",
+        "source_artifact": "overfitting_assessment",
+        "source_field": "status"
+      },
+      {
+        "name": "cv_agent_val_gap",
+        "value": 0.04930187829742971,
+        "source_artifact": "internal_metrics",
+        "source_field": "cv_agent_val_gap"
+      }
+    ],
+    "failed_criteria": [],
+    "explanation": "All configured internal acceptance criteria were satisfied.",
+    "overfit_status": "good"
+  },
+  "last_validation_review": {
+    "approved": true,
+    "hard_veto": false,
+    "hard_failure_conditions": [],
+    "soft_rejection_recommended": false,
+    "warnings": [
+      "Evidence provided does not document the exact preprocessing pipeline or whether any scaling/transform steps were nested within cross-validation; no hard failure is flagged, but this remains an evidence gap.",
+      "The protected agent-validation set is a single small holdout within development data, so repeated adaptive use could inflate confidence.",
+      "Development sample size is very small (agent_dev_size=16, agent_val_size=4), which limits robustness of performance estimates.",
+      "Reported mean_cv_rmse and mean_cv_mae are both 0.0, which is unusual given non-perfect R2 and may indicate unavailable, placeholder, or non-comparable error reporting."
+    ],
+    "additional_validation_proposals": [
+      "Perform Y-randomization/permutation testing to check whether the observed CV and holdout performance could arise by chance.",
+      "Run repeated cross-validation with multiple fold assignments to assess stability beyond the single CV split hash already reported.",
+      "Assess feature-selection stability across resamples to determine whether the 3 selected descriptors are consistently retained."
+    ],
+    "evidence": [
+      {
+        "name": "acceptance_passed",
+        "value": true,
+        "source_artifact": "acceptance",
+        "source_field": "accepted"
+      }
+    ],
+    "summary": "No deterministic hard-failure flags are set, so a hard veto is not justified. Based on the provided summary, there is no evidence of external-test leakage or protected-target misuse in preprocessing, feature selection, or HPO. Performance appears reasonably consistent across train, CV, and agent-validation (train_cv_gap about 0.104; cv_r2_std about 0.088; agent_val_r2 slightly above mean_cv_r2), supporting provisional approval. However, confidence is limited by the very small development sizes, the single protected holdout, missing explicit preprocessing details, and unusual zero-valued CV RMSE/MAE reporting. Conservative follow-up validation is recommended.",
+    "decision_source": "deterministic_code"
+  }
+}

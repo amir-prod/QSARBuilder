@@ -1,0 +1,155 @@
+{
+  "python_version": "3.11.15 | packaged by conda-forge | (main, Jun 11 2026, 03:34:02) [GCC 14.3.0]",
+  "platform": "Linux-4.4.0-19041-Microsoft-x86_64-with-glibc2.31",
+  "sklearn_version": "1.9.0",
+  "model_config": {
+    "estimator": "SVR",
+    "n_estimators": 100,
+    "max_depth": 10,
+    "min_samples_split": 2,
+    "min_samples_leaf": 1,
+    "max_features": "sqrt",
+    "bootstrap": true,
+    "max_samples": null,
+    "criterion": "squared_error",
+    "random_state": 42,
+    "n_jobs": -1,
+    "params": {
+      "C": 5.0,
+      "epsilon": 0.2,
+      "gamma": "scale",
+      "kernel": "rbf"
+    }
+  },
+  "selected_features": [
+    "RDKit_SPS",
+    "RDKit_EState_VSA8",
+    "RDKit_HallKierAlpha"
+  ],
+  "dataset_hash": "e744cee7b2366a83e69a2894cc109189daf03d76e212aba2592496a15c1d9d28",
+  "workflow_config": {
+    "test_fraction": 0.2,
+    "random_seed": 42,
+    "output_dir": "outputs",
+    "umap": {
+      "n_neighbors": 15,
+      "n_components": 2,
+      "min_dist": 0.1,
+      "metric": "euclidean"
+    },
+    "clustering": {
+      "min_clusters": 2,
+      "max_clusters": 10,
+      "random_state": 60
+    },
+    "preprocessing": {
+      "missing_value_threshold": 0.2,
+      "near_constant_std_threshold": 0.01,
+      "correlation_threshold": 0.95
+    },
+    "model": {
+      "estimator": "RandomForestRegressor",
+      "n_estimators": 100,
+      "max_depth": 10,
+      "min_samples_split": 2,
+      "min_samples_leaf": 1,
+      "max_features": "sqrt",
+      "bootstrap": true,
+      "max_samples": null,
+      "criterion": "squared_error",
+      "random_state": 42,
+      "n_jobs": -1,
+      "params": {}
+    },
+    "descriptors": {
+      "backends": [
+        "RDKit",
+        "Mordred"
+      ],
+      "run_geometry_optimization": false,
+      "num_workers": 4,
+      "xtb_timeout": 600,
+      "external_descriptors_path": null
+    },
+    "ga": {
+      "population_size": 50,
+      "n_generations": 30,
+      "crossover_prob": 0.7,
+      "mutation_prob": 0.2,
+      "tournament_size": 3,
+      "cv_folds": 5,
+      "n_jobs": -1,
+      "random_seed": 42
+    },
+    "sfs": {
+      "max_features": 20,
+      "cv_folds": 5,
+      "random_seed": 42,
+      "n_jobs": -1
+    },
+    "hpo": {
+      "enabled": true,
+      "max_hpo_rounds": 3,
+      "cv_folds": 5,
+      "max_candidates_per_round": 120,
+      "min_cv_improvement": 0.02,
+      "overfit_gap_threshold": 0.15,
+      "severe_overfit_gap_threshold": 0.25,
+      "minimum_cv_r2": 0.5,
+      "cv_std_threshold": 0.15,
+      "minimum_train_r2": 0.4,
+      "n_jobs": -1,
+      "openai_model": "gpt-5.4"
+    },
+    "model_fallback": {
+      "enabled": true,
+      "estimators": [
+        "PLSRegression",
+        "ExtraTreesRegressor",
+        "SVR",
+        "KNeighborsRegressor"
+      ]
+    },
+    "sfs_fixed_ga_expansion": {
+      "enabled": true,
+      "extra_features": 2,
+      "output_subdir": "sfs_fixed_ga_plus2"
+    },
+    "agentic": {
+      "enabled": true,
+      "max_cycles": 3,
+      "max_total_experiments": 8,
+      "max_specialist_calls_per_cycle": 2,
+      "max_retries_per_agent_call": 1,
+      "require_approval_for_data_changes": true,
+      "prevent_external_test_access": true,
+      "model": "gpt-5.4",
+      "acceptance": {
+        "minimum_mean_cv_r2": 0.6,
+        "maximum_train_cv_gap": 0.15,
+        "maximum_cv_r2_std": 0.15,
+        "minimum_mean_train_r2": null,
+        "require_non_overfit_status": true,
+        "require_validation_agent_approval": true,
+        "minimum_agent_val_r2": null,
+        "maximum_cv_agent_val_gap": 0.2
+      },
+      "practical_equivalence_tolerance": 0.01,
+      "agent_validation_fraction": 0.2,
+      "max_screen_models": 5,
+      "max_optimize_after_screen": 2,
+      "hard_max_cycles": 10,
+      "hard_max_experiments": 20,
+      "hard_max_retries": 2,
+      "hard_max_candidates_per_grid": 60
+    },
+    "smiles_column": "",
+    "activity_column": "",
+    "id_column": null,
+    "min_valid_compounds": 20
+  },
+  "hyperparameter_optimization": {
+    "winning_estimator": "SVR",
+    "resumed_from": "16b2d5bd4a9b"
+  }
+}

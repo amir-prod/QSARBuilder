@@ -1,0 +1,5 @@
+{
+  "external_previously_evaluated": true,
+  "source_run_id": "16b2d5bd4a9b",
+  "disclaimer": "EXTERNAL-TEST DISCLAIMER: The external holdout used for this evaluation was previously scored in source run `16b2d5bd4a9b`. It is NOT an untouched independent external test for this forked lineage. If external-test results influence further model development, that test set is no longer independent and must not be reported as an untouched external test."
+}

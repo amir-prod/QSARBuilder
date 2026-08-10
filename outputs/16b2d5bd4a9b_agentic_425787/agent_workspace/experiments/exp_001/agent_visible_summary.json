@@ -1,0 +1,45 @@
+{
+  "experiment_id": "exp_001",
+  "dataset_size": null,
+  "validation_counts": {},
+  "development_split_size": 20,
+  "agent_dev_size": 16,
+  "agent_val_size": 4,
+  "descriptor_count_before": null,
+  "descriptor_count_after": null,
+  "feature_count": 3,
+  "selected_feature_names": [
+    "RDKit_SPS",
+    "RDKit_EState_VSA8",
+    "RDKit_HallKierAlpha"
+  ],
+  "samples_per_feature_ratio": 5.333333333333333,
+  "mean_train_r2": 0.9344782165360594,
+  "mean_cv_r2": 0.8306212289132923,
+  "cv_r2_std": 0.08810836581020177,
+  "train_cv_gap": 0.10385698762276718,
+  "mean_cv_rmse": 0.0,
+  "mean_cv_mae": 0.0,
+  "agent_val_r2": 0.879923107210722,
+  "overfitting_status": "good",
+  "overfitting_acceptable": true,
+  "hpo_rounds": null,
+  "best_parameters": {
+    "C": 5.0,
+    "epsilon": 0.2,
+    "gamma": "scale",
+    "kernel": "rbf"
+  },
+  "estimator": "SVR",
+  "model_complexity_summary": "simplicity_score=3.000",
+  "sfs_summary": {},
+  "ga_summary": {},
+  "warnings": [
+    "Protected agent-validation is a single holdout within development data, not nested CV. Repeated adaptive experimentation can overfit this set."
+  ],
+  "source_artifact_paths": {},
+  "external_test_unavailable": true,
+  "external_test_statement": "External-test information is unavailable during agentic development. Agents must not request or use external-test metrics, predictions, residuals, applicability-domain classifications, or scatter plots.",
+  "cv_folds_hash": "bf1120d2fdad0796a3d51b09a3be7518923ddc7fd394651cec43654eadaddb50",
+  "experiment_kind": "initial_deterministic"
+}

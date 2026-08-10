@@ -11,6 +11,14 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import SVR
 
 from qsar_agent.config import ModelConfig
+from qsar_agent.models.catalog import (
+    EXTENDED_DEFAULT_PARAMS,
+    EXTENDED_FALLBACK_GRIDS,
+    EXTENDED_SPACES,
+    build_extended_estimator,
+    build_model_specifications,
+)
+from qsar_agent.schemas.agentic import ModelSpecification
 from qsar_agent.schemas.hyperparameter_optimization import GridSanitizationResult
 
 
@@ -48,7 +56,27 @@ DEFAULT_FALLBACK_ESTIMATORS = [
     "KNeighborsRegressor",
 ]
 
-SUPPORTED_ESTIMATORS = ["RandomForestRegressor", *DEFAULT_FALLBACK_ESTIMATORS]
+# Core estimators used by the deterministic fallback path (unchanged).
+CORE_ESTIMATORS = ["RandomForestRegressor", *DEFAULT_FALLBACK_ESTIMATORS]
+
+# Full catalog names (availability checked via ModelSpecification).
+CATALOG_ESTIMATORS = [
+    "RandomForestRegressor",
+    "ExtraTreesRegressor",
+    "HistGradientBoostingRegressor",
+    "GradientBoostingRegressor",
+    "AdaBoostRegressor",
+    "SVR",
+    "KNeighborsRegressor",
+    "ElasticNet",
+    "Ridge",
+    "PLSRegression",
+    "XGBRegressor",
+    "CatBoostRegressor",
+    "LGBMRegressor",
+]
+
+SUPPORTED_ESTIMATORS = list(CATALOG_ESTIMATORS)
 
 _RF_DEFAULTS: dict[str, Any] = {
     "n_estimators": 100,
@@ -96,6 +124,7 @@ _DEFAULT_PARAMS: dict[str, dict[str, Any]] = {
     "ExtraTreesRegressor": _EXTRA_TREES_DEFAULTS,
     "SVR": _SVR_DEFAULTS,
     "KNeighborsRegressor": _KNN_DEFAULTS,
+    **EXTENDED_DEFAULT_PARAMS,
 }
 
 _RF_SPACE: dict[str, set[Any]] = {
@@ -144,6 +173,7 @@ _ALLOWED_SPACE: dict[str, dict[str, set[Any]]] = {
     "ExtraTreesRegressor": _EXTRA_TREES_SPACE,
     "SVR": _SVR_SPACE,
     "KNeighborsRegressor": _KNN_SPACE,
+    **EXTENDED_SPACES,
 }
 
 _RF_FALLBACK_OVERFIT = {
@@ -328,6 +358,7 @@ _FALLBACK_GRIDS: dict[str, dict[str, dict[str, list[Any]]]] = {
         "unstable": _KNN_FALLBACK_UNSTABLE,
         "default": _KNN_FALLBACK_DEFAULT,
     },
+    **EXTENDED_FALLBACK_GRIDS,
 }
 
 _HPO_PROMPTS: dict[str, str] = {
@@ -365,7 +396,33 @@ def estimator_slug(estimator: str) -> str:
         "ExtraTreesRegressor": "extra_trees_regressor",
         "SVR": "svr",
         "KNeighborsRegressor": "k_neighbors_regressor",
+        "HistGradientBoostingRegressor": "hist_gradient_boosting",
+        "GradientBoostingRegressor": "gradient_boosting",
+        "AdaBoostRegressor": "adaboost",
+        "ElasticNet": "elastic_net",
+        "Ridge": "ridge",
+        "XGBRegressor": "xgboost",
+        "CatBoostRegressor": "catboost",
+        "LGBMRegressor": "lightgbm",
     }.get(estimator, estimator.lower())
+
+
+def list_registered_estimators(*, include_unavailable: bool = True) -> list[str]:
+    specs = build_model_specifications()
+    if include_unavailable:
+        return list(specs.keys())
+    return [name for name, spec in specs.items() if spec.available]
+
+
+def list_available_estimators() -> list[str]:
+    return list_registered_estimators(include_unavailable=False)
+
+
+def get_model_specification(estimator_name: str) -> ModelSpecification:
+    specs = build_model_specifications()
+    if estimator_name not in specs:
+        raise ValueError(f"Unknown estimator: {estimator_name}")
+    return specs[estimator_name]
 
 
 def get_tunable_params(estimator: str) -> set[str]:
@@ -383,7 +440,13 @@ def get_hpo_prompt_spec(estimator: str) -> str:
 def get_default_model_config(estimator: str, random_state: int = 42, n_jobs: int = -1) -> ModelConfig:
     if estimator not in SUPPORTED_ESTIMATORS:
         raise ValueError(f"Unsupported estimator: {estimator}")
-    params = dict(_DEFAULT_PARAMS[estimator])
+    spec = get_model_specification(estimator)
+    if not spec.available:
+        raise ValueError(
+            f"Estimator '{estimator}' is registered but unavailable "
+            f"(missing dependency: {spec.missing_dependency})."
+        )
+    params = dict(_DEFAULT_PARAMS.get(estimator, spec.default_parameters))
     cfg_data: dict[str, Any] = {
         "estimator": estimator,
         "random_state": random_state,
@@ -478,6 +541,16 @@ def build_estimator_from_config(config: ModelConfig | dict[str, Any] | None = No
             n_jobs=cfg.n_jobs,
         )
 
+    if estimator in EXTENDED_DEFAULT_PARAMS:
+        spec = get_model_specification(estimator)
+        if not spec.available:
+            raise ValueError(
+                f"Estimator '{estimator}' dependency not available: {spec.missing_dependency}"
+            )
+        return build_extended_estimator(
+            estimator, params, random_state=cfg.random_state, n_jobs=cfg.n_jobs
+        )
+
     raise ValueError(f"Unsupported estimator: {estimator}")
 
 
@@ -501,15 +574,11 @@ def _normalize_value(estimator: str, param: str, value: Any) -> Any:
         return float(value)
     if param == "gamma" and isinstance(value, (int, float)) and not isinstance(value, bool):
         return float(value)
-    if param == "C" and value is not None:
+    if param in ("C", "epsilon", "alpha", "l1_ratio", "learning_rate", "subsample",
+                 "colsample_bytree", "reg_lambda", "l2_regularization") and value is not None:
         return float(value)
-    if param == "epsilon" and value is not None:
-        return float(value)
-    if param == "n_components" and value is not None:
-        return int(value)
-    if param == "n_neighbors" and value is not None:
-        return int(value)
-    if param == "p" and value is not None:
+    if param in ("n_components", "n_neighbors", "p", "n_estimators", "max_iter",
+                 "iterations", "depth", "min_samples_leaf") and value is not None:
         return int(value)
     return value
 
@@ -680,6 +749,23 @@ def model_simplicity_score(estimator: str, params: dict[str, Any]) -> float:
 
     if estimator == "KNeighborsRegressor":
         return float(params.get("n_neighbors", 5))
+
+    if estimator in ("Ridge", "ElasticNet"):
+        return float(params.get("alpha", 1.0))
+
+    if estimator in (
+        "HistGradientBoostingRegressor",
+        "GradientBoostingRegressor",
+        "AdaBoostRegressor",
+        "XGBRegressor",
+        "CatBoostRegressor",
+        "LGBMRegressor",
+    ):
+        depth = params.get("max_depth", params.get("depth", 4))
+        depth_score = 50.0 if depth is None else float(depth)
+        lr = float(params.get("learning_rate", 0.1))
+        n_est = float(params.get("n_estimators", params.get("max_iter", params.get("iterations", 100))))
+        return depth_score + n_est * 0.01 - (1.0 / max(lr, 1e-6)) * 0.01
 
     return 0.0
 

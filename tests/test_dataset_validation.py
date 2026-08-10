@@ -44,7 +44,8 @@ def test_duplicate_compounds(tmp_run_dir):
     path = tmp_run_dir / "data.csv"
     df.to_csv(path, index=False)
     result = validate_dataset(path, "smiles", "activity", None, tmp_run_dir, min_valid_compounds=10)
-    assert result.duplicate_compound_count == 9
+    # 10 identical CCO rows → 10 duplicate SMILES removed (first occurrence kept among uniques).
+    assert result.duplicate_compound_count == 10
 
 
 def test_too_few_compounds(tmp_run_dir):

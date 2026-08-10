@@ -25,6 +25,8 @@ from qsar_agent.config import (
     get_openai_model,
     load_env_file,
 )
+from qsar_agent.schemas.agentic import AgenticAcceptanceCriteria, AgenticImprovementConfig
+from qsar_agent.agentic.approvals import init_agentic_session_state, resolve_pending_approval
 from qsar_agent.schemas.workflow import StageStatus
 from qsar_agent.services.artifact_manager import generate_run_id, get_run_dir
 from qsar_agent.services.workflow_runner import WorkflowRunner
@@ -39,6 +41,7 @@ load_env_file()
 
 st.set_page_config(page_title=APP_TITLE, page_icon="🧪", layout="wide")
 init_session_state()
+init_agentic_session_state(st)
 
 
 def file_download_button(label: str, path: str, mime: str = "application/octet-stream") -> None:
@@ -56,9 +59,9 @@ def render_header() -> None:
         "fallback to other regressors when HPO fails."
     )
     st.warning(
-        "External-test performance is evaluated only after feature selection, "
-        "hyperparameter optimization, and final model training. The test set is "
-        "never used for tuning."
+        "External-test performance is evaluated only after the winning configuration "
+        "is locked using training CV (and optional agentic internal evidence). "
+        "The external test is never used for tuning, branch comparison, or agent decisions."
     )
     if st.session_state.get("run_id"):
         st.info(f"Current run ID: `{st.session_state.run_id}`")
@@ -175,6 +178,85 @@ def render_sidebar_config() -> WorkflowConfig:
         help="Runs PLS, ExtraTrees, SVR, and KNN with per-model feature selection and HPO.",
     )
 
+    with st.sidebar.expander("Agentic Improvement", expanded=False):
+        agentic_enabled = st.checkbox(
+            "Enable agentic improvement",
+            value=False,
+            help="After the deterministic pipeline, diagnose failed internal acceptance and run bounded experiments.",
+        )
+        agentic_max_cycles = st.number_input("Max cycles", 1, 10, 3)
+        agentic_max_experiments = st.number_input("Max experiments", 1, 20, 8)
+        agentic_min_cv = st.slider("Acceptance min mean CV R²", 0.0, 1.0, 0.60, 0.05)
+        agentic_max_gap = st.slider("Acceptance max train–CV gap", 0.05, 0.5, 0.15, 0.01)
+        agentic_max_std = st.slider("Acceptance max CV R² std", 0.05, 0.5, 0.15, 0.01)
+        agentic_model = st.text_input(
+            "Agent model",
+            value=get_openai_model(),
+            help="Used only when agentic mode is enabled and an API key is available.",
+        )
+        if st.button("Stop agentic loop (next cycle)"):
+            st.session_state.agentic_stop_requested = True
+        pending = st.session_state.get("agentic_pending_approval")
+        if pending and pending.get("status") == "pending":
+            st.warning("Pending approval required")
+            st.json(pending)
+            c1, c2 = st.columns(2)
+            run_id = st.session_state.get("run_id")
+            if run_id and c1.button("Approve"):
+                resolve_pending_approval(Path("outputs") / run_id, approve=True)
+                st.success("Approved")
+            if run_id and c2.button("Reject"):
+                resolve_pending_approval(Path("outputs") / run_id, approve=False)
+                st.info("Rejected")
+
+    with st.sidebar.expander("Resume from previous run", expanded=False):
+        from qsar_agent.services.resume_agentic import list_resumable_runs
+
+        resumable = list_resumable_runs(output_dir)
+        if not resumable:
+            st.caption("No resumable runs found (need preprocessed train + HPO/comparison).")
+            st.session_state.resume_source_run_id = None
+        else:
+            def _resume_label(s) -> str:
+                cv = f"{s.mean_cv_r2:.3f}" if s.mean_cv_r2 is not None else "?"
+                return (
+                    f"{s.run_id} | {s.estimator or '?'} | "
+                    f"feats={s.feature_count} | CV R²={cv}"
+                )
+
+            labels = {s.run_id: _resume_label(s) for s in resumable}
+            choice = st.selectbox(
+                "Source run",
+                options=[s.run_id for s in resumable],
+                format_func=lambda rid: labels.get(rid, rid),
+                key="resume_source_run_select",
+            )
+            st.session_state.resume_source_run_id = choice
+            selected = next(s for s in resumable if s.run_id == choice)
+            st.caption(
+                f"Winner: `{selected.estimator}` · features={selected.feature_count} · "
+                f"mean CV R²={selected.mean_cv_r2}"
+            )
+            if selected.external_previously_evaluated:
+                st.warning(
+                    "This run already evaluated the external test. Agentic resume will "
+                    "**fork a new lineage** and cannot continue inside the original run."
+                )
+                default_eval_ext = False
+            else:
+                st.info("Source run has no external-test artifacts; fork will still be created.")
+                default_eval_ext = True
+            st.session_state.resume_evaluate_external = st.checkbox(
+                "Evaluate external test after lock",
+                value=default_eval_ext,
+                help=(
+                    "When the source already scored the external holdout, post-lock "
+                    "evaluation on that same holdout is exploratory and not an "
+                    "untouched independent test."
+                ),
+                key="resume_evaluate_external_cb",
+            )
+
     return WorkflowConfig(
         test_fraction=test_fraction,
         random_seed=int(random_seed),
@@ -218,6 +300,17 @@ def render_sidebar_config() -> WorkflowConfig:
             openai_model=hpo_openai_model,
         ),
         model_fallback=ModelFallbackSettings(enabled=model_fallback_enabled),
+        agentic=AgenticImprovementConfig(
+            enabled=bool(agentic_enabled),
+            max_cycles=int(agentic_max_cycles),
+            max_total_experiments=int(agentic_max_experiments),
+            model=agentic_model,
+            acceptance=AgenticAcceptanceCriteria(
+                minimum_mean_cv_r2=float(agentic_min_cv),
+                maximum_train_cv_gap=float(agentic_max_gap),
+                maximum_cv_r2_std=float(agentic_max_std),
+            ),
+        ),
     )
 
 
@@ -420,7 +513,10 @@ def _render_branch_external_plots(
     # Prefer non-winner branch dirs; still show all for comparison.
     if len(rows) <= 1:
         return
-    st.subheader("All model branches (external test)")
+    st.caption(
+        "Winner-only external evaluation is the default. Additional branch external "
+        "plots appear only if legacy multi-branch evaluation was enabled."
+    )
     labels = [r.get("label") or r.get("estimator") or f"branch_{i}" for i, r in enumerate(rows)]
     choice = st.selectbox(
         "Branch",
@@ -444,16 +540,87 @@ def _render_branch_external_plots(
         st.caption(f"Plot not found for {row.get('label', 'branch')}.")
 
 
+def _render_agentic_tab(run_dir: Path, artifacts: dict) -> None:
+    st.subheader("Agentic improvement")
+    st.caption(
+        "Deterministic scientific results are authoritative. Agent text is advisory. "
+        "Deterministic fallback decisions are labeled explicitly."
+    )
+    meta_path = run_dir / "agentic_resume_meta.json"
+    if meta_path.exists():
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        st.info(
+            f"Resumed from source run `{meta.get('source_run_id')}`. "
+            f"External previously evaluated: {meta.get('external_previously_evaluated')}."
+        )
+        if meta.get("external_previously_evaluated"):
+            st.warning(
+                "This forked lineage must not report the reused holdout as an untouched "
+                "independent external test if that holdout was scored in the source run."
+            )
+    agent_ws = Path(artifacts.get("agent_workspace") or (run_dir / "agent_workspace"))
+    state_path = agent_ws / "project_state.json"
+    if state_path.exists():
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        st.write(
+            f"**Status:** {state.get('status')} | "
+            f"**Cycle:** {state.get('cycle_index')} | "
+            f"**Experiments:** {state.get('experiment_count')} | "
+            f"**Best:** `{state.get('best_experiment_id')}`"
+        )
+        if state.get("last_acceptance"):
+            st.write("Acceptance:", state["last_acceptance"].get("explanation"))
+        if state.get("last_validation_review"):
+            st.write("Validation:", state["last_validation_review"].get("summary"))
+        if state.get("lock_record"):
+            st.json(state["lock_record"])
+    ledger = agent_ws / "experiment_ledger.jsonl"
+    if ledger.exists():
+        rows = []
+        for line in ledger.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                rec = json.loads(line)
+                rows.append(
+                    {
+                        "experiment_id": rec.get("experiment_id"),
+                        "parent": rec.get("parent_experiment_id"),
+                        "action": rec.get("action"),
+                        "kind": rec.get("experiment_kind"),
+                        "multi_component": rec.get("multi_component"),
+                        "estimator": rec.get("estimator"),
+                        "mean_cv_r2": (rec.get("internal_metrics") or {}).get("mean_cv_r2"),
+                        "decision_source": rec.get("decision_source"),
+                    }
+                )
+        if rows:
+            st.dataframe(pd.DataFrame(rows))
+    report_md = agent_ws / "final_agent_report.md"
+    if report_md.exists():
+        st.markdown(report_md.read_text(encoding="utf-8"))
+        file_download_button("Download agentic report", str(report_md), "text/markdown")
+    events = agent_ws / "agent_events.jsonl"
+    if events.exists():
+        with st.expander("Agent event log"):
+            st.text(events.read_text(encoding="utf-8")[-8000:])
+    disclaimer = run_dir / "locked_external" / "external_independence_disclaimer.json"
+    if disclaimer.exists():
+        st.error(json.loads(disclaimer.read_text(encoding="utf-8")).get("disclaimer", ""))
+    if not state_path.exists():
+        st.info("No agentic workspace for this run (agentic mode disabled or not triggered).")
+
+
 def render_results_dashboard() -> None:
     report = st.session_state.get("final_report")
     artifacts = st.session_state.get("artifact_paths", {})
-    if not report:
+    run_id = st.session_state.get("run_id")
+    if not report and not (run_id and artifacts):
         return
 
-    run_id = st.session_state.get("run_id")
     run_dir = Path("outputs") / run_id if run_id else Path("outputs")
     if artifacts.get("prediction_scatter"):
         run_dir = Path(artifacts["prediction_scatter"]).parent
+    elif artifacts.get("agent_workspace"):
+        run_dir = Path(artifacts["agent_workspace"]).parent
 
     st.header("Results Dashboard")
     tabs = st.tabs(
@@ -465,10 +632,27 @@ def render_results_dashboard() -> None:
             "Hyperparameter Optimization",
             "Model",
             "Applicability Domain",
+            "Agentic",
             "Downloads",
             "Logs",
         ]
     )
+
+    if report is None:
+        # Agentic-resume path: show Agentic / Downloads / Logs only.
+        for i in range(7):
+            with tabs[i]:
+                st.info("Full pipeline report not available (agentic-only resume). See Agentic tab.")
+        with tabs[7]:
+            _render_agentic_tab(run_dir, artifacts)
+        with tabs[8]:
+            for name, path in artifacts.items():
+                file_download_button(f"Download {name}", path)
+        with tabs[9]:
+            ws = st.session_state.get("workflow_state")
+            if ws and ws.logs:
+                st.text("\n".join(ws.logs))
+        return
 
     with tabs[0]:
         st.json(report.model_dump())
@@ -596,16 +780,112 @@ def render_results_dashboard() -> None:
         _render_branch_external_plots(run_dir, artifacts, show="williams")
 
     with tabs[7]:
+        _render_agentic_tab(run_dir, artifacts)
+
+    with tabs[8]:
         for name, path in artifacts.items():
             file_download_button(f"Download {name}", path)
         ws = st.session_state.get("workflow_state")
         if ws and ws.zip_path:
             file_download_button("Download complete run ZIP", ws.zip_path, "application/zip")
 
-    with tabs[8]:
+    with tabs[9]:
         ws = st.session_state.get("workflow_state")
         if ws and ws.logs:
             st.text("\n".join(ws.logs))
+
+
+def render_agentic_resume_section(config: WorkflowConfig) -> None:
+    """Run agentic improvement only from a previously completed deterministic run."""
+    st.header("Resume Agentic Only")
+    source_id = st.session_state.get("resume_source_run_id")
+    if not source_id:
+        st.info(
+            "Select a previous run under **Resume from previous run** in the sidebar. "
+            "Dataset re-upload is not required for this path."
+        )
+        return
+
+    source_dir = Path(config.output_dir) / source_id
+    st.write(f"Source run: `{source_id}`")
+    if not config.agentic.enabled:
+        st.warning("Enable **Agentic Improvement** in the sidebar before running agentic-only resume.")
+
+    evaluate_external = bool(st.session_state.get("resume_evaluate_external", False))
+    run_resume = st.button(
+        "Run agentic only",
+        type="primary",
+        disabled=not config.agentic.enabled,
+        key="run_agentic_only_btn",
+    )
+    if not run_resume:
+        return
+
+    from qsar_agent.services.resume_agentic import (
+        InPlaceResumeForbiddenError,
+        detect_external_access,
+        run_agentic_only,
+    )
+
+    ext = detect_external_access(source_dir)
+    if ext.external_previously_evaluated:
+        st.warning(
+            "Forking a new lineage because the source run already has external-test artifacts. "
+            f"Reasons: {', '.join(ext.reasons)}"
+        )
+
+    progress = st.empty()
+    logs: list[str] = []
+
+    def _log(msg: str) -> None:
+        logs.append(msg)
+        progress.text("\n".join(logs[-20:]))
+
+    try:
+        with st.spinner("Running agentic improvement on forked lineage..."):
+            result = run_agentic_only(
+                source_dir,
+                workflow_config=config.model_copy(
+                    update={"agentic": config.agentic.model_copy(update={"enabled": True})}
+                ),
+                output_root=config.output_dir,
+                evaluate_external_after_lock=evaluate_external,
+                log_callback=_log,
+                stop_check=lambda: bool(st.session_state.get("agentic_stop_requested")),
+            )
+        st.session_state.run_id = result.forked_run_id
+        st.session_state.artifact_paths = dict(result.artifact_paths)
+        st.session_state.agentic_project_state = result.agentic_state.model_dump()
+        st.session_state.agentic_stop_requested = False
+        # Minimal workflow_state-like fields for downloads/logs
+        from qsar_agent.schemas.workflow import WorkflowState
+
+        ws = WorkflowState.create(
+            result.forked_run_id, config_snapshot=config.to_dict()
+        )
+        ws.artifact_paths = dict(result.artifact_paths)
+        ws.logs = logs
+        set_workflow_state(ws)
+        st.success(
+            f"Agentic resume complete. Forked run: `{result.forked_run_id}` "
+            f"(source `{result.source_run_id}`)."
+        )
+        if result.disclaimer:
+            st.error(result.disclaimer)
+        st.json(
+            {
+                "forked_run_id": result.forked_run_id,
+                "external_previously_evaluated": result.external_previously_evaluated,
+                "evaluated_external": result.evaluated_external,
+                "status": result.agentic_state.status,
+                "best_experiment_id": result.agentic_state.best_experiment_id,
+            }
+        )
+    except InPlaceResumeForbiddenError as exc:
+        st.error(str(exc))
+    except Exception as exc:
+        st.error(f"Agentic resume failed: {exc}")
+        raise
 
 
 def main() -> None:
@@ -613,6 +893,7 @@ def main() -> None:
     upload_bytes = render_upload_section()
     config = render_sidebar_config()
     render_workflow_execution(config, upload_bytes)
+    render_agentic_resume_section(config)
     render_results_dashboard()
 
 

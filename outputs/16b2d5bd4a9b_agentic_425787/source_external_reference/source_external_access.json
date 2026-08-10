@@ -1,0 +1,17 @@
+{
+  "external_previously_evaluated": true,
+  "reasons": [
+    "found predictions.csv",
+    "found model_metrics.json",
+    "found prediction_scatter.png",
+    "found williams_plot.png",
+    "found applicability_domain.csv"
+  ],
+  "artifact_paths": [
+    "outputs/16b2d5bd4a9b/predictions.csv",
+    "outputs/16b2d5bd4a9b/model_metrics.json",
+    "outputs/16b2d5bd4a9b/prediction_scatter.png",
+    "outputs/16b2d5bd4a9b/williams_plot.png",
+    "outputs/16b2d5bd4a9b/applicability_domain.csv"
+  ]
+}

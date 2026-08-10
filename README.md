@@ -2,7 +2,9 @@
 
 **QSAR Agent** is a Streamlit application for building regression QSAR models from SMILES and experimental activity data. It orchestrates a reproducible, leakage-aware workflow using [DescJocky](https://github.com/StephenSzwiec/descjocky) molecular descriptors (with optional external descriptor merge), UMAP-based cluster splitting, sequential and genetic feature selection, and Random Forest modeling—with optional OpenAI agent coordination for feature-count decisions.
 
-> **Important:** External-test performance is evaluated only after feature selection and final model training. The test set is never used for preprocessing, tuning, or feature selection.
+> **Important:** External-test performance is evaluated only after the winning configuration is **locked** using training-only evidence. The test set is never used for preprocessing, tuning, feature selection, branch comparison, or agentic decisions.
+>
+> If external-test results influence further model development, that test set is no longer independent and must not be reported as an untouched external test.
 
 ## Features
 
@@ -16,7 +18,9 @@
 - One-standard-error rule for optimal descriptor count (OpenAI explains the choice)
 - DEAP genetic algorithm for final descriptor subset optimization
 - Agent-guided hyperparameter optimization (up to 3 rounds, training CV only)
-- Random Forest final model with train and external-test metrics
+- Multi-model fallback and expanded sklearn model catalog (optional XGBoost/CatBoost/LightGBM when installed)
+- Optional **agentic model-improvement** loop after the deterministic pipeline (disabled by default)
+- Winner-only external-test evaluation after model lock
 - Williams applicability-domain plot
 - Per-run artifact export and ZIP download
 
@@ -25,11 +29,13 @@
 ```
 streamlit_app.py          # Streamlit UI
 qsar_agent/
-  config.py               # Workflow defaults and OpenAI settings
+  config.py               # Workflow defaults, OpenAI, agentic settings
   app_state.py            # Streamlit session state helpers
-  schemas/                # Pydantic models for tools, state, and reports
+  schemas/                # Pydantic models (incl. schemas/agentic.py)
+  models/                 # Estimator registry + schema-driven catalog
   tools/                  # Deterministic scientific pipeline stages
-  agents/                 # OpenAI-assisted feature-count explanation
+  agents/                 # OpenAI-assisted HPO grids / feature-count explanation
+  agentic/                # Optional post-pipeline supervisor + specialists
   services/               # Workflow runner, plotting, artifact management
 examples/                 # Original reference scripts (UMAP split, GA, SFS)
 example/                  # Sample input CSV for testing
@@ -37,7 +43,47 @@ outputs/<run_id>/         # Isolated artifacts per workflow run
 tests/                    # Unit and integration tests
 ```
 
-The OpenAI agent coordinates the workflow and explains decisions but **never** calculates descriptors, trains models, or fabricates metrics. All scientific work is done by deterministic Python tools.
+LLMs never calculate descriptors, train models, fabricate metrics, or execute arbitrary code. All scientific computation stays in deterministic, tested Python tools. Agentic mode only proposes allowlisted experiments that the executor runs with existing tools.
+
+## Deterministic mode vs agentic-improvement mode
+
+| Mode | Default | Requires API key | What happens |
+|------|---------|------------------|--------------|
+| **Deterministic** | On | No | Full QSAR pipeline; CV-based model selection; external test once on locked winner |
+| **Agentic improvement** | Off | Optional | After deterministic development, if internal acceptance fails, a Supervisor consults specialists and runs bounded experiments using training / protected agent-validation evidence only |
+
+Without an API key, agentic mode uses clearly labeled `deterministic_fallback` specialist heuristics (never pretended to be an LLM).
+
+### Agentic roles
+
+1. **Supervisor** — sole authority to select the next allowlisted action (≤2 specialists/cycle).
+2. **Data Quality** — diagnostic-only in v1 (no executable dataset mutations).
+3. **Descriptor & Feature** — feature-count / SFS-fixed GA proposals.
+4. **Modeling** — HPO refinement, registered estimator trials, controlled family screening.
+5. **Validation** — scientific review; hard veto only when deterministic hard-failure flags confirm it.
+
+### Supported agentic actions (v1)
+
+`accept_model`, `refine_hyperparameters`, `reduce_feature_count`, `expand_feature_count`, `run_sfs_fixed_ga_expansion`, `try_registered_estimator`, `compare_registered_estimators`, `recommend_unregistered_estimator`, `request_model_dependency_approval`, `request_user_approval`, `request_user_input`, `stop_budget_exhausted`, `stop_no_viable_model`.
+
+Legacy alias: `try_fallback_estimator` → `try_registered_estimator`.
+
+### Acceptance criteria (configurable)
+
+Internal acceptance is computed deterministically (defaults): minimum mean CV R² 0.60, max train–CV gap 0.15, max CV R² std 0.15, require non-overfit (`good`) status, optional Validation approval. LLMs cannot override thresholds.
+
+### Experiment loop & approvals
+
+Bounded cycles/experiments; duplicate prevention; practical-equivalence tie-break (0.01 CV R²) preferring simpler models. Streamlit can pause for approvals; v1 does not execute dataset-mutation approvals. Data Quality cannot approve actions the executor cannot perform.
+
+### Protected agent-validation (not full nested CV)
+
+A seeded holdout is carved from development data for adaptive ranking. Preprocessing / FS / GA / HPO use agent-development data only. Limitation: repeated adaptive search can still overfit the protected agent-validation set—mitigated by budgets and Validation warnings.
+
+### Controlled vs full pipeline experiments
+
+- **Controlled comparison:** same data, features, preprocessing, CV folds; change only the estimator.
+- **Full pipeline branch:** estimator-specific FS+HPO; labeled `multi_component=true`.
 
 ## Installation
 
@@ -80,6 +126,25 @@ OPENAI_MODEL = "gpt-4o-mini"
 ```
 
 Never commit `.env` or `.streamlit/secrets.toml` with real keys.
+
+## Resume agentic from a previous run
+
+You can load a completed deterministic run and execute **only** the agentic improvement loop:
+
+1. In the Streamlit sidebar, open **Resume from previous run** and select an `outputs/<run_id>` that has `preprocessed_train_descriptors.csv` plus `model_comparison.json` or `hpo_final_selection.json`.
+2. Enable **Agentic Improvement** and adjust acceptance thresholds as needed.
+3. Click **Run agentic only** (dataset re-upload is not required).
+
+### Fork policy (external-test isolation)
+
+If the source run already contains external-test artifacts (`predictions.csv`, `model_metrics.json`, `locked_external/`, etc.):
+
+- Agentic resume is **blocked in-place** on that `run_id`.
+- The app **forks** a new lineage: `outputs/<source_run_id>_agentic_<suffix>/`.
+- Only development-safe artifacts are copied (train matrix, winner snapshot, config subset). Prior external metrics are **not** copied into the fork for agents.
+- After model lock, optional external evaluation may reuse the source holdout CSV only with an explicit disclaimer: that holdout is **not** an untouched independent external test for the forked lineage.
+
+If the source run never evaluated the external test, a fork is still created, and post-lock external evaluation can be treated as independent for that lineage.
 
 ## Running the application
 
@@ -207,6 +272,10 @@ The external test set is not used during:
 - Feature-count selection (one-standard-error rule)
 - Genetic algorithm fitness
 - Hyperparameter tuning
+- Fallback / cross-model selection
+- Agentic diagnoses, proposals, or experiment ranking
+
+External evaluation requires `project_state.status == "model_locked"` with a lock record (experiment ID, configuration hash, timestamp, selection rationale). After external evaluation, the lineage is marked completed and further agentic optimization in that lineage is prohibited. Only the locked winner is scored on the external test (non-winning branches are not externally evaluated by default).
 
 ### UMAP is not clustering
 
@@ -256,11 +325,13 @@ Each run writes to `outputs/<run_id>/`:
 | `ga_convergence.png` / `.svg` | GA convergence plot |
 | `baseline_cv_metrics.csv` / `baseline_overfitting_assessment.json` | HPO baseline diagnostics |
 | `hpo_iteration_log.md` / `hpo_final_selection.json` | HPO decisions (when enabled) |
-| `predictions.csv` / `model_metrics.json` | Per-compound predictions and metrics |
-| `final_model.joblib` | Trained Random Forest |
+| `predictions.csv` / `model_metrics.json` | Per-compound predictions and metrics (locked winner) |
+| `final_model.joblib` | Trained winning estimator |
 | `prediction_scatter.png` / `.svg` | Predicted vs experimental plot |
 | `applicability_domain.csv` | Per-compound AD classification |
 | `williams_plot.png` / `.svg` | Williams plot |
+| `locked_external/` | Post-lock external artifacts copy |
+| `agent_workspace/` | Project state, experiment ledger, summaries, agent report (when agentic runs) |
 | `run_manifest.json` | Reproducibility metadata |
 | `qsar_agent_run_<run_id>.zip` | Complete run archive |
 
@@ -277,6 +348,9 @@ Key defaults (adjustable in the Streamlit sidebar):
 | Correlation threshold | 0.95 |
 | Max SFS descriptors | 20 |
 | CV folds | 5 |
+| Agentic improvement | Disabled |
+| Agentic max cycles / experiments | 3 / 8 |
+| Agentic min mean CV R² | 0.60 |
 | SFS / GA / model `n_jobs` | -1 (all cores) |
 | Random Forest | 100 trees, max_depth=10 |
 | GA population / generations | 50 / 30 |

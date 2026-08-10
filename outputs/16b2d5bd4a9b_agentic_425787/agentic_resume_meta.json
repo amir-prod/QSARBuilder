@@ -1,0 +1,22 @@
+{
+  "source_run_id": "16b2d5bd4a9b",
+  "source_run_dir": "/home/amirreza/QSARBuilder_vanila/QSARBuilder/outputs/16b2d5bd4a9b",
+  "forked_run_id": "16b2d5bd4a9b_agentic_425787",
+  "forked_at": "2026-08-10T21:50:19.029027+00:00",
+  "external_previously_evaluated": true,
+  "external_access_reasons": [
+    "found predictions.csv",
+    "found model_metrics.json",
+    "found prediction_scatter.png",
+    "found williams_plot.png",
+    "found applicability_domain.csv"
+  ],
+  "winner_source": "model_comparison.json",
+  "estimator": "SVR",
+  "selected_features": [
+    "RDKit_SPS",
+    "RDKit_EState_VSA8",
+    "RDKit_HallKierAlpha"
+  ],
+  "policy": "In-place agentic resume on externally evaluated runs is forbidden. This fork reuses training artifacts only; prior external metrics are not copied."
+}

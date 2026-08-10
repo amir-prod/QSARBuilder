@@ -83,13 +83,22 @@ def evaluate_baseline_model_cv(
     cv_folds: int = 5,
     random_seed: int = 42,
     run_dir: Path | None = None,
+    cv_splits: list[tuple[Any, Any]] | None = None,
 ) -> BaselineCVResult:
-    """K-fold CV on training data only using GA-selected features."""
+    """K-fold CV on training data only using GA-selected features.
+
+    If ``cv_splits`` is provided (list of (train_idx, val_idx)), those folds are
+    reused exactly — required for fair controlled estimator screening.
+    """
     X, y = _load_xy(train_path, selected_features)
-    kf = KFold(n_splits=cv_folds, shuffle=True, random_state=random_seed)
+    if cv_splits is None:
+        kf = KFold(n_splits=cv_folds, shuffle=True, random_state=random_seed)
+        splits = list(kf.split(X))
+    else:
+        splits = cv_splits
 
     fold_metrics: list[FoldMetrics] = []
-    for fold_idx, (tr_idx, val_idx) in enumerate(kf.split(X)):
+    for fold_idx, (tr_idx, val_idx) in enumerate(splits):
         model = build_estimator(model_config)
         X_tr, X_val = X.iloc[tr_idx], X.iloc[val_idx]
         y_tr, y_val = y.iloc[tr_idx], y.iloc[val_idx]
@@ -112,6 +121,7 @@ def evaluate_baseline_model_cv(
     fold_path = ""
     summary_path = ""
     if run_dir is not None:
+        Path(run_dir).mkdir(parents=True, exist_ok=True)
         fold_path = str(run_dir / "baseline_cv_metrics.csv")
         pd.DataFrame([f.model_dump() for f in fold_metrics]).to_csv(fold_path, index=False)
         summary_path = str(run_dir / "baseline_cv_summary.json")

@@ -1,0 +1,8 @@
+{
+  "agent_validation_fraction": 0.2,
+  "agent_dev_size": 16,
+  "agent_val_size": 4,
+  "protected_validation_available": true,
+  "random_seed": 42,
+  "limitation": "Protected agent-validation is a single holdout within development data, not nested CV. Repeated adaptive experimentation can overfit this set."
+}

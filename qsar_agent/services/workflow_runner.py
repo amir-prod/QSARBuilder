@@ -27,7 +27,6 @@ from qsar_agent.tools.branch_external_evaluation import (
     evaluate_branch_on_external_test,
     find_winning_branch,
     flatten_branches,
-    load_modeling_and_ad_from_artifacts,
     modeling_result_with_run_dir_paths,
     promote_branch_artifacts_to_run_dir,
 )
@@ -416,10 +415,11 @@ class WorkflowRunner:
                     activity_label=self.config.activity_column or "activity",
                     dataset_hash=dataset_hash,
                     config_snapshot=self.config.to_dict(),
+                    evaluate_external=False,
                 )
                 rf_branch = fallback_result.rf_branch
                 fallback_branches = list(fallback_result.fallback_branches)
-                branch_external_artifacts = list(fallback_result.branch_external_artifacts)
+                branch_external_artifacts = []
                 cross = fallback_result.cross_model_selection
                 if cross:
                     final_model_config = ModelConfig(**cross.final_model_config)
@@ -451,55 +451,143 @@ class WorkflowRunner:
                 )
                 self._complete_stage("model_fallback", msg)
 
-            # External evaluation: every completed branch gets scatter + Williams in its dir.
-            # Winner artifacts are promoted to run root (no second train for that branch).
+            # Resolve CV-selected winner branch (training evidence only).
+            branches = flatten_branches(rf_branch, *fallback_branches)
+            winner_branch = find_winning_branch(
+                branches,
+                winning_estimator=winning_estimator,
+                selected_features=winning_features,
+                winner_is_expansion=winner_is_expansion,
+                winner_expansion_label=winner_expansion_label,
+            ) or rf_branch
+            winning_features = list(
+                getattr(winner_branch.ga, "selected_features", None) or winning_features
+            )
+            if winner_branch.hpo_result.final_model_config:
+                final_model_config = ModelConfig(**winner_branch.hpo_result.final_model_config)
+
+            # Optional agentic improvement (training / agent-val only).
+            agentic_state = None
+            if self.config.agentic.enabled:
+                from qsar_agent.agentic.loop import AgenticImprovementLoop, maybe_create_provider
+
+                append_log(self.state.logs, "Starting agentic improvement loop (external test locked).")
+                provider = maybe_create_provider(self.config.agentic)
+                if provider is None:
+                    append_log(
+                        self.state.logs,
+                        "Agentic mode: no OpenAI API key; using labeled deterministic_fallback agents.",
+                    )
+                loop = AgenticImprovementLoop(
+                    run_dir=self.run_dir,
+                    workflow_config=self.config,
+                    hpo_config=hpo_cfg,
+                    development_train_path=Path(preprocessing.preprocessed_train_path),
+                    selected_features=winning_features,
+                    dataset_hash=dataset_hash,
+                    initial_estimator=winning_estimator,
+                    initial_final_selection=winner_branch.hpo_result.final_selection,
+                    provider=provider,
+                    grid_proposer=(
+                        (lambda **kwargs: propose_hyperparameter_grid(
+                            openai_model=hpo_cfg.openai_model or None, **kwargs
+                        ))
+                        if hpo_cfg.enabled
+                        else None
+                    ),
+                    log_callback=hpo_log,
+                )
+                agentic_state = loop.run()
+                self.artifact_paths["agent_workspace"] = str(self.run_dir / "agent_workspace")
+                if agentic_state.locked_experiment_id:
+                    from qsar_agent.agentic.ledger import get_experiment
+
+                    locked_exp = get_experiment(self.run_dir, agentic_state.locked_experiment_id)
+                    if locked_exp is not None and locked_exp.estimator:
+                        winning_estimator = locked_exp.estimator
+                        hpo_metadata["winning_estimator"] = winning_estimator
+                    if locked_exp is not None and locked_exp.selected_features:
+                        winning_features = list(locked_exp.selected_features)
+                    # Prefer matching branch if estimator/features align; else keep winner_branch
+                    matched = find_winning_branch(
+                        branches,
+                        winning_estimator=winning_estimator,
+                        selected_features=winning_features,
+                        winner_is_expansion=False,
+                        winner_expansion_label="",
+                    )
+                    if matched is not None:
+                        winner_branch = matched
+                        if winner_branch.hpo_result.final_model_config:
+                            final_model_config = ModelConfig(
+                                **winner_branch.hpo_result.final_model_config
+                            )
+
+            # Code-enforced lock before any external evaluation.
+            from qsar_agent.agentic.lock import assert_external_eval_allowed, mark_external_evaluated
+            from qsar_agent.agentic.ledger import save_project_state
+            from qsar_agent.services.model_lock_eval import ensure_model_locked
+
+            agentic_state = ensure_model_locked(
+                self.run_dir,
+                workflow_config=self.config,
+                dataset_hash=dataset_hash,
+                estimator=winning_estimator,
+                selected_features=winning_features,
+                final_model_config=final_model_config,
+                selection_rationale=(
+                    model_comparison_summary
+                    or "Locked deterministic winner selected using training CV only."
+                ),
+                selection_record={
+                    "winning_estimator": winning_estimator,
+                    "selected_features": winning_features,
+                    "winner_is_expansion": winner_is_expansion,
+                },
+                agentic_state=agentic_state,
+            )
+
+            # External evaluation: locked winner only (branch API preserves AD/scatter layout).
             self._start_stage("final_model")
             activity_label = self.config.activity_column or "activity"
-            if not branch_external_artifacts:
-                art, modeling, ad = evaluate_branch_on_external_test(
-                    rf_branch,
-                    train_path=preprocessing.preprocessed_train_path,
-                    test_path=preprocessing.preprocessed_test_path,
-                    activity_label=activity_label,
-                    dataset_hash=dataset_hash,
-                    config_snapshot=self.config.to_dict(),
-                    hpo_metadata=hpo_metadata,
-                )
-                branch_external_artifacts = [art]
-            else:
-                branches = flatten_branches(rf_branch, *fallback_branches)
-                winner_branch = find_winning_branch(
-                    branches,
-                    winning_estimator=winning_estimator,
-                    selected_features=winning_features,
-                    winner_is_expansion=winner_is_expansion,
-                    winner_expansion_label=winner_expansion_label,
-                ) or rf_branch
-                winner_art = next(
-                    (
-                        a
-                        for a in branch_external_artifacts
-                        if Path(a.branch_dir).resolve()
-                        == Path(winner_branch.branch_dir).resolve()
-                    ),
-                    None,
-                )
-                if winner_art is None:
-                    _, modeling, ad = evaluate_branch_on_external_test(
-                        winner_branch,
-                        train_path=preprocessing.preprocessed_train_path,
-                        test_path=preprocessing.preprocessed_test_path,
-                        activity_label=activity_label,
-                        dataset_hash=dataset_hash,
-                        config_snapshot=self.config.to_dict(),
-                        hpo_metadata=hpo_metadata,
-                    )
-                else:
-                    modeling, ad = load_modeling_and_ad_from_artifacts(
-                        winner_art, hpo_metadata=hpo_metadata
-                    )
+            assert_external_eval_allowed(agentic_state)
+
+            art, modeling, ad = evaluate_branch_on_external_test(
+                winner_branch,
+                train_path=preprocessing.preprocessed_train_path,
+                test_path=preprocessing.preprocessed_test_path,
+                activity_label=activity_label,
+                dataset_hash=dataset_hash,
+                config_snapshot=self.config.to_dict(),
+                hpo_metadata=hpo_metadata,
+            )
+            branch_external_artifacts = [art]
+            if Path(winner_branch.branch_dir).resolve() != self.run_dir.resolve():
                 promote_branch_artifacts_to_run_dir(winner_branch.branch_dir, self.run_dir)
                 modeling, ad = modeling_result_with_run_dir_paths(modeling, ad, self.run_dir)
+
+            locked_ext = self.run_dir / "locked_external"
+            locked_ext.mkdir(parents=True, exist_ok=True)
+            for name in (
+                "predictions.csv",
+                "model_metrics.json",
+                "prediction_scatter.png",
+                "williams_plot.png",
+                "applicability_domain.csv",
+                "final_model.joblib",
+            ):
+                src = self.run_dir / name
+                if src.exists():
+                    import shutil
+
+                    shutil.copy2(src, locked_ext / name)
+            save_json(
+                locked_ext / "lock_record.json",
+                agentic_state.lock_record.model_dump() if agentic_state.lock_record else {},
+            )
+            agentic_state = mark_external_evaluated(agentic_state)
+            agentic_state = agentic_state.model_copy(update={"status": "completed"})
+            save_project_state(self.run_dir, agentic_state)
 
             save_json(
                 self.run_dir / "branch_external_artifacts.json",
@@ -508,6 +596,7 @@ class WorkflowRunner:
             self.artifact_paths["branch_external_artifacts"] = str(
                 self.run_dir / "branch_external_artifacts.json"
             )
+            self.artifact_paths["locked_external"] = str(locked_ext)
             self.artifact_paths.update(
                 {
                     "predictions": modeling.predictions_path,

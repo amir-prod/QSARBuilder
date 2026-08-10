@@ -8,6 +8,11 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from qsar_agent.schemas.agentic import (
+    AgenticAcceptanceCriteria,
+    AgenticImprovementConfig,
+)
+
 
 class UMAPConfig(BaseModel):
     n_neighbors: int = 15
@@ -120,6 +125,7 @@ class WorkflowConfig(BaseModel):
     sfs_fixed_ga_expansion: SFSFixedGAExpansionSettings = Field(
         default_factory=SFSFixedGAExpansionSettings
     )
+    agentic: AgenticImprovementConfig = Field(default_factory=AgenticImprovementConfig)
     smiles_column: str = ""
     activity_column: str = ""
     id_column: str | None = None
@@ -127,6 +133,13 @@ class WorkflowConfig(BaseModel):
 
     def to_dict(self) -> dict[str, Any]:
         return self.model_dump()
+
+
+# Re-export for callers that import agentic settings from config.
+__all_agentic__ = (
+    "AgenticAcceptanceCriteria",
+    "AgenticImprovementConfig",
+)
 
 
 def _project_root() -> Path:

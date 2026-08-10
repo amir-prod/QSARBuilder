@@ -39,14 +39,18 @@ def run_model_fallback_if_needed(
     activity_label: str = "activity",
     dataset_hash: str = "",
     config_snapshot: dict[str, Any] | None = None,
+    evaluate_external: bool = False,
 ) -> ModelFallbackResult:
     """
     Try fallback estimators when RF HPO did not find an acceptable model.
 
-    Compares RF + all fallback branches (and any SFS-fixed GA expansions) and
-    returns the globally best candidate. When ``test_path`` is provided, also
-    fits each completed branch on train and writes scatter/Williams plots into
-    that branch directory.
+    Compares RF + all fallback branches (and any SFS-fixed GA expansions) using
+    training CV only and returns the globally best candidate.
+
+    External-test evaluation is disabled by default (``evaluate_external=False``).
+    Callers should evaluate only the locked winner after model selection.
+    Setting ``evaluate_external=True`` with a ``test_path`` restores the legacy
+    multi-branch external evaluation behavior (not recommended).
     """
     rf_acceptable = (
         rf_branch.hpo_result.final_selection is not None
@@ -96,6 +100,7 @@ def run_model_fallback_if_needed(
                 dataset_hash=dataset_hash,
                 config_snapshot=config_snapshot,
                 log_callback=log_callback,
+                evaluate_external=evaluate_external,
             )
             return ModelFallbackResult(
                 triggered=False,
@@ -115,6 +120,7 @@ def run_model_fallback_if_needed(
             dataset_hash=dataset_hash,
             config_snapshot=config_snapshot,
             log_callback=log_callback,
+            evaluate_external=evaluate_external,
         )
         return ModelFallbackResult(
             triggered=False,
@@ -180,6 +186,7 @@ def run_model_fallback_if_needed(
         dataset_hash=dataset_hash,
         config_snapshot=config_snapshot,
         log_callback=log_callback,
+        evaluate_external=evaluate_external,
     )
 
     return ModelFallbackResult(
@@ -204,8 +211,9 @@ def _maybe_evaluate_branches(
     dataset_hash: str,
     config_snapshot: dict[str, Any] | None,
     log_callback: Callable[[str], None] | None,
+    evaluate_external: bool = False,
 ) -> list[BranchExternalArtifacts]:
-    if test_path is None:
+    if not evaluate_external or test_path is None:
         return []
     branches = flatten_branches(*roots)
     if not branches:
