@@ -19,7 +19,9 @@ from qsar_agent.services.artifact_manager import file_hash, generate_run_id, get
 from qsar_agent.services.model_lock_eval import (
     ensure_model_locked,
     evaluate_locked_winner_external,
+    save_post_test_audit_criteria_snapshot,
 )
+from qsar_agent.services.post_test_audit import run_post_test_audit
 from qsar_agent.services.workflow_runner import _hpo_config_from_workflow
 
 
@@ -524,6 +526,8 @@ def run_agentic_only(
                     "was previously scored and is not an untouched independent external test "
                     "for this forked lineage."
                 )
+            # Freeze audit criteria before external unlock.
+            save_post_test_audit_criteria_snapshot(fork_dir, cfg.agentic.post_test_audit)
             agentic_state, modeling, ad = evaluate_locked_winner_external(
                 fork_dir,
                 agentic_state=agentic_state,
@@ -537,8 +541,11 @@ def run_agentic_only(
                 external_previously_evaluated=ext.external_previously_evaluated,
                 source_run_id=source_dir.name,
                 log_callback=log,
+                use_lock_record_config=True,
             )
             evaluated = True
+            audit = run_post_test_audit(fork_dir)
+            log(f"Post-test audit: {audit.primary_outcome}")
             artifact_paths.update(
                 {
                     "predictions": modeling.predictions_path,
@@ -546,6 +553,7 @@ def run_agentic_only(
                     "prediction_scatter": modeling.scatter_png_path,
                     "williams_plot": ad.williams_png_path,
                     "locked_external": str(fork_dir / "locked_external"),
+                    "post_test_audit": str(fork_dir / "locked_external" / "post_test_audit.json"),
                 }
             )
 

@@ -6,6 +6,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
+from qsar_agent.schemas.post_test_audit import PostTestAuditCriteria
+
 
 AllowedAction = Literal[
     "accept_model",
@@ -118,6 +120,8 @@ class AgenticImprovementConfig(BaseModel):
     hard_max_experiments: int = 20
     hard_max_retries: int = 2
     hard_max_candidates_per_grid: int = 60
+    # Frozen before external unlock for the lineage
+    post_test_audit: PostTestAuditCriteria = Field(default_factory=PostTestAuditCriteria)
 
 
 class ModelSpecification(BaseModel):

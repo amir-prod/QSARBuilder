@@ -277,6 +277,16 @@ The external test set is not used during:
 
 External evaluation requires `project_state.status == "model_locked"` with a lock record (experiment ID, configuration hash, timestamp, selection rationale). After external evaluation, the lineage is marked completed and further agentic optimization in that lineage is prohibited. Only the locked winner is scored on the external test (non-winning branches are not externally evaluated by default).
 
+### Post-lock stages (external eval → audit → remediation)
+
+After the winning experiment is locked, the pipeline runs three named stages:
+
+1. **Locked external evaluation** — Config is resolved **only** from the lock record / locked experiment (`estimator`, `selected_features`, hyperparameters). The configuration hash is recomputed and must match `lock_record.configuration_hash` before fitting; on mismatch evaluation is refused. Evaluation uses `evaluate_locked_winner_external` (not a rematched deterministic branch). Exact eval config is written to `locked_external/evaluated_config.json`.
+2. **Read-only PostTestAudit** — Diagnostics only: train/CV/agent-val/external metric table, R² gaps, seeded bootstrap CIs, AD in/out-domain subgroup metrics, residual/influential IDs, and random-vs-grouped CV comparison **only if** pre-lock artifacts exist (otherwise `unavailable`). Never retrains, retunes, changes features, or restarts the locked lineage. Outcomes: `external_validation_passed` | `external_validation_failed` plus optional diagnostic flags. Writes `locked_external/post_test_audit.json` and `.md`.
+3. **Remediation recommendations** — Structured recommendations only. On failure/severe flags, Streamlit offers **Start new improvement lineage**, which forks via the existing resume entrypoint. The locked model is never unlocked or mutated.
+
+`PostTestAuditCriteria` are frozen to `agent_workspace/post_test_audit_criteria.json` **before** external unlock and must not be edited after seeing external metrics for that lineage. Sidebar criteria controls apply only to new runs; completed runs show the frozen snapshot.
+
 ### UMAP is not clustering
 
 UMAP produces a 2D embedding; **KMeans** clusters that embedding (following the `examples/` reference code). Splitting is performed within each cluster to preserve chemical diversity.
@@ -330,7 +340,9 @@ Each run writes to `outputs/<run_id>/`:
 | `prediction_scatter.png` / `.svg` | Predicted vs experimental plot |
 | `applicability_domain.csv` | Per-compound AD classification |
 | `williams_plot.png` / `.svg` | Williams plot |
-| `locked_external/` | Post-lock external artifacts copy |
+| `locked_external/` | Post-lock external artifacts, `evaluated_config.json`, post-test audit |
+| `locked_external/post_test_audit.json` / `.md` | Read-only post-external audit (outcome, flags, CIs, recommendations) |
+| `agent_workspace/post_test_audit_criteria.json` | Frozen audit criteria snapshot (saved before external unlock) |
 | `agent_workspace/` | Project state, experiment ledger, summaries, agent report (when agentic runs) |
 | `run_manifest.json` | Reproducibility metadata |
 | `qsar_agent_run_<run_id>.zip` | Complete run archive |

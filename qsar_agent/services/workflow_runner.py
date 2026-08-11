@@ -24,11 +24,8 @@ from qsar_agent.services.artifact_manager import (
 )
 from qsar_agent.services.plotting import plot_sfs_r2
 from qsar_agent.tools.branch_external_evaluation import (
-    evaluate_branch_on_external_test,
     find_winning_branch,
     flatten_branches,
-    modeling_result_with_run_dir_paths,
-    promote_branch_artifacts_to_run_dir,
 )
 from qsar_agent.tools.dataset_validation import validate_dataset
 from qsar_agent.tools.descriptor_preprocessing import fit_descriptor_preprocessor
@@ -37,7 +34,7 @@ from qsar_agent.tools.hyperparameter_optimization import run_iterative_hyperpara
 from qsar_agent.tools.descriptor_calculation import calculate_descriptors
 from qsar_agent.tools.sequential_feature_selection import run_sequential_feature_selection
 from qsar_agent.tools.umap_split import create_umap_cluster_split
-from qsar_agent.schemas.model_fallback import BranchExternalArtifacts, ModelBranchResult
+from qsar_agent.schemas.model_fallback import ModelBranchResult
 from qsar_agent.tools.model_fallback import run_model_fallback_if_needed
 
 logger = get_logger()
@@ -376,7 +373,6 @@ class WorkflowRunner:
             model_comparison_summary = ""
             winner_is_expansion = False
             winner_expansion_label = ""
-            branch_external_artifacts: list[BranchExternalArtifacts] = []
             fallback_branches: list[ModelBranchResult] = []
             hpo_metadata.setdefault("winning_estimator", winning_estimator)
             hpo_metadata.setdefault("model_fallback_triggered", False)
@@ -524,9 +520,13 @@ class WorkflowRunner:
                             )
 
             # Code-enforced lock before any external evaluation.
-            from qsar_agent.agentic.lock import assert_external_eval_allowed, mark_external_evaluated
-            from qsar_agent.agentic.ledger import save_project_state
-            from qsar_agent.services.model_lock_eval import ensure_model_locked
+            from qsar_agent.agentic.lock import assert_external_eval_allowed
+            from qsar_agent.services.model_lock_eval import (
+                ConfigurationHashMismatchError,
+                ensure_model_locked,
+                evaluate_locked_winner_external,
+                save_post_test_audit_criteria_snapshot,
+            )
 
             agentic_state = ensure_model_locked(
                 self.run_dir,
@@ -543,59 +543,41 @@ class WorkflowRunner:
                     "winning_estimator": winning_estimator,
                     "selected_features": winning_features,
                     "winner_is_expansion": winner_is_expansion,
+                    "final_model_config": final_model_config.model_dump(),
                 },
                 agentic_state=agentic_state,
             )
 
-            # External evaluation: locked winner only (branch API preserves AD/scatter layout).
+            # Freeze post-test audit criteria before external unlock (lineage-immutable).
+            criteria_path = save_post_test_audit_criteria_snapshot(
+                self.run_dir, self.config.agentic.post_test_audit
+            )
+            self.artifact_paths["post_test_audit_criteria"] = str(criteria_path)
+
+            # Stage 1: locked external evaluation from lock-record config only.
             self._start_stage("final_model")
             activity_label = self.config.activity_column or "activity"
             assert_external_eval_allowed(agentic_state)
 
-            art, modeling, ad = evaluate_branch_on_external_test(
-                winner_branch,
-                train_path=preprocessing.preprocessed_train_path,
-                test_path=preprocessing.preprocessed_test_path,
-                activity_label=activity_label,
-                dataset_hash=dataset_hash,
-                config_snapshot=self.config.to_dict(),
-                hpo_metadata=hpo_metadata,
-            )
-            branch_external_artifacts = [art]
-            if Path(winner_branch.branch_dir).resolve() != self.run_dir.resolve():
-                promote_branch_artifacts_to_run_dir(winner_branch.branch_dir, self.run_dir)
-                modeling, ad = modeling_result_with_run_dir_paths(modeling, ad, self.run_dir)
+            try:
+                agentic_state, modeling, ad = evaluate_locked_winner_external(
+                    self.run_dir,
+                    agentic_state=agentic_state,
+                    train_path=Path(preprocessing.preprocessed_train_path),
+                    test_path=Path(preprocessing.preprocessed_test_path),
+                    dataset_hash=dataset_hash,
+                    config_snapshot=self.config.to_dict(),
+                    hpo_metadata=hpo_metadata,
+                    activity_label=activity_label,
+                    log_callback=hpo_log,
+                    use_lock_record_config=True,
+                )
+            except ConfigurationHashMismatchError as exc:
+                append_log(self.state.logs, f"External evaluation aborted: {exc}")
+                append_warning(self.warnings, str(exc))
+                raise
 
             locked_ext = self.run_dir / "locked_external"
-            locked_ext.mkdir(parents=True, exist_ok=True)
-            for name in (
-                "predictions.csv",
-                "model_metrics.json",
-                "prediction_scatter.png",
-                "williams_plot.png",
-                "applicability_domain.csv",
-                "final_model.joblib",
-            ):
-                src = self.run_dir / name
-                if src.exists():
-                    import shutil
-
-                    shutil.copy2(src, locked_ext / name)
-            save_json(
-                locked_ext / "lock_record.json",
-                agentic_state.lock_record.model_dump() if agentic_state.lock_record else {},
-            )
-            agentic_state = mark_external_evaluated(agentic_state)
-            agentic_state = agentic_state.model_copy(update={"status": "completed"})
-            save_project_state(self.run_dir, agentic_state)
-
-            save_json(
-                self.run_dir / "branch_external_artifacts.json",
-                [a.model_dump() for a in branch_external_artifacts],
-            )
-            self.artifact_paths["branch_external_artifacts"] = str(
-                self.run_dir / "branch_external_artifacts.json"
-            )
             self.artifact_paths["locked_external"] = str(locked_ext)
             self.artifact_paths.update(
                 {
@@ -610,6 +592,19 @@ class WorkflowRunner:
             self._start_stage("applicability_domain")
             self.artifact_paths["williams_plot"] = ad.williams_png_path
             self._complete_stage("applicability_domain")
+
+            # Stage 2–3: read-only post-test audit + remediation recommendations.
+            from qsar_agent.services.post_test_audit import run_post_test_audit
+
+            audit = run_post_test_audit(self.run_dir)
+            self.artifact_paths["post_test_audit"] = str(
+                locked_ext / "post_test_audit.json"
+            )
+            append_log(
+                self.state.logs,
+                f"Post-test audit: {audit.primary_outcome} "
+                f"(flags={list(audit.diagnostic_flags)})",
+            )
 
             self.state.warnings = self.warnings
             self.state.artifact_paths = self.artifact_paths

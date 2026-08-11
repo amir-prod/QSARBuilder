@@ -26,6 +26,7 @@ from qsar_agent.config import (
     load_env_file,
 )
 from qsar_agent.schemas.agentic import AgenticAcceptanceCriteria, AgenticImprovementConfig
+from qsar_agent.schemas.post_test_audit import PostTestAuditCriteria
 from qsar_agent.agentic.approvals import init_agentic_session_state, resolve_pending_approval
 from qsar_agent.schemas.workflow import StageStatus
 from qsar_agent.services.artifact_manager import generate_run_id, get_run_dir
@@ -194,6 +195,12 @@ def render_sidebar_config() -> WorkflowConfig:
             value=get_openai_model(),
             help="Used only when agentic mode is enabled and an API key is available.",
         )
+        st.markdown("**Post-test audit criteria** (frozen before external unlock)")
+        audit_min_ext_r2 = st.slider("Minimum external R²", 0.0, 1.0, 0.50, 0.05)
+        audit_max_cv_test_gap = st.slider("Max CV–test R² gap", 0.05, 0.5, 0.20, 0.01)
+        audit_min_ad = st.slider("Minimum AD coverage", 0.0, 1.0, 0.70, 0.05)
+        audit_bootstrap_n = st.number_input("Minimum bootstrap n", 5, 100, 20)
+        audit_subgroup_n = st.number_input("Minimum AD subgroup n", 2, 50, 5)
         if st.button("Stop agentic loop (next cycle)"):
             st.session_state.agentic_stop_requested = True
         pending = st.session_state.get("agentic_pending_approval")
@@ -309,6 +316,13 @@ def render_sidebar_config() -> WorkflowConfig:
                 minimum_mean_cv_r2=float(agentic_min_cv),
                 maximum_train_cv_gap=float(agentic_max_gap),
                 maximum_cv_r2_std=float(agentic_max_std),
+            ),
+            post_test_audit=PostTestAuditCriteria(
+                minimum_external_r2=float(audit_min_ext_r2),
+                maximum_cv_test_r2_gap=float(audit_max_cv_test_gap),
+                minimum_ad_coverage=float(audit_min_ad),
+                minimum_bootstrap_n=int(audit_bootstrap_n),
+                minimum_subgroup_n=int(audit_subgroup_n),
             ),
         ),
     )
@@ -540,6 +554,116 @@ def _render_branch_external_plots(
         st.caption(f"Plot not found for {row.get('label', 'branch')}.")
 
 
+def _render_post_test_audit_tab(run_dir: Path, artifacts: dict, config: WorkflowConfig | None = None) -> None:
+    st.subheader("Post-test audit (read-only)")
+    st.caption(
+        "Diagnostics only after locked external evaluation. "
+        "Does not retrain, retune, or unlock the locked model. "
+        "Remediation requires starting a new forked improvement lineage."
+    )
+    audit_path = Path(artifacts.get("post_test_audit") or (run_dir / "locked_external" / "post_test_audit.json"))
+    criteria_path = run_dir / "agent_workspace" / "post_test_audit_criteria.json"
+    if not criteria_path.exists():
+        criteria_path = run_dir / "locked_external" / "post_test_audit_criteria.json"
+    if criteria_path.exists():
+        st.markdown("**Frozen criteria snapshot** (not editable for this lineage)")
+        st.json(json.loads(criteria_path.read_text(encoding="utf-8")))
+    if not audit_path.exists():
+        st.info("No post-test audit yet (external evaluation not completed for this run).")
+        return
+    audit = json.loads(audit_path.read_text(encoding="utf-8"))
+    outcome = audit.get("primary_outcome", "")
+    if outcome == "external_validation_passed":
+        st.success(f"Primary outcome: `{outcome}`")
+    else:
+        st.error(f"Primary outcome: `{outcome}`")
+    flags = audit.get("diagnostic_flags") or []
+    if flags:
+        st.warning("Flags: " + ", ".join(f"`{f}`" for f in flags))
+    st.write(audit.get("explanation", ""))
+
+    rows = []
+    for label, key in (
+        ("Train", "train_metrics"),
+        ("CV", "cv_metrics"),
+        ("Agent-val", "agent_val_metrics"),
+        ("External", "external_metrics"),
+    ):
+        m = audit.get(key) or {}
+        rows.append(
+            {
+                "split": label,
+                "R²": m.get("mean_r2"),
+                "RMSE": m.get("rmse"),
+                "MAE": m.get("mae"),
+                "n": m.get("n"),
+                "source": m.get("source"),
+            }
+        )
+    st.dataframe(pd.DataFrame(rows), use_container_width=True)
+    st.write(
+        f"Train–CV R² gap: `{audit.get('train_cv_r2_gap')}` · "
+        f"CV–external R² gap: `{audit.get('cv_test_r2_gap')}` · "
+        f"AD coverage: `{audit.get('ad_coverage')}` · "
+        f"External n: `{audit.get('external_n')}`"
+    )
+
+    cis = audit.get("bootstrap_cis") or []
+    if cis:
+        st.subheader("Bootstrap CIs (external)")
+        st.dataframe(pd.DataFrame(cis), use_container_width=True)
+
+    sg_rows = []
+    for key in ("in_domain_metrics", "out_of_domain_metrics"):
+        sg = audit.get(key)
+        if sg:
+            sg_rows.append(sg)
+    if sg_rows:
+        st.subheader("AD subgroup metrics")
+        st.dataframe(pd.DataFrame(sg_rows), use_container_width=True)
+
+    grouped = audit.get("random_vs_grouped_cv") or {}
+    st.subheader("Random vs grouped CV")
+    st.write(f"Status: `{grouped.get('status', 'unavailable')}`")
+    if grouped.get("recommendation"):
+        st.caption(grouped["recommendation"])
+
+    recs = audit.get("recommendations") or []
+    if recs:
+        st.subheader("Recommendations")
+        for r in recs:
+            st.markdown(f"- {r}")
+
+    evidence = audit.get("evidence_paths") or {}
+    if evidence:
+        with st.expander("Evidence paths"):
+            st.json(evidence)
+
+    md_path = run_dir / "locked_external" / "post_test_audit.md"
+    if md_path.exists():
+        file_download_button("Download post_test_audit.md", str(md_path), "text/markdown")
+    file_download_button("Download post_test_audit.json", str(audit_path), "application/json")
+
+    # Stage 3: fork new lineage without mutating lock record
+    failed_or_severe = outcome == "external_validation_failed" or bool(flags)
+    if failed_or_severe:
+        st.subheader("Remediation")
+        st.caption(
+            "Start a new improvement lineage via fork/resume. "
+            "The locked model in this run remains unchanged. "
+            "External metrics are not used for selection in the fork."
+        )
+        if st.button("Start new improvement lineage", key="fork_new_lineage_from_audit"):
+            st.session_state.resume_source_run_id = run_dir.name
+            st.session_state.resume_evaluate_external = False
+            st.session_state.agentic_fork_requested = True
+            st.info(
+                f"Source run set to `{run_dir.name}`. "
+                "Enable Agentic Improvement in the sidebar, then use **Run agentic only** "
+                "below to fork a new lineage."
+            )
+
+
 def _render_agentic_tab(run_dir: Path, artifacts: dict) -> None:
     st.subheader("Agentic improvement")
     st.caption(
@@ -633,22 +757,25 @@ def render_results_dashboard() -> None:
             "Model",
             "Applicability Domain",
             "Agentic",
+            "Post-test audit",
             "Downloads",
             "Logs",
         ]
     )
 
     if report is None:
-        # Agentic-resume path: show Agentic / Downloads / Logs only.
+        # Agentic-resume path: show Agentic / Post-test audit / Downloads / Logs only.
         for i in range(7):
             with tabs[i]:
                 st.info("Full pipeline report not available (agentic-only resume). See Agentic tab.")
         with tabs[7]:
             _render_agentic_tab(run_dir, artifacts)
         with tabs[8]:
+            _render_post_test_audit_tab(run_dir, artifacts)
+        with tabs[9]:
             for name, path in artifacts.items():
                 file_download_button(f"Download {name}", path)
-        with tabs[9]:
+        with tabs[10]:
             ws = st.session_state.get("workflow_state")
             if ws and ws.logs:
                 st.text("\n".join(ws.logs))
@@ -783,13 +910,16 @@ def render_results_dashboard() -> None:
         _render_agentic_tab(run_dir, artifacts)
 
     with tabs[8]:
+        _render_post_test_audit_tab(run_dir, artifacts)
+
+    with tabs[9]:
         for name, path in artifacts.items():
             file_download_button(f"Download {name}", path)
         ws = st.session_state.get("workflow_state")
         if ws and ws.zip_path:
             file_download_button("Download complete run ZIP", ws.zip_path, "application/zip")
 
-    with tabs[9]:
+    with tabs[10]:
         ws = st.session_state.get("workflow_state")
         if ws and ws.logs:
             st.text("\n".join(ws.logs))
