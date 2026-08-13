@@ -21,6 +21,7 @@ from qsar_agent.agentic.lock import (
 )
 from qsar_agent.agentic.selection import select_best_experiment
 from qsar_agent.config import ModelConfig, WorkflowConfig
+from qsar_agent.models.registry import SUPPORTED_ESTIMATORS, normalize_estimator_name
 from qsar_agent.schemas.agentic import AgenticProjectState, ExperimentRecord, ModelLockRecord
 from qsar_agent.services.artifact_manager import save_json
 from qsar_agent.tools.applicability_domain import calculate_applicability_domain
@@ -47,6 +48,36 @@ def build_lock_config_snapshot(
         "selected_features": list(selected_features),
         "final_model_config": cfg,
     }
+
+
+def _pick_locked_estimator(
+    exp: Any,
+    selection: dict[str, Any],
+    snap: dict[str, Any],
+    changes: dict[str, Any],
+    final_cfg: dict[str, Any],
+) -> str:
+    """Prefer a registry estimator name over expansion display labels."""
+    candidates = [
+        final_cfg.get("estimator"),
+        selection.get("final_model_config", {}).get("estimator")
+        if isinstance(selection.get("final_model_config"), dict)
+        else None,
+        exp.estimator if exp is not None else None,
+        selection.get("winning_estimator"),
+        changes.get("estimator"),
+        snap.get("estimator"),
+    ]
+    first_nonempty = ""
+    for raw in candidates:
+        if not raw:
+            continue
+        name = normalize_estimator_name(str(raw))
+        if not first_nonempty:
+            first_nonempty = name
+        if name in SUPPORTED_ESTIMATORS:
+            return name
+    return first_nonempty
 
 
 def resolve_locked_eval_config(
@@ -80,13 +111,7 @@ def resolve_locked_eval_config(
     if not isinstance(final_cfg, dict):
         final_cfg = {}
 
-    estimator = (
-        (exp.estimator if exp and exp.estimator else None)
-        or selection.get("winning_estimator")
-        or final_cfg.get("estimator")
-        or changes.get("estimator")
-        or snap.get("estimator")
-    )
+    estimator = _pick_locked_estimator(exp, selection, snap, changes, final_cfg)
     if not estimator:
         raise ExternalEvalLockError("Locked experiment has no estimator.")
 
@@ -191,16 +216,26 @@ def verify_lock_configuration_hash(
     # Synthetic / selection-only lock (e.g. deterministic_winner with no ledger file)
     selection = dict(lock.selection_record or {})
     if selection.get("final_model_config") and selection.get("selected_features"):
-        snap = build_lock_config_snapshot(
-            estimator=str(selection.get("winning_estimator") or selection.get("estimator") or ""),
-            selected_features=list(selection.get("selected_features") or []),
-            final_model_config=selection["final_model_config"],
-        )
-        recomputed = configuration_hash(snap)
-        if recomputed != expected:
+        features = list(selection.get("selected_features") or [])
+        fc = selection["final_model_config"]
+        raw_est = str(selection.get("winning_estimator") or selection.get("estimator") or "")
+        acceptable = set()
+        for est in (raw_est, normalize_estimator_name(raw_est)):
+            if not est:
+                continue
+            acceptable.add(
+                configuration_hash(
+                    build_lock_config_snapshot(
+                        estimator=est,
+                        selected_features=features,
+                        final_model_config=fc,
+                    )
+                )
+            )
+        if expected not in acceptable:
             raise ConfigurationHashMismatchError(
                 f"Configuration hash mismatch before external evaluation: "
-                f"lock_record={expected[:16]}… selection={recomputed[:16]}…."
+                f"lock_record={expected[:16]}… selection={next(iter(acceptable), '')[:16]}…."
             )
         return expected
 
@@ -226,6 +261,20 @@ def ensure_model_locked(
     agentic_state: AgenticProjectState | None = None,
 ) -> AgenticProjectState:
     """Ensure project_state is model_locked before external evaluation."""
+    estimator = normalize_estimator_name(estimator) or estimator
+    if isinstance(final_model_config, ModelConfig):
+        cfg_est = normalize_estimator_name(final_model_config.estimator)
+        if cfg_est and cfg_est != final_model_config.estimator:
+            final_model_config = final_model_config.model_copy(update={"estimator": cfg_est})
+        estimator = cfg_est or estimator
+    elif isinstance(final_model_config, dict):
+        final_model_config = dict(final_model_config)
+        cfg_est = normalize_estimator_name(
+            str(final_model_config.get("estimator") or estimator)
+        )
+        if cfg_est:
+            final_model_config["estimator"] = cfg_est
+            estimator = cfg_est
     state = agentic_state or load_project_state(run_dir)
     if state is not None and state.status == "model_locked" and state.lock_record is not None:
         # Enrich selection_record with eval config if missing (helps hash verify + resolve)
@@ -303,7 +352,7 @@ def ensure_model_locked(
         acceptance_criteria=workflow_config.agentic.acceptance,
     )
     sel_rec = dict(selection_record or {})
-    sel_rec.setdefault("winning_estimator", estimator)
+    sel_rec["winning_estimator"] = estimator
     sel_rec.setdefault("selected_features", selected_features)
     sel_rec.setdefault(
         "final_model_config",

@@ -12,6 +12,7 @@ from qsar_agent.agents.qsar_agent import (
 )
 from qsar_agent.config import ModelConfig, WorkflowConfig
 from qsar_agent.logging_utils import append_log, append_warning, get_logger
+from qsar_agent.models.registry import normalize_estimator_name
 from qsar_agent.schemas.hyperparameter_optimization import HPOConfig, OverfittingThresholds
 from qsar_agent.schemas.workflow import StageStatus, WorkflowState
 from qsar_agent.services.artifact_manager import (
@@ -461,6 +462,15 @@ class WorkflowRunner:
             )
             if winner_branch.hpo_result.final_model_config:
                 final_model_config = ModelConfig(**winner_branch.hpo_result.final_model_config)
+            # Display labels like "PLSRegression (sfs_fixed_ga_plus2)" are not registry names.
+            winning_estimator = normalize_estimator_name(
+                winner_branch.estimator or winning_estimator
+            )
+            if final_model_config.estimator != winning_estimator:
+                final_model_config = final_model_config.model_copy(
+                    update={"estimator": winning_estimator}
+                )
+            hpo_metadata["winning_estimator"] = winning_estimator
 
             # Optional agentic improvement (training / agent-val only).
             agentic_state = None
@@ -500,7 +510,7 @@ class WorkflowRunner:
 
                     locked_exp = get_experiment(self.run_dir, agentic_state.locked_experiment_id)
                     if locked_exp is not None and locked_exp.estimator:
-                        winning_estimator = locked_exp.estimator
+                        winning_estimator = normalize_estimator_name(locked_exp.estimator)
                         hpo_metadata["winning_estimator"] = winning_estimator
                     if locked_exp is not None and locked_exp.selected_features:
                         winning_features = list(locked_exp.selected_features)

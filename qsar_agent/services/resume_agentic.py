@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 from qsar_agent.agentic.loop import AgenticImprovementLoop, maybe_create_provider
 from qsar_agent.agents.qsar_agent import propose_hyperparameter_grid
 from qsar_agent.config import ModelConfig, WorkflowConfig
+from qsar_agent.models.registry import normalize_estimator_name
 from qsar_agent.schemas.agentic import AgenticImprovementConfig, AgenticProjectState
 from qsar_agent.schemas.hyperparameter_optimization import FinalModelSelection, HPOConfig
 from qsar_agent.services.artifact_manager import file_hash, generate_run_id, get_run_dir, save_json
@@ -146,10 +147,8 @@ def _load_json(path: Path) -> dict[str, Any]:
 def _normalize_estimator(label: str, final_model_config: dict[str, Any]) -> str:
     cfg_est = final_model_config.get("estimator")
     if isinstance(cfg_est, str) and cfg_est.strip():
-        return cfg_est.strip()
-    # Strip expansion suffixes like "SVR (sfs_fixed_ga_plus2)"
-    base = label.split("(")[0].strip()
-    return base or label
+        return normalize_estimator_name(cfg_est)
+    return normalize_estimator_name(label) or label
 
 
 def load_winner_from_run(run_dir: Path) -> WinnerSnapshot:

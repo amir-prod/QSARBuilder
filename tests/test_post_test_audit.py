@@ -91,6 +91,49 @@ def test_evaluate_uses_lock_record_config_and_writes_evaluated_config(tmp_path: 
     assert ad is not None
 
 
+def test_evaluate_strips_expansion_display_label(tmp_path: Path):
+    train_path, test_path, cols = _toy_matrices(tmp_path)
+    run_dir = tmp_path / "run_label"
+    run_dir.mkdir()
+    cfg = WorkflowConfig(agentic=AgenticImprovementConfig(enabled=False))
+    model_cfg = ModelConfig(
+        estimator="PLSRegression",
+        params={"n_components": 2, "scale": False, "max_iter": 500},
+        random_state=0,
+        n_jobs=1,
+    )
+    state = ensure_model_locked(
+        run_dir,
+        workflow_config=cfg,
+        dataset_hash="h",
+        estimator="PLSRegression (sfs_fixed_ga_plus2)",
+        selected_features=cols,
+        final_model_config=model_cfg,
+        selection_rationale="expansion winner",
+        selection_record={
+            "winning_estimator": "PLSRegression (sfs_fixed_ga_plus2)",
+            "selected_features": cols,
+            "final_model_config": model_cfg.model_dump(),
+            "winner_is_expansion": True,
+            "winner_expansion_label": "sfs_fixed_ga_plus2",
+        },
+    )
+    save_post_test_audit_criteria_snapshot(run_dir, cfg.agentic.post_test_audit)
+    state, modeling, _ad = evaluate_locked_winner_external(
+        run_dir,
+        agentic_state=state,
+        train_path=train_path,
+        test_path=test_path,
+        use_lock_record_config=True,
+    )
+    evaluated = json.loads(
+        (run_dir / "locked_external" / "evaluated_config.json").read_text(encoding="utf-8")
+    )
+    assert evaluated["estimator"] == "PLSRegression"
+    assert "(" not in evaluated["estimator"]
+    assert modeling is not None
+
+
 def test_hash_mismatch_fails_safely(tmp_path: Path):
     train_path, test_path, cols = _toy_matrices(tmp_path)
     run_dir = tmp_path / "run_bad"
