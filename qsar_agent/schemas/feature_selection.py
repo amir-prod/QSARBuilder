@@ -11,6 +11,8 @@ class SFSResultRow(BaseModel):
     mean_cv_r2: float
     std_cv_r2: float
     selected_features: list[str]
+    val_r2: float | None = None
+    combined_r2: float | None = None
 
 
 class SFSResult(BaseModel):
@@ -27,6 +29,9 @@ class FeatureCountSelection(BaseModel):
     best_feature_count: int
     selected_feature_count: int
     selected_cv_r2: float
+    best_combined_r2: float | None = None
+    selected_combined_r2: float | None = None
+    selected_val_r2: float | None = None
     explanation: str
     selection_json_path: str
     explanation_md_path: str

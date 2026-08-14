@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from deap import base, creator, tools
+from sklearn.metrics import r2_score
 from sklearn.model_selection import cross_val_score
 
 from qsar_agent.config import GAConfig, ModelConfig
@@ -16,6 +17,7 @@ from qsar_agent.schemas.feature_selection import GAResult
 from qsar_agent.services import build_estimator
 from qsar_agent.services.artifact_manager import save_json
 from qsar_agent.services.plotting import plot_ga_convergence
+from qsar_agent.tools.combined_score import combined_r2
 from qsar_agent.tools.descriptor_calculation import META_COLUMNS
 
 # DEAP creator can only be registered once per process
@@ -37,16 +39,18 @@ def run_genetic_algorithm(
     ga_config: GAConfig | None = None,
     model_config: ModelConfig | None = None,
     fixed_features: list[str] | None = None,
+    val_path: str | Path | None = None,
 ) -> GAResult:
     """
-    GA feature selection optimizing CV R² on training data only.
+    GA feature selection optimizing combined CV + validation R².
+
+    Search uses K-fold CV on training data. When ``val_path`` is provided,
+    fitness is 0.5·CV R² + 0.5·validation R² (model fit on full train).
+    The external test set is never used.
 
     When ``fixed_features`` is provided, those descriptors are always included
     and GA selects exactly ``number_of_features`` additional descriptors from
     the remaining pool. Fitness evaluates fixed ∪ selected.
-
-    Corrected from examples/ga_feature_selection_regression.py which used the
-    external test set for fitness (data leakage).
     """
     cfg = ga_config or GAConfig()
     random.seed(cfg.random_seed)
@@ -54,6 +58,10 @@ def run_genetic_algorithm(
 
     df = pd.read_csv(train_path)
     X, y = _get_xy(df)
+    X_val = y_val = None
+    if val_path is not None:
+        val_df = pd.read_csv(val_path)
+        X_val, y_val = _get_xy(val_df)
     all_feature_names = X.columns.tolist()
     fixed = list(fixed_features or [])
 
@@ -105,7 +113,18 @@ def run_genetic_algorithm(
             scoring="r2",
             n_jobs=cfg.n_jobs,
         )
-        return (float(scores.mean()),)
+        cv_r2 = float(scores.mean())
+        val_score = None
+        if X_val is not None and y_val is not None:
+            val_model = build_estimator(estimator_template)
+            val_model.fit(X_sel.values, y)
+            names = list(fixed) + [chromosome_names[i] for i in selected]
+            missing = [n for n in names if n not in X_val.columns]
+            if missing:
+                return (-1000.0,)
+            y_val_pred = val_model.predict(X_val[names].values)
+            val_score = float(r2_score(y_val, y_val_pred))
+        return (combined_r2(cv_r2, val_score),)
 
     toolbox = base.Toolbox()
 

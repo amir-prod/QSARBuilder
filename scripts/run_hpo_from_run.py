@@ -9,8 +9,9 @@ Required artifacts in the run directory:
   - preprocessed_train_descriptors.csv
   - ga_selected_features.json  (or selected_features in run_manifest.json)
 
-Optional (only if --run-final-model):
-  - preprocessed_test_descriptors.csv
+Optional:
+  - preprocessed_val_descriptors.csv (used with CV for HPO selection when present)
+  - preprocessed_test_descriptors.csv (only if --run-final-model)
 
 Example:
   python scripts/run_hpo_from_run.py outputs/acb0edb8584e
@@ -242,9 +243,11 @@ def main() -> None:
     run_dir = _resolve_run_dir(args.run_dir, args.run_id, args.output_root)
 
     train_path = run_dir / "preprocessed_train_descriptors.csv"
+    val_path = run_dir / "preprocessed_val_descriptors.csv"
     test_path = run_dir / "preprocessed_test_descriptors.csv"
     if not train_path.exists():
         raise SystemExit(f"Missing training data: {train_path}")
+    val_arg = val_path if val_path.exists() else None
 
     features = _load_selected_features(run_dir)
     model_cfg = _load_model_config(run_dir)
@@ -291,6 +294,7 @@ def main() -> None:
         log_callback=log_callback,
         n_features=n_features,
         n_train_samples=n_train,
+        val_path=val_arg,
     )
 
     _print_round_proposals(result, skip_agent_proposal=use_openai_proposer)
@@ -322,9 +326,12 @@ def main() -> None:
             features,
             final_cfg,
             hpo_metadata=hpo_metadata,
+            val_path=val_arg,
         )
         print(f"\nFinal model saved: {modeling.model_path}")
         print(f"Train R²: {modeling.train_metrics.r2:.4f}")
+        if modeling.val_metrics is not None:
+            print(f"Val R²:   {modeling.val_metrics.r2:.4f}")
         print(f"Test R²:  {modeling.test_metrics.r2:.4f}")
 
 

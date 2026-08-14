@@ -22,6 +22,7 @@ def calculate_applicability_domain(
     predictions_path: str | Path,
     run_dir: Path,
     selected_features: list[str],
+    val_path: str | Path | None = None,
 ) -> ApplicabilityDomainResult:
     """
     Compute Williams plot diagnostics using leverage and standardized residuals.
@@ -31,6 +32,7 @@ def calculate_applicability_domain(
     """
     train_df = pd.read_csv(train_path)
     test_df = pd.read_csv(test_path)
+    val_df = pd.read_csv(val_path) if val_path is not None else None
     pred_df = pd.read_csv(predictions_path)
 
     X_train = train_df[selected_features].values
@@ -47,6 +49,11 @@ def calculate_applicability_domain(
 
     h_train = leverage(X_train_aug)
     h_test = leverage(X_test_aug)
+    h_val = None
+    if val_df is not None:
+        X_val = val_df[selected_features].values
+        X_val_aug = np.column_stack([np.ones(len(X_val)), X_val])
+        h_val = leverage(X_val_aug)
 
     n_train = len(X_train)
     p = len(selected_features)
@@ -61,11 +68,16 @@ def calculate_applicability_domain(
 
     train_id_to_lev = dict(zip(train_df["compound_id"], h_train))
     test_id_to_lev = dict(zip(test_df["compound_id"], h_test))
+    val_id_to_lev = (
+        dict(zip(val_df["compound_id"], h_val)) if val_df is not None and h_val is not None else {}
+    )
 
     records = []
     for i, row in pred_df.iterrows():
         if row["split"] == "train":
             lev = train_id_to_lev[row["compound_id"]]
+        elif row["split"] == "val":
+            lev = val_id_to_lev[row["compound_id"]]
         else:
             lev = test_id_to_lev[row["compound_id"]]
 
@@ -97,8 +109,10 @@ def calculate_applicability_domain(
     ad_df.to_csv(ad_path, index=False)
 
     train_in = ad_df[(ad_df["split"] == "train") & ad_df["in_domain"]]
+    val_in = ad_df[(ad_df["split"] == "val") & ad_df["in_domain"]]
     test_in = ad_df[(ad_df["split"] == "test") & ad_df["in_domain"]]
     n_train = len(ad_df[ad_df["split"] == "train"])
+    n_val = len(ad_df[ad_df["split"] == "val"])
     n_test = len(ad_df[ad_df["split"] == "test"])
 
     high_lev_ids = ad_df[ad_df["leverage"] > h_star]["compound_id"].tolist()
@@ -107,6 +121,8 @@ def calculate_applicability_domain(
     summary = ApplicabilityDomainSummary(
         train_in_domain_count=len(train_in),
         train_in_domain_pct=100 * len(train_in) / n_train if n_train else 0,
+        val_in_domain_count=len(val_in),
+        val_in_domain_pct=100 * len(val_in) / n_val if n_val else 0,
         test_in_domain_count=len(test_in),
         test_in_domain_pct=100 * len(test_in) / n_test if n_test else 0,
         warning_leverage=float(h_star),

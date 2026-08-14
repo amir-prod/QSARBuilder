@@ -2,7 +2,7 @@
 
 **QSAR Agent** is a Streamlit application for building regression QSAR models from SMILES and experimental activity data. It orchestrates a reproducible, leakage-aware workflow using [DescJocky](https://github.com/StephenSzwiec/descjocky) molecular descriptors (with optional external descriptor merge), UMAP-based cluster splitting, sequential and genetic feature selection, and Random Forest modeling—with optional OpenAI agent coordination for feature-count decisions.
 
-> **Important:** External-test performance is evaluated only after feature selection and final model training. The test set is never used for preprocessing, tuning, or feature selection.
+> **Important:** External-test performance is evaluated only after feature selection and final model training. The test set is never used for preprocessing, tuning, or feature selection. A held-out validation set (default 10%) is used together with training cross-validation for feature-count selection, GA fitness, and HPO/model selection.
 
 ## Features
 
@@ -10,13 +10,13 @@
 - RDKit validation and canonicalization of SMILES
 - DescJocky descriptor calculation (selectable backends; optional xtb geometry optimization)
 - Optional external descriptor CSV merge on `compound_id`
-- UMAP + KMeans cluster-aware train/external-test split
+- UMAP + KMeans cluster-aware train/validation/external-test split
 - Train-only descriptor preprocessing (imputation, variance/correlation filtering, scaling)
-- Sequential forward feature selection (mlxtend) with CV R² curves
+- Sequential forward feature selection (mlxtend) with CV R² and validation R² curves
 - One-standard-error rule for optimal descriptor count (OpenAI explains the choice)
 - DEAP genetic algorithm for final descriptor subset optimization
-- Agent-guided hyperparameter optimization (up to 3 rounds, training CV only)
-- Random Forest final model with train and external-test metrics
+- Agent-guided hyperparameter optimization (up to 3 rounds; search on training CV, selection uses CV + validation)
+- Random Forest final model with train, validation, and external-test metrics
 - Williams applicability-domain plot
 - Per-run artifact export and ZIP download
 
@@ -196,7 +196,11 @@ Near-constant descriptors are removed using raw training-set standard deviation 
 
 ### Preprocessing fitted only on training data
 
-Missing-value thresholds, imputation values, correlation decisions, and scaling parameters are learned from the training set only and applied unchanged to the external test set.
+Missing-value thresholds, imputation values, correlation decisions, and scaling parameters are learned from the training set only and applied unchanged to the validation and external test sets.
+
+### Validation set (development) vs external test
+
+Default split is **80% train / 10% validation / 10% test**. Feature selection, GA fitness, and HPO/model selection use **training K-fold CV plus held-out validation** (combined score = 0.5·CV R² + 0.5·val R²). Validation metrics are slightly optimistic because they influenced selection.
 
 ### External test set isolation
 
@@ -204,9 +208,9 @@ The external test set is not used during:
 
 - Descriptor preprocessing decisions
 - Sequential feature selection
-- Feature-count selection (one-standard-error rule)
+- Feature-count selection (one-standard-error rule on combined CV+val score)
 - Genetic algorithm fitness
-- Hyperparameter tuning
+- Hyperparameter search and model selection
 
 ### UMAP is not clustering
 
@@ -218,7 +222,7 @@ The Williams plot is a classical descriptor-space diagnostic based on leverage a
 
 ### Corrections from reference `examples/` code
 
-- **GA fitness:** Cross-validation on the training set only (the example GA used the test set for fitness—data leakage).
+- **GA fitness:** Combined training CV R² and held-out validation R² (the example GA used the test set for fitness—data leakage).
 - **Preprocessing order:** Near-constant removal before scaling (examples scaled first).
 - **SFS efficiency:** A single mlxtend SFS fit up to `max_features` reads all subset sizes from `sfs.subsets_` (the example `build_each_model` pattern), rather than re-fitting SFS separately for each feature count.
 
@@ -241,10 +245,10 @@ Each run writes to `outputs/<run_id>/`:
 | `external_descriptors.csv` | Copied user-provided external descriptors (if used) |
 | `descriptor_calculation_report.json` / `.md` | Backends used, 3D status, column list, warnings |
 | `descjocky/` | DescJocky working files (SMILES, SDFs, backend CSV) |
-| `train_set_raw_descriptors.csv` / `test_set_raw_descriptors.csv` | Post-split descriptor sets |
+| `train_set_raw_descriptors.csv` / `val_set_raw_descriptors.csv` / `test_set_raw_descriptors.csv` | Post-split descriptor sets |
 | `split_assignments.csv` / `umap_coordinates.csv` | Split and embedding coordinates |
 | `umap_split.png` / `.svg` | UMAP split figure |
-| `preprocessed_train_descriptors.csv` / `preprocessed_test_descriptors.csv` | Scaled descriptor matrices |
+| `preprocessed_train_descriptors.csv` / `preprocessed_val_descriptors.csv` / `preprocessed_test_descriptors.csv` | Scaled descriptor matrices |
 | `descriptor_preprocessor.joblib` | Fitted preprocessing pipeline |
 | `descriptor_preprocessing_report.json` | Preprocessing summary |
 | `removed_descriptors.csv` | Descriptors removed and reasons |
@@ -270,7 +274,8 @@ Key defaults (adjustable in the Streamlit sidebar):
 
 | Setting | Default |
 |---------|---------|
-| External test fraction | 0.20 |
+| Validation fraction | 0.10 |
+| External test fraction | 0.10 |
 | Random seed | 42 |
 | Missing-value threshold | 20% |
 | Near-constant std threshold | 0.01 |

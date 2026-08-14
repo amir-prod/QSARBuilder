@@ -37,6 +37,7 @@ from qsar_agent.schemas.hyperparameter_optimization import (
 from qsar_agent.services import build_estimator
 from qsar_agent.services.artifact_manager import save_json
 from qsar_agent.services.plotting import plot_hpo_round_performance, plot_hpo_summary
+from qsar_agent.tools.combined_score import combined_r2
 from qsar_agent.tools.overfitting_assessment import assess_overfitting
 
 # Re-export registry helpers used by tests and agents.
@@ -58,6 +59,26 @@ def _load_xy(train_path: str | Path, selected_features: list[str]) -> tuple[pd.D
         if feat not in train_df.columns:
             raise ValueError(f"Selected feature not in training data: {feat}")
     return train_df[selected_features], train_df["activity"]
+
+
+def _score_holdout_val(
+    train_path: str | Path,
+    val_path: str | Path | None,
+    selected_features: list[str],
+    model_config: ModelConfig | None,
+) -> float | None:
+    """Fit on full train and score the held-out validation set. Never uses test."""
+    if val_path is None:
+        return None
+    X_train, y_train = _load_xy(train_path, selected_features)
+    X_val, y_val = _load_xy(val_path, selected_features)
+    model = build_estimator(model_config)
+    model.fit(X_train, y_train)
+    return float(r2_score(y_val, model.predict(X_val)))
+
+
+def _combined_from_summary(summary: CVSummary) -> float:
+    return combined_r2(summary.mean_cv_r2, summary.holdout_val_r2)
 
 
 def _summary_from_folds(folds: list[FoldMetrics]) -> CVSummary:
@@ -257,7 +278,7 @@ def select_final_model_config(
     thresholds: OverfittingThresholds,
     estimator: str = "RandomForestRegressor",
 ) -> FinalModelSelection:
-    """Choose final configuration using training CV only."""
+    """Choose final configuration using combined CV + holdout-validation R²."""
     candidates: list[dict[str, Any]] = [
         {
             "source": "baseline",
@@ -278,39 +299,46 @@ def select_final_model_config(
 
     acceptable = [c for c in candidates if c["assessment"].is_acceptable]
     pool = acceptable if acceptable else candidates
-    best_cv = max(c["summary"].mean_cv_r2 for c in pool)
-    best_std = next(c["summary"].std_cv_r2 for c in pool if c["summary"].mean_cv_r2 == best_cv)
-    se_threshold = best_cv - best_std
+    best = max(pool, key=lambda c: _combined_from_summary(c["summary"]))
+    best_combo = _combined_from_summary(best["summary"])
+    se_threshold = best_combo - best["summary"].std_cv_r2
 
     within_se = [
-        c for c in pool if c["summary"].mean_cv_r2 >= se_threshold - 1e-9
+        c for c in pool if _combined_from_summary(c["summary"]) >= se_threshold - 1e-9
     ]
     chosen = min(
         within_se,
         key=lambda c: model_simplicity_score(estimator, c["params"]),
     )
+    chosen_combo = _combined_from_summary(chosen["summary"])
 
     warning = ""
     if not acceptable:
         warning = (
-            "No acceptable model found after HPO; selected highest CV R² candidate. "
+            "No acceptable model found after HPO; selected highest combined R² candidate. "
             "Final model may still be overfit, unstable, or poor-performing."
         )
     elif chosen not in acceptable:
         warning = "Selected model from acceptable pool with one-SE simplicity rule."
 
+    val_txt = (
+        f", holdout val R²={chosen['summary'].holdout_val_r2:.4f}"
+        if chosen["summary"].holdout_val_r2 is not None
+        else ""
+    )
     rationale = (
-        f"Selected {chosen['source']} with mean CV R²={chosen['summary'].mean_cv_r2:.4f}, "
+        f"Selected {chosen['source']} with combined R²={chosen_combo:.4f} "
+        f"(mean CV R²={chosen['summary'].mean_cv_r2:.4f}{val_txt}), "
         f"train-CV gap={chosen['summary'].train_cv_r2_gap:.4f}, "
         f"status={chosen['assessment'].status}. "
     )
     if acceptable:
         rationale += (
             f"Preferred acceptable models ({len(acceptable)}); applied one-SE rule "
-            f"(threshold CV R² >= {se_threshold:.4f}) with simplicity tie-break."
+            f"on combined R² (threshold >= {se_threshold:.4f}) with simplicity tie-break."
         )
     else:
-        rationale += "No acceptable models; chose best CV R² with warning."
+        rationale += "No acceptable models; chose best combined R² with warning."
 
     source: ModelSource = chosen["source"]  # type: ignore[assignment]
 
@@ -325,6 +353,8 @@ def select_final_model_config(
             {
                 "source": c["source"],
                 "mean_cv_r2": c["summary"].mean_cv_r2,
+                "holdout_val_r2": c["summary"].holdout_val_r2,
+                "combined_r2": _combined_from_summary(c["summary"]),
                 "status": c["assessment"].status,
                 "acceptable": c["assessment"].is_acceptable,
             }
@@ -371,28 +401,35 @@ def select_best_across_models(
 
     acceptable = [c for c in pool_items if c["assessment"].is_acceptable]
     pool = acceptable if acceptable else pool_items
-    best_cv = max(c["summary"].mean_cv_r2 for c in pool)
-    best_std = next(
-        c["summary"].std_cv_r2 for c in pool if c["summary"].mean_cv_r2 == best_cv
-    )
-    se_threshold = best_cv - best_std
+    best = max(pool, key=lambda c: _combined_from_summary(c["summary"]))
+    best_combo = _combined_from_summary(best["summary"])
+    se_threshold = best_combo - best["summary"].std_cv_r2
 
-    within_se = [c for c in pool if c["summary"].mean_cv_r2 >= se_threshold - 1e-9]
+    within_se = [
+        c for c in pool if _combined_from_summary(c["summary"]) >= se_threshold - 1e-9
+    ]
     chosen = min(
         within_se,
         key=lambda c: model_simplicity_score(c["base_estimator"], c["params"]),
     )
+    chosen_combo = _combined_from_summary(chosen["summary"])
 
     warning = ""
     if not acceptable:
         warning = (
-            "No acceptable model found across estimators; selected highest CV R² candidate. "
+            "No acceptable model found across estimators; selected highest combined R² candidate. "
             "Final model may still be overfit, unstable, or poor-performing."
         )
 
+    val_txt = (
+        f", holdout val R²={chosen['summary'].holdout_val_r2:.4f}"
+        if chosen["summary"].holdout_val_r2 is not None
+        else ""
+    )
     rationale = (
         f"Selected {chosen['estimator']} ({chosen['source']}) with "
-        f"mean CV R²={chosen['summary'].mean_cv_r2:.4f}, "
+        f"combined R²={chosen_combo:.4f} "
+        f"(mean CV R²={chosen['summary'].mean_cv_r2:.4f}{val_txt}), "
         f"train-CV gap={chosen['summary'].train_cv_r2_gap:.4f}, "
         f"status={chosen['assessment'].status}. "
     )
@@ -400,12 +437,12 @@ def select_best_across_models(
         rationale += (
             f"Compared {len(pool_items)} model branch(es); "
             f"{len(acceptable)} acceptable; applied one-SE rule "
-            f"(threshold CV R² >= {se_threshold:.4f}) with simplicity tie-break."
+            f"on combined R² (threshold >= {se_threshold:.4f}) with simplicity tie-break."
         )
     else:
         rationale += (
             f"Compared {len(pool_items)} model branch(es); "
-            "no acceptable models; chose best CV R² with warning."
+            "no acceptable models; chose best combined R² with warning."
         )
 
     compared_models = [
@@ -413,6 +450,8 @@ def select_best_across_models(
             "estimator": c["estimator"],
             "source": c["source"],
             "mean_cv_r2": c["summary"].mean_cv_r2,
+            "holdout_val_r2": c["summary"].holdout_val_r2,
+            "combined_r2": _combined_from_summary(c["summary"]),
             "train_cv_r2_gap": c["summary"].train_cv_r2_gap,
             "status": c["assessment"].status,
             "acceptable": c["assessment"].is_acceptable,
@@ -467,6 +506,7 @@ def run_iterative_hyperparameter_optimization(
     log_callback: Callable[[str], None] | None = None,
     n_features: int | None = None,
     n_train_samples: int | None = None,
+    val_path: str | Path | None = None,
 ) -> HPOResult:
     """Full HPO controller: baseline CV, up to 3 agent-guided rounds, final selection."""
     cfg = hpo_config or HPOConfig()
@@ -503,6 +543,19 @@ def run_iterative_hyperparameter_optimization(
         run_dir,
     )
     log("Baseline CV diagnostics completed.")
+
+    baseline_val_r2 = _score_holdout_val(
+        train_path, val_path, selected_features, base
+    )
+    if baseline_val_r2 is not None:
+        baseline_cv = baseline_cv.model_copy(
+            update={
+                "summary": baseline_cv.summary.model_copy(
+                    update={"holdout_val_r2": baseline_val_r2}
+                )
+            }
+        )
+        log(f"Baseline holdout validation R² = {baseline_val_r2:.3f}.")
 
     # Always provide dataset size to the LLM grid proposer.
     if n_features is None:
@@ -611,6 +664,15 @@ def run_iterative_hyperparameter_optimization(
                 run_dir,
                 round_idx,
             )
+            round_model = params_to_model_config(best_params, base)
+            round_val_r2 = _score_holdout_val(
+                train_path, val_path, selected_features, round_model
+            )
+            if round_val_r2 is not None:
+                best_summary = best_summary.model_copy(
+                    update={"holdout_val_r2": round_val_r2}
+                )
+                log(f"HPO round {round_idx} holdout validation R² = {round_val_r2:.3f}.")
 
             round_assessment = assess_overfitting(best_summary, cfg.thresholds)
             save_json(

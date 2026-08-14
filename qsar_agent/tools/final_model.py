@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import platform
 import sys
 from pathlib import Path
@@ -16,7 +15,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from qsar_agent.config import ModelConfig
 from qsar_agent.schemas.modeling import Metrics, ModelingResult
 from qsar_agent.services import build_estimator
-from qsar_agent.services.artifact_manager import file_hash, save_json
+from qsar_agent.services.artifact_manager import save_json
 from qsar_agent.services.plotting import plot_prediction_scatter
 
 
@@ -39,10 +38,12 @@ def train_and_evaluate_final_model(
     dataset_hash: str = "",
     config_snapshot: dict | None = None,
     hpo_metadata: dict[str, Any] | None = None,
+    val_path: str | Path | None = None,
 ) -> ModelingResult:
-    """Train final model on GA-selected features; evaluate on external test."""
+    """Train final model on train only; score val (development) and external test."""
     train_df = pd.read_csv(train_path)
     test_df = pd.read_csv(test_path)
+    val_df = pd.read_csv(val_path) if val_path is not None else None
 
     for feat in selected_features:
         if feat not in train_df.columns:
@@ -58,15 +59,26 @@ def train_and_evaluate_final_model(
 
     y_train_pred = model.predict(X_train)
     y_test_pred = model.predict(X_test)
-
     train_metrics = _compute_metrics(y_train, y_train_pred)
     test_metrics = _compute_metrics(y_test, y_test_pred)
 
+    val_metrics = None
+    y_val = y_val_pred = None
+    if val_df is not None:
+        missing = [f for f in selected_features if f not in val_df.columns]
+        if missing:
+            raise ValueError(f"Selected features missing from validation data: {missing}")
+        X_val = val_df[selected_features]
+        y_val = val_df["activity"]
+        y_val_pred = model.predict(X_val)
+        val_metrics = _compute_metrics(y_val, y_val_pred)
+
     predictions = []
-    for split, df, y_true, y_pred in [
-        ("train", train_df, y_train, y_train_pred),
-        ("test", test_df, y_test, y_test_pred),
-    ]:
+    split_rows = [("train", train_df, y_train, y_train_pred)]
+    if val_df is not None and y_val is not None and y_val_pred is not None:
+        split_rows.append(("val", val_df, y_val, y_val_pred))
+    split_rows.append(("test", test_df, y_test, y_test_pred))
+    for split, df, y_true, y_pred in split_rows:
         for i in range(len(df)):
             predictions.append(
                 {
@@ -89,6 +101,8 @@ def train_and_evaluate_final_model(
         "selected_features": selected_features,
         "hyperparameter_optimization": hpo_meta,
     }
+    if val_metrics is not None:
+        metrics_data["val"] = val_metrics.model_dump()
     metrics_path = run_dir / "model_metrics.json"
     save_json(metrics_path, metrics_data)
 
@@ -107,6 +121,9 @@ def train_and_evaluate_final_model(
         activity_label,
         png_path,
         svg_path,
+        val_true=None if y_val is None else y_val.values,
+        val_pred=y_val_pred,
+        val_metrics=None if val_metrics is None else val_metrics.model_dump(),
     )
 
     import sklearn
@@ -126,6 +143,7 @@ def train_and_evaluate_final_model(
 
     return ModelingResult(
         train_metrics=train_metrics,
+        val_metrics=val_metrics,
         test_metrics=test_metrics,
         selected_features=selected_features,
         predictions_path=str(pred_path),

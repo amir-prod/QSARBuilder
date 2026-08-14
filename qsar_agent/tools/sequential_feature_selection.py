@@ -10,12 +10,13 @@ import numpy as np
 import pandas as pd
 from mlxtend.feature_selection import SequentialFeatureSelector as SFS
 from sklearn.metrics import r2_score
-from sklearn.model_selection import KFold, cross_val_score
+from sklearn.model_selection import KFold
 
-from qsar_agent.config import ModelConfig, SFSConfig
+from qsar_agent.config import ModelConfig
 from qsar_agent.schemas.feature_selection import SFSResult, SFSResultRow
 from qsar_agent.services.plotting import plot_sfs_r2
 from qsar_agent.services import build_estimator
+from qsar_agent.tools.combined_score import combined_r2
 from qsar_agent.tools.descriptor_calculation import META_COLUMNS
 
 logger = logging.getLogger(__name__)
@@ -34,18 +35,25 @@ def run_sequential_feature_selection(
     model_config: ModelConfig | None = None,
     random_seed: int = 42,
     n_jobs: int = -1,
+    val_path: str | Path | None = None,
 ) -> SFSResult:
     """
     Run forward SFS for feature counts 1..min(max_features, n_descriptors).
 
     Uses a single mlxtend SFS fit (as in examples/utils.py build_each_model) and
     reads intermediate subsets from sfs.subsets_, rather than re-fitting SFS
-    separately for every feature count.
+    separately for every feature count. Search uses K-fold CV on train; each
+    subset is also scored on the held-out validation set when ``val_path`` is set.
     """
     df = pd.read_csv(train_path)
     X, y = _get_xy(df)
     n_descriptors = X.shape[1]
     max_eval = min(max_features, n_descriptors)
+
+    X_val = y_val = None
+    if val_path is not None:
+        val_df = pd.read_csv(val_path)
+        X_val, y_val = _get_xy(val_df)
 
     logger.info(
         "Starting sequential feature selection: %d descriptors, evaluating 1..%d",
@@ -90,6 +98,16 @@ def run_sequential_feature_selection(
         cv_scores = np.asarray(subset["cv_scores"], dtype=float)
         std_cv_r2 = float(cv_scores.std()) if len(cv_scores) > 1 else 0.0
 
+        val_score = None
+        if X_val is not None and y_val is not None:
+            missing = [c for c in selected_names if c not in X_val.columns]
+            if missing:
+                raise ValueError(f"Selected features missing from validation data: {missing}")
+            y_val_pred = estimator_train.predict(X_val[selected_names])
+            val_score = float(r2_score(y_val, y_val_pred))
+
+        combo = combined_r2(mean_cv_r2, val_score)
+
         results.append(
             SFSResultRow(
                 n_features=k,
@@ -97,14 +115,18 @@ def run_sequential_feature_selection(
                 mean_cv_r2=mean_cv_r2,
                 std_cv_r2=std_cv_r2,
                 selected_features=selected_names,
+                val_r2=val_score,
+                combined_r2=combo,
             )
         )
         logger.info(
-            "SFS k=%d: train R²=%.4f, CV R²=%.4f (+/- %.4f)",
+            "SFS k=%d: train R²=%.4f, CV R²=%.4f (+/- %.4f), val R²=%s, combined R²=%.4f",
             k,
             train_r2,
             mean_cv_r2,
             std_cv_r2,
+            f"{val_score:.4f}" if val_score is not None else "n/a",
+            combo,
         )
 
     results_df = pd.DataFrame([r.model_dump() for r in results])

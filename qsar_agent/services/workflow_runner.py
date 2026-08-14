@@ -164,7 +164,7 @@ class WorkflowRunner:
                 f"3D_descriptors={descriptors.three_d_descriptors_included}",
             )
 
-            # 3. Train/test split
+            # 3. Train/val/test split
             self._start_stage("umap_split")
             split = create_split(
                 descriptors.raw_descriptors_path,
@@ -174,11 +174,13 @@ class WorkflowRunner:
                 self.config.umap,
                 self.config.clustering,
                 split_method=self.config.split_method,
+                val_fraction=self.config.val_fraction,
             )
             self.warnings.extend(split.warnings)
             self.artifact_paths.update(
                 {
                     "train_raw": split.train_path,
+                    "val_raw": split.val_path,
                     "test_raw": split.test_path,
                     "umap_plot": split.umap_plot_png,
                 }
@@ -192,11 +194,13 @@ class WorkflowRunner:
                 split.test_path,
                 self.run_dir,
                 self.config.preprocessing,
+                val_path=split.val_path,
             )
             self.warnings.extend(preprocessing.warnings)
             self.artifact_paths.update(
                 {
                     "preprocessed_train": preprocessing.preprocessed_train_path,
+                    "preprocessed_val": preprocessing.preprocessed_val_path,
                     "preprocessed_test": preprocessing.preprocessed_test_path,
                     "preprocessor": preprocessing.preprocessor_path,
                 }
@@ -217,6 +221,7 @@ class WorkflowRunner:
                 self.config.model,
                 self.config.sfs.random_seed,
                 self.config.sfs.n_jobs,
+                val_path=preprocessing.preprocessed_val_path,
             )
             self.artifact_paths["sfs_results"] = sfs.results_csv_path
             self._complete_stage("sequential_feature_selection")
@@ -241,6 +246,7 @@ class WorkflowRunner:
                 feature_count.selected_feature_count,
                 self.config.ga,
                 self.config.model,
+                val_path=preprocessing.preprocessed_val_path,
             )
             self.artifact_paths["ga_selected_features"] = ga.selected_features_path
             self._complete_stage("genetic_algorithm")
@@ -266,6 +272,7 @@ class WorkflowRunner:
                     hpo_cfg,
                     self.run_dir,
                     log_callback=hpo_log,
+                    val_path=preprocessing.preprocessed_val_path,
                 )
                 final_model_config = ModelConfig(**hpo_result.final_model_config)
                 hpo_metadata = {
@@ -294,6 +301,7 @@ class WorkflowRunner:
                     log_callback=hpo_log,
                     n_features=n_features,
                     n_train_samples=n_train,
+                    val_path=preprocessing.preprocessed_val_path,
                 )
                 self._complete_stage("baseline_cv_diagnostics")
                 self._start_stage("overfitting_assessment")
@@ -409,6 +417,7 @@ class WorkflowRunner:
                     rf_branch,
                     train_path=preprocessing.preprocessed_train_path,
                     test_path=preprocessing.preprocessed_test_path,
+                    val_path=preprocessing.preprocessed_val_path,
                     run_dir=self.run_dir,
                     workflow_config=self.config,
                     hpo_config=hpo_cfg,
@@ -461,6 +470,7 @@ class WorkflowRunner:
                     rf_branch,
                     train_path=preprocessing.preprocessed_train_path,
                     test_path=preprocessing.preprocessed_test_path,
+                    val_path=preprocessing.preprocessed_val_path,
                     activity_label=activity_label,
                     dataset_hash=dataset_hash,
                     config_snapshot=self.config.to_dict(),
@@ -490,6 +500,7 @@ class WorkflowRunner:
                         winner_branch,
                         train_path=preprocessing.preprocessed_train_path,
                         test_path=preprocessing.preprocessed_test_path,
+                        val_path=preprocessing.preprocessed_val_path,
                         activity_label=activity_label,
                         dataset_hash=dataset_hash,
                         config_snapshot=self.config.to_dict(),

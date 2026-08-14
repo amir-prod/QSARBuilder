@@ -32,6 +32,7 @@ def run_model_branch(
     log_callback: Callable[[str], None] | None = None,
     explain_feature_count: bool = True,
     expansion_settings: SFSFixedGAExpansionSettings | None = None,
+    val_path: str | Path | None = None,
 ) -> ModelBranchResult:
     """Run SFS → feature count → GA → HPO for a single estimator."""
     branch_dir = output_subdir if output_subdir is not None else run_dir
@@ -45,6 +46,7 @@ def run_model_branch(
         model_config,
         sfs_config.random_seed,
         sfs_config.n_jobs,
+        val_path=val_path,
     )
 
     feature_count = select_feature_count_one_se_rule(sfs)
@@ -70,6 +72,7 @@ def run_model_branch(
         feature_count.selected_feature_count,
         ga_config,
         model_config,
+        val_path=val_path,
     )
 
     train_df = pd.read_csv(train_path)
@@ -87,6 +90,7 @@ def run_model_branch(
         log_callback=log_callback,
         n_features=n_features,
         n_train_samples=n_train,
+        val_path=val_path,
     )
 
     branch = ModelBranchResult(
@@ -109,6 +113,7 @@ def run_model_branch(
         expansion_settings=expansion_settings,
         grid_proposer=grid_proposer,
         log_callback=log_callback,
+        val_path=val_path,
     )
     if expansion is not None:
         branch = branch.model_copy(update={"expansion": expansion})

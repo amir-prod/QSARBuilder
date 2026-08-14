@@ -17,6 +17,7 @@ class PreprocessingResult(BaseModel):
     near_constant_threshold: float
     correlation_threshold: float
     preprocessed_train_path: str
+    preprocessed_val_path: str
     preprocessed_test_path: str
     preprocessor_path: str
     preprocessing_report_path: str

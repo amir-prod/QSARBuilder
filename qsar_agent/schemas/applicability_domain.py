@@ -8,6 +8,8 @@ from pydantic import BaseModel, Field
 class ApplicabilityDomainSummary(BaseModel):
     train_in_domain_count: int
     train_in_domain_pct: float
+    val_in_domain_count: int = 0
+    val_in_domain_pct: float = 0.0
     test_in_domain_count: int
     test_in_domain_pct: float
     warning_leverage: float

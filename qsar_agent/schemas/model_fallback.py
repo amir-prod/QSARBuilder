@@ -57,6 +57,7 @@ class BranchExternalArtifacts(BaseModel):
     ad_report_path: str = ""
     ad_classifications_path: str = ""
     train_r2: float = 0.0
+    val_r2: float | None = None
     test_r2: float = 0.0
 
 

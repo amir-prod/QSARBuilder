@@ -20,20 +20,27 @@ def test_metrics_and_predictions(synthetic_dataset, tmp_run_dir):
         pipeline_runner=fake_descjocky_pipeline,
     )
     split = create_umap_cluster_split(descriptors.raw_descriptors_path, tmp_run_dir)
-    prep = fit_descriptor_preprocessor(split.train_path, split.test_path, tmp_run_dir)
+    prep = fit_descriptor_preprocessor(
+        split.train_path, split.test_path, tmp_run_dir, val_path=split.val_path
+    )
     ga = run_genetic_algorithm(
         prep.preprocessed_train_path, tmp_run_dir, 3,
         ga_config=GAConfig(population_size=15, n_generations=3, cv_folds=3),
+        val_path=prep.preprocessed_val_path,
     )
     result = train_and_evaluate_final_model(
         prep.preprocessed_train_path,
         prep.preprocessed_test_path,
         tmp_run_dir,
         ga.selected_features,
+        val_path=prep.preprocessed_val_path,
     )
     import pandas as pd
     preds = pd.read_csv(result.predictions_path)
     assert "predicted_activity" in preds.columns
     assert "split" in preds.columns
+    assert set(preds["split"]) == {"train", "val", "test"}
     assert result.train_metrics.n_samples > 0
+    assert result.val_metrics is not None
+    assert result.val_metrics.n_samples > 0
     assert result.test_metrics.n_samples > 0

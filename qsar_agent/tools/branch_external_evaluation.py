@@ -68,6 +68,7 @@ def evaluate_branch_on_external_test(
     dataset_hash: str = "",
     config_snapshot: dict[str, Any] | None = None,
     hpo_metadata: dict[str, Any] | None = None,
+    val_path: str | Path | None = None,
 ) -> tuple[BranchExternalArtifacts, ModelingResult, ApplicabilityDomainResult]:
     """Fit branch on train, evaluate on external test; write scatter + Williams into branch_dir."""
     if not branch.branch_dir:
@@ -98,6 +99,7 @@ def evaluate_branch_on_external_test(
         dataset_hash,
         config_snapshot,
         hpo_metadata=meta,
+        val_path=val_path,
     )
     ad = calculate_applicability_domain(
         train_path,
@@ -105,6 +107,7 @@ def evaluate_branch_on_external_test(
         modeling.predictions_path,
         branch_dir,
         branch.ga.selected_features,
+        val_path=val_path,
     )
     artifacts = BranchExternalArtifacts(
         estimator=branch.estimator,
@@ -123,6 +126,7 @@ def evaluate_branch_on_external_test(
         ad_report_path=ad.report_path,
         ad_classifications_path=ad.classifications_path,
         train_r2=modeling.train_metrics.r2,
+        val_r2=None if modeling.val_metrics is None else modeling.val_metrics.r2,
         test_r2=modeling.test_metrics.r2,
     )
     return artifacts, modeling, ad
@@ -137,6 +141,7 @@ def evaluate_branches_on_external_test(
     dataset_hash: str = "",
     config_snapshot: dict[str, Any] | None = None,
     log_callback: Callable[[str], None] | None = None,
+    val_path: str | Path | None = None,
 ) -> list[tuple[BranchExternalArtifacts, ModelingResult, ApplicabilityDomainResult]]:
     """Evaluate each unique branch dir; return artifacts + modeling + AD per branch."""
     results = []
@@ -152,13 +157,15 @@ def evaluate_branches_on_external_test(
                 activity_label=activity_label,
                 dataset_hash=dataset_hash,
                 config_snapshot=config_snapshot,
+                val_path=val_path,
             )
         )
         if log_callback:
             art = results[-1][0]
+            val_txt = f", val R²={art.val_r2:.3f}" if art.val_r2 is not None else ""
             log_callback(
                 f"External evaluation complete for {label}: "
-                f"train R²={art.train_r2:.3f}, test R²={art.test_r2:.3f}."
+                f"train R²={art.train_r2:.3f}{val_txt}, test R²={art.test_r2:.3f}."
             )
     return results
 
@@ -258,8 +265,10 @@ def load_modeling_and_ad_from_artifacts(
     """Rebuild ModelingResult / ApplicabilityDomainResult from branch artifact files."""
     hpo_meta = hpo_metadata or {}
     metrics = json.loads(Path(art.metrics_path).read_text(encoding="utf-8"))
+    val_metrics = Metrics(**metrics["val"]) if "val" in metrics else None
     modeling = ModelingResult(
         train_metrics=Metrics(**metrics["train"]),
+        val_metrics=val_metrics,
         test_metrics=Metrics(**metrics["test"]),
         selected_features=art.selected_features,
         predictions_path=art.predictions_path,
@@ -276,6 +285,8 @@ def load_modeling_and_ad_from_artifacts(
     summary_keys = (
         "train_in_domain_count",
         "train_in_domain_pct",
+        "val_in_domain_count",
+        "val_in_domain_pct",
         "test_in_domain_count",
         "test_in_domain_pct",
         "warning_leverage",

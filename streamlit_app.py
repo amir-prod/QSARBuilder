@@ -58,7 +58,8 @@ def render_header() -> None:
     st.warning(
         "External-test performance is evaluated only after feature selection, "
         "hyperparameter optimization, and final model training. The test set is "
-        "never used for tuning."
+        "never used for tuning. The validation set is used together with training "
+        "cross-validation for feature selection and model selection."
     )
     if st.session_state.get("run_id"):
         st.info(f"Current run ID: `{st.session_state.run_id}`")
@@ -102,7 +103,16 @@ def render_sidebar_config() -> WorkflowConfig:
     render_openai_api_key_controls()
     mapping = st.session_state.get("column_mapping", {})
 
-    test_fraction = st.sidebar.slider("External test fraction", 0.1, 0.4, 0.2, 0.05)
+    val_fraction = st.sidebar.slider("Validation fraction", 0.05, 0.20, 0.10, 0.05)
+    test_fraction = st.sidebar.slider("External test fraction", 0.05, 0.20, 0.10, 0.05)
+    train_fraction = 1.0 - val_fraction - test_fraction
+    if val_fraction + test_fraction >= 0.5:
+        st.sidebar.error("Validation + test must be < 50% so at least 50% remains in train.")
+    else:
+        st.sidebar.caption(
+            f"Implied train fraction: {train_fraction:.0%} "
+            f"(val {val_fraction:.0%}, test {test_fraction:.0%})."
+        )
     split_method = st.sidebar.selectbox(
         "Splitting method",
         options=["umap_cluster", "sorted"],
@@ -114,7 +124,7 @@ def render_sidebar_config() -> WorkflowConfig:
         help=(
             "UMAP cluster: structure-aware split within chemical clusters. "
             "Sorted: rank compounds by activity and send every k-th to test "
-            "(k ≈ 1 / test fraction; 20% → every 5th). "
+            "and an offset rank to validation (k ≈ 1 / fraction; 10% → every 10th). "
             "Min and max activity always stay in the training set."
         ),
     )
@@ -194,6 +204,7 @@ def render_sidebar_config() -> WorkflowConfig:
     )
 
     return WorkflowConfig(
+        val_fraction=val_fraction,
         test_fraction=test_fraction,
         split_method=split_method,
         random_seed=int(random_seed),
@@ -599,11 +610,16 @@ def render_results_dashboard() -> None:
         if scatter and Path(scatter).exists():
             st.image(scatter)
         st.write("Training:", report.train_metrics)
+        if getattr(report, "val_metrics", None) is not None:
+            st.write("Validation (development):", report.val_metrics)
         st.write("External test:", report.test_metrics)
         if hasattr(report, "train_metrics"):
             ws = st.session_state.get("workflow_state")
             if ws and ws.config_snapshot.get("hpo", {}).get("enabled"):
-                st.caption("Final model selected using training CV only before external-test evaluation.")
+                st.caption(
+                    "Features and hyperparameters selected using training CV plus "
+                    "held-out validation. External test is evaluated only at the end."
+                )
         _render_branch_external_plots(run_dir, artifacts, show="scatter")
 
     with tabs[6]:

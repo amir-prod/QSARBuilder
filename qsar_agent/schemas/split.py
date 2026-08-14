@@ -12,15 +12,20 @@ class ClusterInfo(BaseModel):
 
 class SplitResult(BaseModel):
     train_count: int
+    val_count: int
     test_count: int
+    val_fraction_actual: float
     test_fraction_actual: float
     n_clusters: int = 0
     cluster_sizes: list[ClusterInfo] = Field(default_factory=list)
     train_activity_mean: float
     train_activity_std: float
+    val_activity_mean: float
+    val_activity_std: float
     test_activity_mean: float
     test_activity_std: float
     train_path: str
+    val_path: str
     test_path: str
     split_assignments_path: str
     umap_coordinates_path: str = ""
@@ -29,4 +34,5 @@ class SplitResult(BaseModel):
     split_report_path: str
     split_method: str = "umap_cluster"
     test_stride: int | None = None
+    val_stride: int | None = None
     warnings: list[str] = Field(default_factory=list)

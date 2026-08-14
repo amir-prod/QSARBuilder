@@ -34,6 +34,7 @@ def run_model_fallback_if_needed(
     workflow_config: WorkflowConfig,
     hpo_config: HPOConfig,
     test_path: str | Path | None = None,
+    val_path: str | Path | None = None,
     grid_proposer: Callable[..., AgentGridProposal] | None = None,
     log_callback: Callable[[str], None] | None = None,
     activity_label: str = "activity",
@@ -75,6 +76,7 @@ def run_model_fallback_if_needed(
             expansion_settings=expansion_settings,
             grid_proposer=grid_proposer,
             log_callback=log_callback,
+            val_path=val_path,
         )
         if expansion is not None:
             rf_branch = rf_branch.model_copy(update={"expansion": expansion})
@@ -92,6 +94,7 @@ def run_model_fallback_if_needed(
                 [rf_branch],
                 train_path=train_path,
                 test_path=test_path,
+                val_path=val_path,
                 activity_label=activity_label,
                 dataset_hash=dataset_hash,
                 config_snapshot=config_snapshot,
@@ -111,6 +114,7 @@ def run_model_fallback_if_needed(
             [rf_branch],
             train_path=train_path,
             test_path=test_path,
+            val_path=val_path,
             activity_label=activity_label,
             dataset_hash=dataset_hash,
             config_snapshot=config_snapshot,
@@ -147,6 +151,7 @@ def run_model_fallback_if_needed(
             log_callback=log_callback,
             explain_feature_count=False,
             expansion_settings=expansion_settings,
+            val_path=val_path,
         )
         fallback_branches.append(branch)
         if log_callback and branch.hpo_result.final_selection:
@@ -176,6 +181,7 @@ def run_model_fallback_if_needed(
         all_roots,
         train_path=train_path,
         test_path=test_path,
+        val_path=val_path,
         activity_label=activity_label,
         dataset_hash=dataset_hash,
         config_snapshot=config_snapshot,
@@ -200,6 +206,7 @@ def _maybe_evaluate_branches(
     *,
     train_path: str | Path,
     test_path: str | Path | None,
+    val_path: str | Path | None = None,
     activity_label: str,
     dataset_hash: str,
     config_snapshot: dict[str, Any] | None,
@@ -214,6 +221,7 @@ def _maybe_evaluate_branches(
         branches,
         train_path=train_path,
         test_path=test_path,
+        val_path=val_path,
         activity_label=activity_label,
         dataset_hash=dataset_hash,
         config_snapshot=config_snapshot,
@@ -283,7 +291,9 @@ def _write_comparison(run_dir: Path, cross: CrossModelSelection) -> None:
     md_lines.append("\n## All candidates\n")
     for row in cross.compared_models:
         md_lines.append(
-            f"- {row['estimator']} ({row['source']}): CV R²={row['mean_cv_r2']:.4f}, "
+            f"- {row['estimator']} ({row['source']}): "
+            f"combined R²={row.get('combined_r2', row['mean_cv_r2']):.4f}, "
+            f"CV R²={row['mean_cv_r2']:.4f}, "
             f"gap={row['train_cv_r2_gap']:.4f}, status={row['status']}, "
             f"acceptable={row['acceptable']}, n_features={row['n_features']}"
         )

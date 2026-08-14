@@ -72,6 +72,7 @@ class CVSummary(BaseModel):
     mean_cv_mae: float
     train_cv_r2_gap: float
     n_folds: int
+    holdout_val_r2: float | None = None
 
 
 class BaselineCVResult(BaseModel):

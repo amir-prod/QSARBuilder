@@ -14,6 +14,7 @@ class Metrics(BaseModel):
 
 class ModelingResult(BaseModel):
     train_metrics: Metrics
+    val_metrics: Metrics | None = None
     test_metrics: Metrics
     selected_features: list[str]
     predictions_path: str

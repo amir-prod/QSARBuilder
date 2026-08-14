@@ -257,6 +257,45 @@ def test_final_model_config_from_hpo_round():
     assert selection.source == "hpo_round_1"
 
 
+def test_final_model_config_prefers_combined_holdout_val():
+    baseline_summary = _cv_summary(0.80, 0.70, 0.02).model_copy(
+        update={"holdout_val_r2": 0.20}
+    )
+    baseline_assessment = assess_overfitting(baseline_summary)
+    from qsar_agent.schemas.hyperparameter_optimization import (
+        GridSanitizationResult,
+        HPORoundResult,
+    )
+
+    # Keep the round acceptable (small train-CV gap) but stronger holdout val.
+    round_summary = _cv_summary(0.72, 0.60, 0.02).model_copy(
+        update={"holdout_val_r2": 0.90}
+    )
+    round_assessment = assess_overfitting(round_summary)
+    rr = HPORoundResult(
+        round_index=1,
+        sanitization=GridSanitizationResult(
+            original_grid={},
+            sanitized_grid={},
+            candidate_count=4,
+        ),
+        candidates=[],
+        best_params={"n_estimators": 200, "max_depth": 5},
+        best_cv_summary=round_summary,
+        assessment=round_assessment,
+        candidates_searched=4,
+    )
+    selection = select_final_model_config(
+        baseline_summary,
+        {"n_estimators": 100, "max_depth": 10},
+        baseline_assessment,
+        [rr],
+        OverfittingThresholds(),
+    )
+    # combined: baseline 0.45, round 0.70
+    assert selection.source == "hpo_round_1"
+
+
 def test_agent_invalid_grid_falls_back():
     from qsar_agent.agents.qsar_agent import propose_hyperparameter_grid
     from qsar_agent.tools.overfitting_assessment import assess_overfitting

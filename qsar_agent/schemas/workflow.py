@@ -50,12 +50,14 @@ class AgentFinalReport(BaseModel):
     dataset_size: int
     valid_compounds: int
     train_size: int
+    val_size: int = 0
     test_size: int
     initial_descriptor_count: int
     final_preprocessed_descriptors: int
     selected_descriptor_count: int
     ga_selected_descriptors: list[str]
     train_metrics: Metrics
+    val_metrics: Metrics | None = None
     test_metrics: Metrics
     applicability_domain_summary: ApplicabilityDomainSummary
     warnings: list[str] = Field(default_factory=list)

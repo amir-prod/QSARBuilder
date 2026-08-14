@@ -20,14 +20,14 @@ def plot_umap_split(
     umap_df,
     png_path: Path,
     svg_path: Path,
-    title: str = "UMAP Cluster-Aware Train/Test Split",
+    title: str = "UMAP Cluster-Aware Train/Val/Test Split",
 ) -> None:
     fig, ax = plt.subplots(figsize=(10, 8))
     clusters = sorted(umap_df["cluster"].unique())
     colors = sns.color_palette("tab10", n_colors=max(len(clusters), 1))
     cluster_colors = {c: colors[i % len(colors)] for i, c in enumerate(clusters)}
 
-    for split, marker in [("train", "o"), ("test", "^")]:
+    for split, marker in [("train", "o"), ("val", "s"), ("test", "^")]:
         subset = umap_df[umap_df["split"] == split]
         for cluster_id in clusters:
             mask = subset["cluster"] == cluster_id
@@ -59,10 +59,14 @@ def plot_sorted_split(
     assignments_df,
     png_path: Path,
     svg_path: Path,
-    title: str = "Activity-Sorted Train/Test Split",
+    title: str = "Activity-Sorted Train/Val/Test Split",
 ) -> None:
     fig, ax = plt.subplots(figsize=(10, 6))
-    for split, marker, color in [("train", "o", "steelblue"), ("test", "^", "crimson")]:
+    for split, marker, color in [
+        ("train", "o", "steelblue"),
+        ("val", "s", "darkorange"),
+        ("test", "^", "crimson"),
+    ]:
         subset = assignments_df[assignments_df["split"] == split]
         if subset.empty:
             continue
@@ -103,6 +107,8 @@ def plot_sfs_r2(
         color="green",
         capsize=3,
     )
+    if "val_r2" in results_df.columns:
+        ax.plot(x, results_df["val_r2"], "D-", label="Validation R²", color="darkorange")
     if selected_count is not None:
         ax.axvline(selected_count, color="red", linestyle="--", label=f"Selected ({selected_count})")
     ax.set_xlabel("Number of descriptors")
@@ -120,7 +126,7 @@ def plot_ga_convergence(history_df, png_path: Path, svg_path: Path) -> None:
     ax.plot(history_df["generation"], history_df["best_fitness"], label="Best fitness", color="blue")
     ax.plot(history_df["generation"], history_df["avg_fitness"], label="Average fitness", color="orange")
     ax.set_xlabel("Generation")
-    ax.set_ylabel("CV R²")
+    ax.set_ylabel("Fitness (CV+val)")
     ax.set_title("Genetic Algorithm Convergence")
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -202,12 +208,22 @@ def plot_prediction_scatter(
     activity_label: str,
     png_path: Path,
     svg_path: Path,
+    val_true=None,
+    val_pred=None,
+    val_metrics: dict | None = None,
 ) -> None:
     fig, ax = plt.subplots(figsize=(10, 8))
     ax.scatter(train_true, train_pred, c="blue", alpha=0.7, s=50, label="Training")
+    if val_true is not None and val_pred is not None:
+        ax.scatter(
+            val_true, val_pred, c="darkorange", alpha=0.7, s=50, marker="s", label="Validation"
+        )
     ax.scatter(test_true, test_pred, c="gold", alpha=0.7, s=50, marker="^", label="External test")
 
-    all_vals = np.concatenate([train_true, test_true, train_pred, test_pred])
+    parts = [train_true, test_true, train_pred, test_pred]
+    if val_true is not None and val_pred is not None:
+        parts.extend([val_true, val_pred])
+    all_vals = np.concatenate(parts)
     vmin, vmax = float(np.min(all_vals)), float(np.max(all_vals))
     margin = (vmax - vmin) * 0.05 if vmax > vmin else 1.0
     lo, hi = vmin - margin, vmax + margin
@@ -220,6 +236,13 @@ def plot_prediction_scatter(
     text = (
         f"Train: R²={train_metrics['r2']:.3f}, RMSE={train_metrics['rmse']:.3f}, "
         f"MAE={train_metrics['mae']:.3f}, n={train_metrics['n_samples']}\n"
+    )
+    if val_metrics is not None:
+        text += (
+            f"Val: R²={val_metrics['r2']:.3f}, RMSE={val_metrics['rmse']:.3f}, "
+            f"MAE={val_metrics['mae']:.3f}, n={val_metrics['n_samples']}\n"
+        )
+    text += (
         f"Test: R²={test_metrics['r2']:.3f}, RMSE={test_metrics['rmse']:.3f}, "
         f"MAE={test_metrics['mae']:.3f}, n={test_metrics['n_samples']}"
     )
@@ -240,7 +263,11 @@ def plot_williams(
     svg_path: Path,
 ) -> None:
     fig, ax = plt.subplots(figsize=(10, 8))
-    for split, color, marker in [("train", "blue", "o"), ("test", "gold", "^")]:
+    for split, color, marker in [
+        ("train", "blue", "o"),
+        ("val", "darkorange", "s"),
+        ("test", "gold", "^"),
+    ]:
         mask = np.array(splits) == split
         ax.scatter(
             np.array(leverage)[mask],

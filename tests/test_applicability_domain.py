@@ -23,16 +23,20 @@ def test_williams_leverage_and_classification(synthetic_dataset, tmp_run_dir):
         pipeline_runner=fake_descjocky_pipeline,
     )
     split = create_umap_cluster_split(descriptors.raw_descriptors_path, tmp_run_dir)
-    prep = fit_descriptor_preprocessor(split.train_path, split.test_path, tmp_run_dir)
+    prep = fit_descriptor_preprocessor(
+        split.train_path, split.test_path, tmp_run_dir, val_path=split.val_path
+    )
     ga = run_genetic_algorithm(
         prep.preprocessed_train_path, tmp_run_dir, 3,
         ga_config=GAConfig(population_size=15, n_generations=3, cv_folds=3),
+        val_path=prep.preprocessed_val_path,
     )
     modeling = train_and_evaluate_final_model(
         prep.preprocessed_train_path,
         prep.preprocessed_test_path,
         tmp_run_dir,
         ga.selected_features,
+        val_path=prep.preprocessed_val_path,
     )
     ad = calculate_applicability_domain(
         prep.preprocessed_train_path,
@@ -40,6 +44,7 @@ def test_williams_leverage_and_classification(synthetic_dataset, tmp_run_dir):
         modeling.predictions_path,
         tmp_run_dir,
         ga.selected_features,
+        val_path=prep.preprocessed_val_path,
     )
     p = len(ga.selected_features)
     n_train = split.train_count
@@ -50,3 +55,5 @@ def test_williams_leverage_and_classification(synthetic_dataset, tmp_run_dir):
     ad_df = pd.read_csv(ad.classifications_path)
     assert "applicability_domain" in ad_df.columns
     assert "in_domain" in ad_df.columns
+    assert set(ad_df["split"]) == {"train", "val", "test"}
+    assert ad.summary.val_in_domain_count >= 0

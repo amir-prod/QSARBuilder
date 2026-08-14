@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class UMAPConfig(BaseModel):
@@ -105,7 +105,8 @@ class SFSFixedGAExpansionSettings(BaseModel):
 
 
 class WorkflowConfig(BaseModel):
-    test_fraction: float = 0.20
+    val_fraction: float = 0.10
+    test_fraction: float = 0.10
     split_method: Literal["umap_cluster", "sorted"] = "umap_cluster"
     random_seed: int = 42
     output_dir: str = "outputs"
@@ -125,6 +126,18 @@ class WorkflowConfig(BaseModel):
     activity_column: str = ""
     id_column: str | None = None
     min_valid_compounds: int = 20
+
+    @model_validator(mode="after")
+    def _check_split_fractions(self) -> "WorkflowConfig":
+        if self.val_fraction <= 0 or self.val_fraction >= 1:
+            raise ValueError(f"val_fraction must be in (0, 1), got {self.val_fraction}")
+        if self.test_fraction <= 0 or self.test_fraction >= 1:
+            raise ValueError(f"test_fraction must be in (0, 1), got {self.test_fraction}")
+        if self.val_fraction + self.test_fraction >= 0.5:
+            raise ValueError(
+                "val_fraction + test_fraction must be < 0.5 so at least 50% remains in train"
+            )
+        return self
 
     def to_dict(self) -> dict[str, Any]:
         return self.model_dump()

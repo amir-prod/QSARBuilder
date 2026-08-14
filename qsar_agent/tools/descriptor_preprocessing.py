@@ -19,7 +19,7 @@ from qsar_agent.tools.descriptor_calculation import META_COLUMNS
 
 
 class DescriptorPreprocessor(BaseEstimator, TransformerMixin):
-    """Fitted on training data only; transforms train and test consistently."""
+    """Fitted on training data only; transforms train, val, and test consistently."""
 
     def __init__(
         self,
@@ -191,18 +191,25 @@ def fit_descriptor_preprocessor(
     test_path: str | Path,
     run_dir: Path,
     preprocessing_config: PreprocessingConfig | None = None,
+    val_path: str | Path | None = None,
 ) -> PreprocessingResult:
-    """Fit preprocessing on training set only; apply to train and test."""
+    """Fit preprocessing on training set only; apply to train, val, and test."""
     cfg = preprocessing_config or PreprocessingConfig()
     train_df = pd.read_csv(train_path)
     test_df = pd.read_csv(test_path)
+    val_df = pd.read_csv(val_path) if val_path is not None else None
     if len(train_df) == 0:
         raise ValueError(
             "Training descriptor set is empty; check UMAP split and descriptor calculation."
         )
     if len(test_df) == 0:
         raise ValueError(
-            "External test descriptor set is empty; check UMAP split "
+            "External test descriptor set is empty; check the train/val/test split "
+            "(small clusters were previously assigned entirely to train)."
+        )
+    if val_df is not None and len(val_df) == 0:
+        raise ValueError(
+            "Validation descriptor set is empty; check the train/val/test split "
             "(small clusters were previously assigned entirely to train)."
         )
 
@@ -215,11 +222,17 @@ def fit_descriptor_preprocessor(
     )
     train_pp = preprocessor.fit_transform(train_df, y=train_df["activity"])
     test_pp = preprocessor.transform(test_df)
+    val_pp = preprocessor.transform(val_df) if val_df is not None else None
 
     train_out = run_dir / "preprocessed_train_descriptors.csv"
+    val_out = run_dir / "preprocessed_val_descriptors.csv"
     test_out = run_dir / "preprocessed_test_descriptors.csv"
     train_pp.to_csv(train_out, index=False)
     test_pp.to_csv(test_out, index=False)
+    if val_pp is not None:
+        val_pp.to_csv(val_out, index=False)
+    else:
+        val_out = train_out
 
     preproc_path = run_dir / "descriptor_preprocessor.joblib"
     joblib.dump(preprocessor, preproc_path)
@@ -266,6 +279,7 @@ def fit_descriptor_preprocessor(
         near_constant_threshold=cfg.near_constant_std_threshold,
         correlation_threshold=cfg.correlation_threshold,
         preprocessed_train_path=str(train_out),
+        preprocessed_val_path=str(val_out),
         preprocessed_test_path=str(test_out),
         preprocessor_path=str(preproc_path),
         preprocessing_report_path=str(report_path),

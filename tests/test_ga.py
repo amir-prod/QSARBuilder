@@ -11,7 +11,7 @@ from qsar_agent.tools.umap_split import create_umap_cluster_split
 from tests.descriptor_test_utils import fake_descjocky_pipeline
 
 
-def _preprocessed_train(synthetic_dataset, tmp_run_dir):
+def _preprocessed_splits(synthetic_dataset, tmp_run_dir):
     cleaned = validate_dataset(
         synthetic_dataset, "smiles", "pIC50", "compound_id", tmp_run_dir, min_valid_compounds=15
     )
@@ -21,17 +21,20 @@ def _preprocessed_train(synthetic_dataset, tmp_run_dir):
         pipeline_runner=fake_descjocky_pipeline,
     )
     split = create_umap_cluster_split(descriptors.raw_descriptors_path, tmp_run_dir)
-    prep = fit_descriptor_preprocessor(split.train_path, split.test_path, tmp_run_dir)
-    return prep.preprocessed_train_path
+    prep = fit_descriptor_preprocessor(
+        split.train_path, split.test_path, tmp_run_dir, val_path=split.val_path
+    )
+    return prep.preprocessed_train_path, prep.preprocessed_val_path
 
 
 def test_ga_exact_feature_count(synthetic_dataset, tmp_run_dir):
-    train_path = _preprocessed_train(synthetic_dataset, tmp_run_dir)
+    train_path, val_path = _preprocessed_splits(synthetic_dataset, tmp_run_dir)
     ga = run_genetic_algorithm(
         train_path,
         tmp_run_dir,
         number_of_features=3,
         ga_config=GAConfig(population_size=20, n_generations=5, cv_folds=3),
+        val_path=val_path,
     )
     assert len(ga.selected_features) == 3
     assert len(set(ga.selected_features)) == 3
@@ -40,7 +43,7 @@ def test_ga_exact_feature_count(synthetic_dataset, tmp_run_dir):
 def test_ga_fixed_features_adds_exactly_n_extras(synthetic_dataset, tmp_run_dir):
     import pandas as pd
 
-    train_path = _preprocessed_train(synthetic_dataset, tmp_run_dir)
+    train_path, val_path = _preprocessed_splits(synthetic_dataset, tmp_run_dir)
     df = pd.read_csv(train_path)
     feature_cols = [c for c in df.columns if c not in META_COLUMNS]
     fixed = feature_cols[:2]
@@ -54,6 +57,7 @@ def test_ga_fixed_features_adds_exactly_n_extras(synthetic_dataset, tmp_run_dir)
         number_of_features=2,
         ga_config=GAConfig(population_size=20, n_generations=5, cv_folds=3),
         fixed_features=fixed,
+        val_path=val_path,
     )
 
     assert ga.selected_features[:2] == fixed

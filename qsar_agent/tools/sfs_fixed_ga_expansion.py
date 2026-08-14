@@ -47,6 +47,7 @@ def run_sfs_fixed_ga_expansion(
     expansion_settings: SFSFixedGAExpansionSettings | None = None,
     grid_proposer: Callable[..., AgentGridProposal] | None = None,
     log_callback: Callable[[str], None] | None = None,
+    val_path: str | Path | None = None,
 ) -> ModelBranchResult | None:
     """
     If the branch HPO conclusion is not acceptable, freeze SFS features, GA-add
@@ -99,6 +100,7 @@ def run_sfs_fixed_ga_expansion(
         ga_config,
         model_config,
         fixed_features=fixed_features,
+        val_path=val_path,
     )
     extra_features = [f for f in ga.selected_features if f not in set(fixed_features)]
 
@@ -117,6 +119,7 @@ def run_sfs_fixed_ga_expansion(
         log_callback=log_callback,
         n_features=n_features,
         n_train_samples=n_train,
+        val_path=val_path,
     )
 
     acceptable_after = (
