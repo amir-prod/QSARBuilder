@@ -55,6 +55,36 @@ def plot_umap_split(
     save_figure(fig, png_path, svg_path)
 
 
+def plot_sorted_split(
+    assignments_df,
+    png_path: Path,
+    svg_path: Path,
+    title: str = "Activity-Sorted Train/Test Split",
+) -> None:
+    fig, ax = plt.subplots(figsize=(10, 6))
+    for split, marker, color in [("train", "o", "steelblue"), ("test", "^", "crimson")]:
+        subset = assignments_df[assignments_df["split"] == split]
+        if subset.empty:
+            continue
+        ax.scatter(
+            subset["activity_rank"],
+            subset["activity"],
+            c=color,
+            marker=marker,
+            s=50,
+            alpha=0.8,
+            edgecolors="black",
+            linewidths=0.3,
+            label=split,
+        )
+    ax.set_xlabel("Activity rank (low → high)")
+    ax.set_ylabel("Activity")
+    ax.set_title(title)
+    ax.legend()
+    fig.tight_layout()
+    save_figure(fig, png_path, svg_path)
+
+
 def plot_sfs_r2(
     results_df,
     png_path: Path,

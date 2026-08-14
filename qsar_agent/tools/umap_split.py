@@ -14,7 +14,7 @@ from sklearn.model_selection import train_test_split
 from qsar_agent.config import ClusteringConfig, UMAPConfig
 from qsar_agent.schemas.split import ClusterInfo, SplitResult
 from qsar_agent.services.artifact_manager import save_json
-from qsar_agent.services.plotting import plot_umap_split
+from qsar_agent.services.plotting import plot_sorted_split, plot_umap_split
 from qsar_agent.tools.descriptor_calculation import META_COLUMNS
 from qsar_agent.tools.provisional_preprocessing import provisional_preprocess_for_umap
 
@@ -176,6 +176,7 @@ def create_umap_cluster_split(
         "random_seed": random_seed,
         "umap_config": umap_cfg.model_dump(),
         "clustering_config": cluster_cfg.model_dump(),
+        "split_method": "umap_cluster",
         "warnings": warnings,
         "note": (
             "Activity distributions are reported for diagnostics only; "
@@ -202,5 +203,205 @@ def create_umap_cluster_split(
         umap_plot_png=str(png_path),
         umap_plot_svg=str(svg_path),
         split_report_path=str(report_path),
+        split_method="umap_cluster",
         warnings=warnings,
+    )
+
+
+def sorted_split_stride(test_fraction: float) -> int:
+    """Stride k such that every k-th ranked compound is a test candidate (20% → 5)."""
+    if test_fraction <= 0 or test_fraction >= 1:
+        raise ValueError(f"test_fraction must be in (0, 1), got {test_fraction}")
+    return max(2, int(round(1.0 / float(test_fraction))))
+
+
+def assign_sorted_split_indices(
+    activity: np.ndarray,
+    test_fraction: float = 0.20,
+) -> tuple[list[int], list[int], int]:
+    """
+    Sort by activity and assign every k-th compound to test.
+
+    Compounds with the minimum or maximum activity always stay in train.
+    k = round(1 / test_fraction), so a 20% test set uses every 5th compound.
+    """
+    activity = np.asarray(activity, dtype=float)
+    n = len(activity)
+    if n < 2:
+        raise RuntimeError(
+            f"Cannot create an external test set with only {n} compound(s)."
+        )
+
+    stride = sorted_split_stride(test_fraction)
+    order = np.argsort(activity, kind="mergesort")
+    min_val = float(np.min(activity))
+    max_val = float(np.max(activity))
+    protected = set(
+        int(i) for i in np.flatnonzero((activity == min_val) | (activity == max_val))
+    )
+
+    train_indices: list[int] = []
+    test_indices: list[int] = []
+    for rank, idx in enumerate(order):
+        idx = int(idx)
+        if (rank + 1) % stride == 0 and idx not in protected:
+            test_indices.append(idx)
+        else:
+            train_indices.append(idx)
+
+    if not test_indices:
+        candidates = [int(i) for i in order if int(i) not in protected]
+        if not candidates:
+            raise RuntimeError(
+                "Cannot create an external test set because every compound has "
+                "the minimum or maximum activity value."
+            )
+        n_test = max(1, min(len(candidates), int(round(n * test_fraction))))
+        pick_pos = np.unique(
+            np.linspace(0, len(candidates) - 1, n_test).astype(int)
+        )
+        test_set = {candidates[int(p)] for p in pick_pos}
+        test_indices = [i for i in candidates if i in test_set]
+        train_indices = [i for i in range(n) if i not in test_set]
+
+    overlap = set(train_indices) & set(test_indices)
+    if overlap:
+        raise RuntimeError(f"Train/test overlap detected: {overlap}")
+    if set(train_indices) | set(test_indices) != set(range(n)):
+        raise RuntimeError("Sorted split did not assign every compound.")
+    return train_indices, test_indices, stride
+
+
+def create_sorted_split(
+    descriptor_path: str | Path,
+    run_dir: Path,
+    test_fraction: float = 0.20,
+) -> SplitResult:
+    """
+    Create a train/external-test split by ranking compounds on the target.
+
+    After sorting by activity, every k-th compound goes to test
+    (k = round(1 / test_fraction)). Min and max activity stay in train.
+    """
+    warnings: list[str] = []
+    run_dir = Path(run_dir)
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    df = pd.read_csv(descriptor_path)
+    if "activity" not in df.columns:
+        raise ValueError("Descriptor table must include an 'activity' column.")
+
+    activity = df["activity"].to_numpy(dtype=float)
+    if np.isnan(activity).any():
+        raise ValueError("Activity contains missing values; cannot perform sorted splitting.")
+
+    train_indices, test_indices, stride = assign_sorted_split_indices(
+        activity, test_fraction
+    )
+
+    assignments = pd.DataFrame(
+        {
+            "compound_id": df["compound_id"].values,
+            "original_row_index": df["original_row_index"].values,
+            "activity": activity,
+            "activity_rank": np.empty(len(df), dtype=int),
+            "split": "train",
+        }
+    )
+    order = np.argsort(activity, kind="mergesort")
+    assignments.loc[order, "activity_rank"] = np.arange(len(df))
+    assignments.loc[test_indices, "split"] = "test"
+
+    train_df = df.iloc[train_indices].copy()
+    test_df = df.iloc[test_indices].copy()
+    if len(test_df) == 0:
+        raise RuntimeError(
+            "External test set is empty after splitting; cannot continue preprocessing."
+        )
+
+    train_path = run_dir / "train_set_raw_descriptors.csv"
+    test_path = run_dir / "test_set_raw_descriptors.csv"
+    train_df.to_csv(train_path, index=False)
+    test_df.to_csv(test_path, index=False)
+
+    assignments_path = run_dir / "split_assignments.csv"
+    assignments.to_csv(assignments_path, index=False)
+
+    png_path = run_dir / "sorted_split.png"
+    svg_path = run_dir / "sorted_split.svg"
+    plot_sorted_split(assignments, png_path, svg_path)
+
+    report = {
+        "split_method": "sorted",
+        "train_count": len(train_df),
+        "test_count": len(test_df),
+        "test_fraction_target": test_fraction,
+        "test_fraction_actual": len(test_df) / len(df),
+        "test_stride": stride,
+        "n_clusters": 0,
+        "cluster_sizes": [],
+        "train_activity_mean": float(train_df["activity"].mean()),
+        "train_activity_std": float(train_df["activity"].std()),
+        "test_activity_mean": float(test_df["activity"].mean()),
+        "test_activity_std": float(test_df["activity"].std()),
+        "train_activity_min": float(train_df["activity"].min()),
+        "train_activity_max": float(train_df["activity"].max()),
+        "test_activity_min": float(test_df["activity"].min()),
+        "test_activity_max": float(test_df["activity"].max()),
+        "warnings": warnings,
+        "note": (
+            f"Compounds ranked by activity; every {stride}th assigned to test. "
+            "Compounds with minimum or maximum activity always remain in train."
+        ),
+    }
+    report_path = run_dir / "split_report.json"
+    save_json(report_path, report)
+
+    return SplitResult(
+        train_count=len(train_df),
+        test_count=len(test_df),
+        test_fraction_actual=len(test_df) / len(df),
+        n_clusters=0,
+        cluster_sizes=[],
+        train_activity_mean=float(train_df["activity"].mean()),
+        train_activity_std=float(train_df["activity"].std()),
+        test_activity_mean=float(test_df["activity"].mean()),
+        test_activity_std=float(test_df["activity"].std()),
+        train_path=str(train_path),
+        test_path=str(test_path),
+        split_assignments_path=str(assignments_path),
+        umap_coordinates_path="",
+        umap_plot_png=str(png_path),
+        umap_plot_svg=str(svg_path),
+        split_report_path=str(report_path),
+        split_method="sorted",
+        test_stride=stride,
+        warnings=warnings,
+    )
+
+
+def create_split(
+    descriptor_path: str | Path,
+    run_dir: Path,
+    test_fraction: float = 0.20,
+    random_seed: int = 42,
+    umap_config: UMAPConfig | None = None,
+    clustering_config: ClusteringConfig | None = None,
+    split_method: str = "umap_cluster",
+) -> SplitResult:
+    """Dispatch to UMAP-cluster or activity-sorted splitting."""
+    method = (split_method or "umap_cluster").strip().lower()
+    if method == "sorted":
+        return create_sorted_split(descriptor_path, run_dir, test_fraction)
+    if method in {"umap_cluster", "umap"}:
+        return create_umap_cluster_split(
+            descriptor_path,
+            run_dir,
+            test_fraction,
+            random_seed,
+            umap_config,
+            clustering_config,
+        )
+    raise ValueError(
+        f"Unknown split_method {split_method!r}; expected 'umap_cluster' or 'sorted'."
     )

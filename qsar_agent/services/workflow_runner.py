@@ -37,7 +37,7 @@ from qsar_agent.tools.genetic_algorithm import run_genetic_algorithm
 from qsar_agent.tools.hyperparameter_optimization import run_iterative_hyperparameter_optimization
 from qsar_agent.tools.descriptor_calculation import calculate_descriptors
 from qsar_agent.tools.sequential_feature_selection import run_sequential_feature_selection
-from qsar_agent.tools.umap_split import create_umap_cluster_split
+from qsar_agent.tools.umap_split import create_split
 from qsar_agent.schemas.model_fallback import BranchExternalArtifacts, ModelBranchResult
 from qsar_agent.tools.model_fallback import run_model_fallback_if_needed
 
@@ -164,15 +164,16 @@ class WorkflowRunner:
                 f"3D_descriptors={descriptors.three_d_descriptors_included}",
             )
 
-            # 3. UMAP split
+            # 3. Train/test split
             self._start_stage("umap_split")
-            split = create_umap_cluster_split(
+            split = create_split(
                 descriptors.raw_descriptors_path,
                 self.run_dir,
                 self.config.test_fraction,
                 self.config.random_seed,
                 self.config.umap,
                 self.config.clustering,
+                split_method=self.config.split_method,
             )
             self.warnings.extend(split.warnings)
             self.artifact_paths.update(
@@ -182,7 +183,7 @@ class WorkflowRunner:
                     "umap_plot": split.umap_plot_png,
                 }
             )
-            self._complete_stage("umap_split")
+            self._complete_stage("umap_split", f"method={split.split_method}")
 
             # 4. Descriptor preprocessing
             self._start_stage("descriptor_preprocessing")
