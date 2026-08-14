@@ -50,6 +50,19 @@ DEFAULT_FALLBACK_ESTIMATORS = [
 
 SUPPORTED_ESTIMATORS = ["RandomForestRegressor", *DEFAULT_FALLBACK_ESTIMATORS]
 
+
+def normalize_estimator_name(estimator: str | None) -> str:
+    """Map display labels such as ``PLSRegression (sfs_fixed_ga_plus2)`` to registry names."""
+    if not estimator:
+        return ""
+    name = str(estimator).strip()
+    if name in SUPPORTED_ESTIMATORS:
+        return name
+    base = name.split("(", 1)[0].strip()
+    if base in SUPPORTED_ESTIMATORS:
+        return base
+    return name
+
 _RF_DEFAULTS: dict[str, Any] = {
     "n_estimators": 100,
     "max_depth": 10,
@@ -381,6 +394,7 @@ def get_hpo_prompt_spec(estimator: str) -> str:
 
 
 def get_default_model_config(estimator: str, random_state: int = 42, n_jobs: int = -1) -> ModelConfig:
+    estimator = normalize_estimator_name(estimator)
     if estimator not in SUPPORTED_ESTIMATORS:
         raise ValueError(f"Unsupported estimator: {estimator}")
     params = dict(_DEFAULT_PARAMS[estimator])
@@ -423,8 +437,10 @@ def build_estimator_from_config(config: ModelConfig | dict[str, Any] | None = No
     else:
         cfg = config or ModelConfig()
 
+    estimator = normalize_estimator_name(cfg.estimator)
+    if estimator != cfg.estimator:
+        cfg = cfg.model_copy(update={"estimator": estimator})
     params = resolve_params(cfg)
-    estimator = cfg.estimator
 
     if estimator == "RandomForestRegressor":
         kwargs: dict[str, Any] = {

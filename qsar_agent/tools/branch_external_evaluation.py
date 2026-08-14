@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from qsar_agent.config import ModelConfig
+from qsar_agent.models.registry import normalize_estimator_name
 from qsar_agent.schemas.applicability_domain import (
     ApplicabilityDomainResult,
     ApplicabilityDomainSummary,
@@ -77,6 +78,9 @@ def evaluate_branch_on_external_test(
     model_config = ModelConfig(**branch.model_config_snapshot) if branch.model_config_snapshot else ModelConfig(
         estimator=branch.estimator
     )
+    base_estimator = normalize_estimator_name(model_config.estimator or branch.estimator)
+    if base_estimator and base_estimator != model_config.estimator:
+        model_config = model_config.model_copy(update={"estimator": base_estimator})
     meta = dict(hpo_metadata or {})
     if branch.hpo_result.final_selection is not None:
         meta.setdefault("enabled", branch.hpo_result.enabled)

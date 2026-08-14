@@ -138,3 +138,17 @@ def test_all_fallback_estimators_fit_single_feature():
         est = build_estimator(get_default_model_config(name, random_state=0, n_jobs=1))
         est.fit(X, y)
         assert est.predict(X).shape[0] == 24
+
+
+def test_normalize_expansion_display_label():
+    from qsar_agent.models.registry import normalize_estimator_name
+
+    assert normalize_estimator_name("PLSRegression (sfs_fixed_ga_plus2)") == "PLSRegression"
+    assert normalize_estimator_name("SVR (sfs_fixed_ga_plus2)") == "SVR"
+    assert normalize_estimator_name("RandomForestRegressor") == "RandomForestRegressor"
+
+
+def test_build_estimator_accepts_expansion_display_label():
+    cfg = ModelConfig(estimator="PLSRegression (sfs_fixed_ga_plus2)", n_jobs=1, random_state=0)
+    model = build_estimator(cfg)
+    assert model is not None
