@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -111,6 +111,7 @@ class SFSFixedGAExpansionSettings(BaseModel):
 
 class WorkflowConfig(BaseModel):
     test_fraction: float = 0.20
+    split_method: Literal["umap_cluster", "sorted"] = "umap_cluster"
     random_seed: int = 42
     output_dir: str = "outputs"
     umap: UMAPConfig = Field(default_factory=UMAPConfig)

@@ -55,7 +55,7 @@ def render_header() -> None:
     st.title(f"🧪 {APP_TITLE}")
     st.markdown(
         "Build regression QSAR models from SMILES and experimental activity using "
-        "DescJocky descriptors (optional external merge), UMAP-based cluster splitting, "
+        "DescJocky descriptors (optional external merge), UMAP cluster or activity-sorted splitting, "
         "sequential and genetic feature selection, Random Forest modeling with automatic "
         "fallback to other regressors when HPO fails."
     )
@@ -107,6 +107,21 @@ def render_sidebar_config() -> WorkflowConfig:
     mapping = st.session_state.get("column_mapping", {})
 
     test_fraction = st.sidebar.slider("External test fraction", 0.1, 0.4, 0.2, 0.05)
+    split_method = st.sidebar.selectbox(
+        "Splitting method",
+        options=["umap_cluster", "sorted"],
+        format_func=lambda m: {
+            "umap_cluster": "UMAP cluster",
+            "sorted": "Sorted (by activity)",
+        }[m],
+        index=0,
+        help=(
+            "UMAP cluster: structure-aware split within chemical clusters. "
+            "Sorted: rank compounds by activity and send every k-th to test "
+            "(k ≈ 1 / test fraction; 20% → every 5th). "
+            "Min and max activity always stay in the training set."
+        ),
+    )
     random_seed = st.sidebar.number_input("Random seed", 0, 99999, 42)
     missing_thresh = st.sidebar.slider("Missing value threshold", 0.0, 0.5, 0.2, 0.05)
     near_const = st.sidebar.number_input("Near-constant std threshold", 0.0, 0.1, 0.01, 0.001)
@@ -148,9 +163,12 @@ def render_sidebar_config() -> WorkflowConfig:
         elif "_external_descriptor_bytes" not in st.session_state:
             st.session_state._external_descriptor_bytes = None
 
-    with st.sidebar.expander("UMAP settings"):
-        n_neighbors = st.number_input("UMAP n_neighbors", 2, 50, 15)
-        min_dist = st.number_input("UMAP min_dist", 0.0, 1.0, 0.1)
+    n_neighbors = 15
+    min_dist = 0.1
+    if split_method == "umap_cluster":
+        with st.sidebar.expander("UMAP settings"):
+            n_neighbors = st.number_input("UMAP n_neighbors", 2, 50, 15)
+            min_dist = st.number_input("UMAP min_dist", 0.0, 1.0, 0.1)
 
     with st.sidebar.expander("GA settings"):
         pop_size = st.number_input("Population size", 10, 200, 50)
@@ -266,6 +284,7 @@ def render_sidebar_config() -> WorkflowConfig:
 
     return WorkflowConfig(
         test_fraction=test_fraction,
+        split_method=split_method,
         random_seed=int(random_seed),
         output_dir=output_dir,
         smiles_column=mapping.get("smiles", ""),
