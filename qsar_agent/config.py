@@ -104,6 +104,14 @@ class SFSFixedGAExpansionSettings(BaseModel):
     output_subdir: str = "sfs_fixed_ga_plus2"
 
 
+class SFSSubsetBranchSettings(BaseModel):
+    """Compete with the one-SE SFS subset (default params and optional HPO)."""
+
+    enabled: bool = True
+    output_subdir: str = "sfs_subset"
+    hpo_output_subdir: str = "sfs_subset_hpo"
+
+
 class WorkflowConfig(BaseModel):
     val_fraction: float = 0.10
     test_fraction: float = 0.10
@@ -121,6 +129,9 @@ class WorkflowConfig(BaseModel):
     model_fallback: ModelFallbackSettings = Field(default_factory=ModelFallbackSettings)
     sfs_fixed_ga_expansion: SFSFixedGAExpansionSettings = Field(
         default_factory=SFSFixedGAExpansionSettings
+    )
+    sfs_subset_branch: SFSSubsetBranchSettings = Field(
+        default_factory=SFSSubsetBranchSettings
     )
     smiles_column: str = ""
     activity_column: str = ""

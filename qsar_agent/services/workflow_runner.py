@@ -40,6 +40,7 @@ from qsar_agent.tools.sequential_feature_selection import run_sequential_feature
 from qsar_agent.tools.umap_split import create_split
 from qsar_agent.schemas.model_fallback import BranchExternalArtifacts, ModelBranchResult
 from qsar_agent.tools.model_fallback import run_model_fallback_if_needed
+from qsar_agent.tools.sfs_subset_branch import attach_sfs_subset_branches
 
 logger = get_logger()
 
@@ -259,6 +260,7 @@ class WorkflowRunner:
             def hpo_log(msg: str) -> None:
                 append_log(self.state.logs, msg)
 
+            grid_proposer = None
             if not hpo_cfg.enabled:
                 self._skip_stage("baseline_cv_diagnostics", "HPO disabled")
                 self._skip_stage("overfitting_assessment", "HPO disabled")
@@ -370,7 +372,7 @@ class WorkflowRunner:
                         rr.search_results_path
                     )
 
-            # Build RF branch result and optionally try fallback / SFS-fixed GA expansion
+            # Build RF branch, attach SFS-subset competitors, then optional fallbacks.
             rf_branch = ModelBranchResult(
                 estimator=self.config.model.estimator,
                 model_config_snapshot=hpo_result.final_model_config,
@@ -379,6 +381,17 @@ class WorkflowRunner:
                 feature_count=feature_count,
                 ga=ga,
                 hpo_result=hpo_result,
+            )
+            rf_branch = attach_sfs_subset_branches(
+                rf_branch,
+                train_path=preprocessing.preprocessed_train_path,
+                run_dir=self.run_dir,
+                model_config=self.config.model,
+                hpo_config=hpo_cfg,
+                settings=self.config.sfs_subset_branch,
+                grid_proposer=grid_proposer,
+                log_callback=hpo_log,
+                val_path=preprocessing.preprocessed_val_path,
             )
 
             winning_estimator = self.config.model.estimator
@@ -394,17 +407,11 @@ class WorkflowRunner:
             hpo_metadata.setdefault("winner_is_expansion", False)
             hpo_metadata.setdefault("winner_expansion_label", "")
 
-            rf_acceptable = (
-                hpo_result.final_selection is not None
-                and hpo_result.final_selection.assessment.is_acceptable
-            )
-
             if not hpo_result.final_selection:
                 self._skip_stage("model_fallback", "No HPO selection available")
-            elif rf_acceptable:
-                self._skip_stage("model_fallback", "RF model acceptable")
             else:
-                # RF not acceptable: run expansion (+ fallbacks if enabled) and compete.
+                # Always compare RF variants (GA vs SFS subset). Fallbacks only
+                # run inside this helper when no RF variant is acceptable.
                 self._start_stage("model_fallback")
 
                 def grid_proposer_fallback(**kwargs):

@@ -39,13 +39,13 @@ def branch_display_label(branch: ModelBranchResult) -> str:
 
 
 def flatten_branches(*roots: ModelBranchResult | None) -> list[ModelBranchResult]:
-    """Collect unique branch results (parent + expansion) by branch_dir."""
+    """Collect unique branch results (parent + SFS subset + expansion) by branch_dir."""
     out: list[ModelBranchResult] = []
     seen: set[str] = set()
     for root in roots:
         if root is None:
             continue
-        for branch in (root, root.expansion):
+        for branch in (root, root.sfs_subset, root.sfs_subset_hpo, root.expansion):
             if branch is None:
                 continue
             if branch.hpo_result.final_selection is None:

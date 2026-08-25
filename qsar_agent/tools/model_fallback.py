@@ -42,14 +42,12 @@ def run_model_fallback_if_needed(
     config_snapshot: dict[str, Any] | None = None,
 ) -> ModelFallbackResult:
     """
-    Try fallback estimators when RF HPO did not find an acceptable model.
+    Compare RF variants (GA, SFS subset, expansion) and optional fallbacks.
 
-    Compares RF + all fallback branches (and any SFS-fixed GA expansions) and
-    returns the globally best candidate. When ``test_path`` is provided, also
-    fits each completed branch on train and writes scatter/Williams plots into
-    that branch directory.
+    Fallbacks run only when no RF variant is acceptable. When ``test_path`` is
+    provided, each completed branch is fit on train and scored on external test.
     """
-    rf_acceptable = (
+    rf_ga_acceptable = (
         rf_branch.hpo_result.final_selection is not None
         and rf_branch.hpo_result.final_selection.assessment.is_acceptable
     )
@@ -57,8 +55,8 @@ def run_model_fallback_if_needed(
     fallback_settings = workflow_config.model_fallback
     expansion_settings = workflow_config.sfs_fixed_ga_expansion
 
-    # Ensure RF expansion exists when RF is not acceptable (also when fallback disabled).
-    if not rf_acceptable and rf_branch.expansion is None:
+    # Ensure RF expansion exists when RF GA is not acceptable (also when fallback disabled).
+    if not rf_ga_acceptable and rf_branch.expansion is None:
         from qsar_agent.config import ModelConfig
 
         if rf_branch.model_config_snapshot:
@@ -81,8 +79,12 @@ def run_model_fallback_if_needed(
         if expansion is not None:
             rf_branch = rf_branch.model_copy(update={"expansion": expansion})
 
-    if rf_acceptable or not fallback_settings.enabled:
-        reason = "RF acceptable" if rf_acceptable else "Model fallback disabled"
+    rf_variant_acceptable = _any_variant_acceptable(rf_branch)
+
+    if rf_variant_acceptable or not fallback_settings.enabled:
+        reason = (
+            "RF variant acceptable" if rf_variant_acceptable else "Model fallback disabled"
+        )
         if log_callback:
             log_callback(f"Model fallback skipped: {reason}.")
         candidates = _collect_candidates(rf_branch)
@@ -151,6 +153,7 @@ def run_model_fallback_if_needed(
             log_callback=log_callback,
             explain_feature_count=False,
             expansion_settings=expansion_settings,
+            sfs_subset_settings=workflow_config.sfs_subset_branch,
             val_path=val_path,
         )
         fallback_branches.append(branch)
@@ -230,10 +233,29 @@ def _maybe_evaluate_branches(
     return [art for art, _modeling, _ad in results]
 
 
+def _iter_variant_branches(branch: ModelBranchResult):
+    yield branch
+    yield branch.sfs_subset
+    yield branch.sfs_subset_hpo
+    yield branch.expansion
+
+
+def _any_variant_acceptable(branch: ModelBranchResult) -> bool:
+    for child in _iter_variant_branches(branch):
+        if child is None:
+            continue
+        fs = child.hpo_result.final_selection
+        if fs is not None and fs.assessment.is_acceptable:
+            return True
+    return False
+
+
 def _collect_candidates(branch: ModelBranchResult) -> list[dict]:
-    cands = [_branch_to_candidate(branch)]
-    if branch.expansion is not None and branch.expansion.hpo_result.final_selection is not None:
-        cands.append(_branch_to_candidate(branch.expansion))
+    cands: list[dict] = []
+    for child in _iter_variant_branches(branch):
+        if child is None or child.hpo_result.final_selection is None:
+            continue
+        cands.append(_branch_to_candidate(child))
     return cands
 
 
@@ -283,9 +305,13 @@ def _write_comparison(run_dir: Path, cross: CrossModelSelection) -> None:
         f"{cross.selection_rationale}\n",
     ]
     if cross.winner_is_expansion:
-        md_lines.append(
-            f"**Winner source:** SFS-fixed GA expansion (`{cross.winner_expansion_label}`)\n"
-        )
+        label = cross.winner_expansion_label
+        if label in ("sfs_subset", "sfs_subset_hpo"):
+            md_lines.append(f"**Winner source:** SFS subset (`{label}`)\n")
+        else:
+            md_lines.append(
+                f"**Winner source:** SFS-fixed GA expansion (`{label}`)\n"
+            )
     if cross.warning:
         md_lines.append(f"**Warning:** {cross.warning}\n")
     md_lines.append("\n## All candidates\n")

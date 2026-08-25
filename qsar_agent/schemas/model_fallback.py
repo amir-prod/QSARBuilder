@@ -21,6 +21,10 @@ class ModelBranchResult(BaseModel):
     hpo_result: HPOResult
     # Optional SFS-fixed + GA expansion branch (separate folder artifacts).
     expansion: ModelBranchResult | None = None
+    # One-SE SFS subset with default hyperparameters.
+    sfs_subset: ModelBranchResult | None = None
+    # Same SFS subset after HPO, only when HPO selected non-baseline params.
+    sfs_subset_hpo: ModelBranchResult | None = None
     # True when this branch itself is an expansion (for comparison labels).
     is_expansion: bool = False
     expansion_label: str = ""
