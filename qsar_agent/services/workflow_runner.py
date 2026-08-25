@@ -24,6 +24,7 @@ from qsar_agent.services.artifact_manager import (
 )
 from qsar_agent.services.plotting import plot_sfs_r2
 from qsar_agent.tools.branch_external_evaluation import (
+    append_external_eval,
     evaluate_branch_on_external_test,
     find_winning_branch,
     flatten_branches,
@@ -372,7 +373,19 @@ class WorkflowRunner:
                         rr.search_results_path
                     )
 
-            # Build RF branch, attach SFS-subset competitors, then optional fallbacks.
+            # Build RF branch, plot as soon as each variant is ready, then fallbacks.
+            activity_label = self.config.activity_column or "activity"
+            branch_external_artifacts: list[BranchExternalArtifacts] = []
+            eval_kwargs = dict(
+                train_path=preprocessing.preprocessed_train_path,
+                test_path=preprocessing.preprocessed_test_path,
+                activity_label=activity_label,
+                dataset_hash=dataset_hash,
+                config_snapshot=self.config.to_dict(),
+                log_callback=hpo_log,
+                val_path=preprocessing.preprocessed_val_path,
+                run_dir=self.run_dir,
+            )
             rf_branch = ModelBranchResult(
                 estimator=self.config.model.estimator,
                 model_config_snapshot=hpo_result.final_model_config,
@@ -382,6 +395,8 @@ class WorkflowRunner:
                 ga=ga,
                 hpo_result=hpo_result,
             )
+            append_external_eval(branch_external_artifacts, rf_branch, **eval_kwargs)
+
             rf_branch = attach_sfs_subset_branches(
                 rf_branch,
                 train_path=preprocessing.preprocessed_train_path,
@@ -393,13 +408,18 @@ class WorkflowRunner:
                 log_callback=hpo_log,
                 val_path=preprocessing.preprocessed_val_path,
             )
+            append_external_eval(
+                branch_external_artifacts,
+                rf_branch.sfs_subset,
+                rf_branch.sfs_subset_hpo,
+                **eval_kwargs,
+            )
 
             winning_estimator = self.config.model.estimator
             winning_features = ga.selected_features
             model_comparison_summary = ""
             winner_is_expansion = False
             winner_expansion_label = ""
-            branch_external_artifacts: list[BranchExternalArtifacts] = []
             fallback_branches: list[ModelBranchResult] = []
             hpo_metadata.setdefault("winning_estimator", winning_estimator)
             hpo_metadata.setdefault("model_fallback_triggered", False)
@@ -430,9 +450,10 @@ class WorkflowRunner:
                     hpo_config=hpo_cfg,
                     grid_proposer=grid_proposer_fallback if hpo_cfg.enabled else None,
                     log_callback=hpo_log,
-                    activity_label=self.config.activity_column or "activity",
+                    activity_label=activity_label,
                     dataset_hash=dataset_hash,
                     config_snapshot=self.config.to_dict(),
+                    existing_artifacts=branch_external_artifacts,
                 )
                 rf_branch = fallback_result.rf_branch
                 fallback_branches = list(fallback_result.fallback_branches)
@@ -471,7 +492,6 @@ class WorkflowRunner:
             # External evaluation: every completed branch gets scatter + Williams in its dir.
             # Winner artifacts are promoted to run root (no second train for that branch).
             self._start_stage("final_model")
-            activity_label = self.config.activity_column or "activity"
             if not branch_external_artifacts:
                 art, modeling, ad = evaluate_branch_on_external_test(
                     rf_branch,

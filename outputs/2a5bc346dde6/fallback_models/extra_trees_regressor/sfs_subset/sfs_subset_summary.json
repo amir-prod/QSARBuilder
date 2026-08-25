@@ -1,0 +1,13 @@
+{
+  "estimator": "ExtraTreesRegressor",
+  "selected_features": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge"
+  ],
+  "n_features": 2,
+  "baseline_source": "baseline",
+  "hpo_source": "baseline",
+  "mean_cv_r2_baseline": 0.46570876646651954,
+  "mean_cv_r2_hpo": 0.46570876646651954,
+  "subset_dir": "outputs/2a5bc346dde6/fallback_models/extra_trees_regressor/sfs_subset"
+}

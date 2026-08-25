@@ -1,0 +1,79 @@
+{
+  "max_hpo_rounds": 3,
+  "rounds_completed": 3,
+  "baseline_acceptable": false,
+  "hpo_triggered": true,
+  "hpo_trigger_reason": "Both training R\u00b2 (0.377) and CV R\u00b2 (0.327) are low. The model lacks capacity or informative descriptors.",
+  "iteration_records": [
+    {
+      "round": 1,
+      "phase": "start",
+      "baseline_cv_r2": 0.3267702526075908
+    },
+    {
+      "round": 1,
+      "candidates": 24,
+      "best_cv_r2": 0.3267702526075908,
+      "gap": 0.05055675798757031,
+      "status": "underfit",
+      "best_params": {
+        "max_iter": 100,
+        "n_components": 3,
+        "scale": true
+      }
+    },
+    {
+      "round": 2,
+      "phase": "start",
+      "baseline_cv_r2": 0.3267702526075908
+    },
+    {
+      "round": 2,
+      "candidates": 12,
+      "best_cv_r2": 0.3267702526075908,
+      "gap": 0.05055675798757031,
+      "status": "underfit",
+      "best_params": {
+        "max_iter": 100,
+        "n_components": 3,
+        "scale": true
+      }
+    },
+    {
+      "round": 3,
+      "phase": "start",
+      "baseline_cv_r2": 0.3267702526075908
+    },
+    {
+      "round": 3,
+      "candidates": 16,
+      "best_cv_r2": 0.3267702526075908,
+      "gap": 0.05055675798757031,
+      "status": "underfit",
+      "best_params": {
+        "max_iter": 100,
+        "n_components": 3,
+        "scale": true
+      }
+    }
+  ],
+  "logs": [
+    "Baseline CV diagnostics started.",
+    "Baseline CV diagnostics completed.",
+    "Baseline holdout validation R\u00b2 = 0.107.",
+    "HPO dataset context for grid proposals: n_train_samples=153, n_features=3.",
+    "Overfitting assessment: underfit. Train-CV R\u00b2 gap = 0.051.",
+    "Model appears underfit. Starting HPO.",
+    "HPO round 1/3 started.",
+    "HPO round 1 holdout validation R\u00b2 = 0.107.",
+    "HPO round 1/3 completed. Best CV R\u00b2 = 0.327. Gap = 0.051.",
+    "HPO round 2/3 started.",
+    "HPO round 2 holdout validation R\u00b2 = 0.107.",
+    "HPO round 2/3 completed. Best CV R\u00b2 = 0.327. Gap = 0.051.",
+    "HPO round 3/3 started.",
+    "HPO round 3 holdout validation R\u00b2 = 0.107.",
+    "HPO round 3/3 completed. Best CV R\u00b2 = 0.327. Gap = 0.051.",
+    "HPO round 3/3 completed. Maximum HPO rounds reached."
+  ],
+  "final_source": "hpo_round_1"
+}

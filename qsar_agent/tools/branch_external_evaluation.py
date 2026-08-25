@@ -15,6 +15,7 @@ from qsar_agent.schemas.applicability_domain import (
 )
 from qsar_agent.schemas.model_fallback import BranchExternalArtifacts, ModelBranchResult
 from qsar_agent.schemas.modeling import Metrics, ModelingResult
+from qsar_agent.services.artifact_manager import save_json
 from qsar_agent.tools.applicability_domain import calculate_applicability_domain
 from qsar_agent.tools.final_model import train_and_evaluate_final_model
 
@@ -168,6 +169,61 @@ def evaluate_branches_on_external_test(
                 f"train R²={art.train_r2:.3f}{val_txt}, test R²={art.test_r2:.3f}."
             )
     return results
+
+
+def persist_branch_external_artifacts(
+    run_dir: Path, artifacts: list[BranchExternalArtifacts]
+) -> None:
+    save_json(run_dir / "branch_external_artifacts.json", [a.model_dump() for a in artifacts])
+
+
+def append_external_eval(
+    artifacts: list[BranchExternalArtifacts],
+    *branches: ModelBranchResult | None,
+    train_path: str | Path,
+    test_path: str | Path | None,
+    activity_label: str = "activity",
+    dataset_hash: str = "",
+    config_snapshot: dict[str, Any] | None = None,
+    log_callback: Callable[[str], None] | None = None,
+    val_path: str | Path | None = None,
+    run_dir: Path | None = None,
+) -> list[BranchExternalArtifacts]:
+    """Fit and plot scatter + Williams for each new branch as soon as it is ready."""
+    if test_path is None:
+        return artifacts
+    seen = {str(Path(a.branch_dir).resolve()) for a in artifacts if a.branch_dir}
+    for branch in branches:
+        if branch is None or not branch.branch_dir:
+            continue
+        if branch.hpo_result.final_selection is None:
+            continue
+        key = str(Path(branch.branch_dir).resolve())
+        if key in seen:
+            continue
+        label = branch_display_label(branch)
+        if log_callback:
+            log_callback(f"External evaluation for branch: {label}")
+        art, _modeling, _ad = evaluate_branch_on_external_test(
+            branch,
+            train_path=train_path,
+            test_path=test_path,
+            activity_label=activity_label,
+            dataset_hash=dataset_hash,
+            config_snapshot=config_snapshot,
+            val_path=val_path,
+        )
+        artifacts.append(art)
+        seen.add(key)
+        if log_callback:
+            val_txt = f", val R²={art.val_r2:.3f}" if art.val_r2 is not None else ""
+            log_callback(
+                f"External evaluation complete for {label}: "
+                f"train R²={art.train_r2:.3f}{val_txt}, test R²={art.test_r2:.3f}."
+            )
+        if run_dir is not None:
+            persist_branch_external_artifacts(run_dir, artifacts)
+    return artifacts
 
 
 def promote_branch_artifacts_to_run_dir(branch_dir: str | Path, run_dir: Path) -> dict[str, str]:

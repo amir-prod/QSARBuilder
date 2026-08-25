@@ -1,0 +1,10 @@
+{
+  "best_cv_r2": 0.510550677967759,
+  "best_feature_count": 5,
+  "selected_feature_count": 4,
+  "selected_cv_r2": 0.5015080471746154,
+  "best_combined_r2": 0.40160412594295913,
+  "selected_combined_r2": 0.3988719435804216,
+  "selected_val_r2": 0.2962358399862278,
+  "explanation": "The highest combined R\u00b2 (0.5\u00b7CV + 0.5\u00b7val) was 0.4016 at 5 descriptor(s) (CV R\u00b2 = 0.5106, val R\u00b2 = 0.2927). Applying the one-standard-error rule with CV std as SE (threshold = 0.3643), the smallest feature count within one SE of the best is 4 descriptor(s) with combined R\u00b2 = 0.3989 (CV R\u00b2 = 0.5015, val R\u00b2 = 0.2962). Training and cross-validation performance are reasonably aligned."
+}

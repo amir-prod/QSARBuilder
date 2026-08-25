@@ -1,0 +1,16 @@
+{
+  "selected_features": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA7"
+  ],
+  "fixed_features": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge"
+  ],
+  "extra_features": [
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA7"
+  ]
+}

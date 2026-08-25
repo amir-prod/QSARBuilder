@@ -1,0 +1,34 @@
+{
+  "train": {
+    "r2": 0.5685788008222481,
+    "rmse": 0.6368729516954753,
+    "mae": 0.4923111111111111,
+    "n_samples": 153
+  },
+  "test": {
+    "r2": 0.30469557982490103,
+    "rmse": 0.8454767947887842,
+    "mae": 0.6077263157894738,
+    "n_samples": 19
+  },
+  "selected_features": [
+    "RDKit_MinPartialCharge"
+  ],
+  "hyperparameter_optimization": {
+    "enabled": true,
+    "rounds_completed": 3,
+    "final_model_source": "baseline",
+    "final_params": {
+      "metric": "minkowski",
+      "n_neighbors": 5,
+      "p": 2,
+      "weights": "uniform"
+    }
+  },
+  "val": {
+    "r2": 0.3143248779302582,
+    "rmse": 0.8041445575726321,
+    "mae": 0.5994421052631578,
+    "n_samples": 19
+  }
+}

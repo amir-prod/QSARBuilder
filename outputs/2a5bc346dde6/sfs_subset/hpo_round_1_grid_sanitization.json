@@ -1,0 +1,91 @@
+{
+  "original_grid": {
+    "n_estimators": [
+      200,
+      500
+    ],
+    "max_depth": [
+      3,
+      5,
+      8,
+      null
+    ],
+    "min_samples_split": [
+      8,
+      16
+    ],
+    "min_samples_leaf": [
+      2,
+      5,
+      10
+    ],
+    "max_features": [
+      "sqrt",
+      1.0
+    ],
+    "bootstrap": [
+      true,
+      false
+    ],
+    "max_samples": [
+      0.6,
+      0.8,
+      null
+    ],
+    "criterion": [
+      "squared_error",
+      "absolute_error"
+    ]
+  },
+  "sanitized_grid": {
+    "n_estimators": [
+      200
+    ],
+    "max_depth": [
+      3,
+      null
+    ],
+    "min_samples_split": [
+      8,
+      16
+    ],
+    "min_samples_leaf": [
+      2,
+      10
+    ],
+    "max_features": [
+      "sqrt",
+      1.0
+    ],
+    "bootstrap": [
+      true,
+      false
+    ],
+    "criterion": [
+      "squared_error",
+      "absolute_error"
+    ]
+  },
+  "removed_params": [
+    "max_samples"
+  ],
+  "removed_values": {
+    "max_samples": [
+      0.6,
+      0.8,
+      null
+    ]
+  },
+  "shrink_steps": [
+    "Removed max_depth=8 to reduce candidates (remaining estimate=288).",
+    "Removed max_depth=5 to reduce candidates (remaining estimate=192).",
+    "Removed min_samples_leaf=5 to reduce candidates (remaining estimate=128).",
+    "Removed n_estimators=500 to reduce candidates (remaining estimate=64)."
+  ],
+  "candidate_count": 64,
+  "used_randomized_search": false,
+  "warnings": [
+    "Removed max_samples because bootstrap includes False (incompatible with sklearn RandomForestRegressor).",
+    "Grid has 384 combinations; shrinking to <= 120."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "status": "good",
+  "is_acceptable": true,
+  "is_overfit": false,
+  "is_underfit": false,
+  "is_unstable": false,
+  "is_severe_overfit": false,
+  "mean_train_r2": 0.6176183020715961,
+  "mean_cv_r2": 0.5015080471746154,
+  "train_cv_r2_gap": 0.11611025489698068,
+  "cv_r2_std": 0.11226830392126978,
+  "warnings": [],
+  "explanation": "CV R\u00b2 (0.502) is acceptable, train-CV gap (0.116) is within limits, and CV variability (std=0.112) is acceptable."
+}

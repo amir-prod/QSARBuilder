@@ -1,0 +1,12 @@
+{
+  "mean_train_r2": 0.6959573255182375,
+  "mean_cv_r2": 0.38794502131745967,
+  "std_cv_r2": 0.1499156005507957,
+  "mean_train_rmse": 0.0,
+  "mean_cv_rmse": 0.0,
+  "mean_train_mae": 0.0,
+  "mean_cv_mae": 0.0,
+  "train_cv_r2_gap": 0.30801230420077785,
+  "n_folds": 5,
+  "holdout_val_r2": null
+}

@@ -1,0 +1,61 @@
+{
+  "original_grid": {
+    "C": [
+      0.1,
+      0.3,
+      1,
+      3,
+      10
+    ],
+    "epsilon": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "gamma": [
+      "scale",
+      "auto",
+      0.01,
+      0.1
+    ],
+    "kernel": [
+      "linear",
+      "rbf",
+      "poly"
+    ]
+  },
+  "sanitized_grid": {
+    "C": [
+      0.1,
+      0.3,
+      10.0
+    ],
+    "epsilon": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "gamma": [
+      "scale",
+      "auto",
+      0.01,
+      0.1
+    ],
+    "kernel": [
+      "linear",
+      "rbf",
+      "poly"
+    ]
+  },
+  "removed_params": [],
+  "removed_values": {},
+  "shrink_steps": [
+    "Removed C=1.0 to reduce candidates (remaining estimate=144).",
+    "Removed C=3.0 to reduce candidates (remaining estimate=108)."
+  ],
+  "candidate_count": 108,
+  "used_randomized_search": false,
+  "warnings": [
+    "Grid has 180 combinations; shrinking to <= 120."
+  ]
+}

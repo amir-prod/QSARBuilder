@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 from qsar_agent.config import (
     GAConfig,
@@ -13,8 +13,9 @@ from qsar_agent.config import (
     SFSSubsetBranchSettings,
 )
 from qsar_agent.schemas.hyperparameter_optimization import AgentGridProposal, HPOConfig
-from qsar_agent.schemas.model_fallback import ModelBranchResult
+from qsar_agent.schemas.model_fallback import BranchExternalArtifacts, ModelBranchResult
 from qsar_agent.services.plotting import plot_sfs_r2
+from qsar_agent.tools.branch_external_evaluation import append_external_eval
 from qsar_agent.tools.feature_count_selection import (
     save_feature_count_selection,
     select_feature_count_one_se_rule,
@@ -41,8 +42,17 @@ def run_model_branch(
     expansion_settings: SFSFixedGAExpansionSettings | None = None,
     sfs_subset_settings: SFSSubsetBranchSettings | None = None,
     val_path: str | Path | None = None,
+    test_path: str | Path | None = None,
+    external_artifacts: list[BranchExternalArtifacts] | None = None,
+    activity_label: str = "activity",
+    dataset_hash: str = "",
+    config_snapshot: dict[str, Any] | None = None,
 ) -> ModelBranchResult:
-    """Run SFS → feature count → GA → HPO for a single estimator."""
+    """Run SFS → feature count → GA → HPO for a single estimator.
+
+    When ``test_path`` is set, scatter and Williams plots are written as soon as
+    each variant (GA, SFS subset, expansion) finishes HPO.
+    """
     branch_dir = output_subdir if output_subdir is not None else run_dir
     branch_dir.mkdir(parents=True, exist_ok=True)
 
@@ -110,6 +120,18 @@ def run_model_branch(
         ga=ga,
         hpo_result=hpo_result,
     )
+    artifacts = external_artifacts if external_artifacts is not None else []
+    eval_kwargs = dict(
+        train_path=train_path,
+        test_path=test_path,
+        activity_label=activity_label,
+        dataset_hash=dataset_hash,
+        config_snapshot=config_snapshot,
+        log_callback=log_callback,
+        val_path=val_path,
+        run_dir=run_dir,
+    )
+    append_external_eval(artifacts, branch, **eval_kwargs)
 
     branch = attach_sfs_subset_branches(
         branch,
@@ -121,6 +143,9 @@ def run_model_branch(
         grid_proposer=grid_proposer,
         log_callback=log_callback,
         val_path=val_path,
+    )
+    append_external_eval(
+        artifacts, branch.sfs_subset, branch.sfs_subset_hpo, **eval_kwargs
     )
 
     expansion = run_sfs_fixed_ga_expansion(
@@ -137,5 +162,6 @@ def run_model_branch(
     )
     if expansion is not None:
         branch = branch.model_copy(update={"expansion": expansion})
+        append_external_eval(artifacts, expansion, **eval_kwargs)
 
     return branch

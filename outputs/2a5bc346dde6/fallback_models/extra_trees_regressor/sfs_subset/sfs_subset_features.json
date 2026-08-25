@@ -1,0 +1,7 @@
+{
+  "selected_features": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge"
+  ],
+  "source": "sfs_subset"
+}

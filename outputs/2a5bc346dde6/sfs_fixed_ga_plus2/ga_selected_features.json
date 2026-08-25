@@ -1,0 +1,16 @@
+{
+  "selected_features": [
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SMR_VSA6",
+    "RDKit_PEOE_VSA6",
+    "RDKit_SlogP_VSA11"
+  ],
+  "fixed_features": [
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SMR_VSA6"
+  ],
+  "extra_features": [
+    "RDKit_PEOE_VSA6",
+    "RDKit_SlogP_VSA11"
+  ]
+}

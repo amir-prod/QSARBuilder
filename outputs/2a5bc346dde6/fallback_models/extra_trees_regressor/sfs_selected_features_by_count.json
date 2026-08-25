@@ -1,0 +1,27 @@
+{
+  "1": [
+    "RDKit_MaxAbsPartialCharge"
+  ],
+  "2": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge"
+  ],
+  "3": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_fr_NH1"
+  ],
+  "4": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1"
+  ],
+  "5": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_PEOE_VSA2",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1"
+  ]
+}

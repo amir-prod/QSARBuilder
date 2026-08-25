@@ -13,6 +13,7 @@ from qsar_agent.schemas.feature_selection import FeatureCountSelection, GAResult
 from qsar_agent.schemas.hyperparameter_optimization import FinalModelSelection, HPOResult
 from qsar_agent.schemas.model_fallback import ModelBranchResult
 from qsar_agent.tools.branch_external_evaluation import (
+    append_external_eval,
     evaluate_branch_on_external_test,
     evaluate_branches_on_external_test,
     find_winning_branch,
@@ -166,3 +167,44 @@ def test_flatten_includes_expansion(tmp_path):
     flat = flatten_branches(parent)
     assert len(flat) == 2
     assert any(b.is_expansion for b in flat)
+
+
+def test_append_external_eval_plots_immediately_and_skips_duplicates(tmp_path):
+    train_path, test_path = _make_train_test(tmp_path)
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+    rf = _branch(run_dir / "rf")
+    artifacts = []
+    append_external_eval(
+        artifacts,
+        rf,
+        train_path=train_path,
+        test_path=test_path,
+        run_dir=run_dir,
+    )
+    assert len(artifacts) == 1
+    assert (Path(rf.branch_dir) / "prediction_scatter.png").exists()
+    assert (Path(rf.branch_dir) / "williams_plot.png").exists()
+    assert (run_dir / "branch_external_artifacts.json").exists()
+
+    svr_dir = run_dir / "fallback_models" / "svr"
+    svr = _branch(svr_dir, estimator="SVR")
+    svr = svr.model_copy(
+        update={
+            "model_config_snapshot": ModelConfig(
+                estimator="SVR", params={"C": 1.0}, n_jobs=1
+            ).model_dump()
+        }
+    )
+    assert not (Path(svr.branch_dir) / "prediction_scatter.png").exists()
+    append_external_eval(
+        artifacts,
+        rf,
+        svr,
+        train_path=train_path,
+        test_path=test_path,
+        run_dir=run_dir,
+    )
+    assert len(artifacts) == 2
+    assert (Path(svr.branch_dir) / "prediction_scatter.png").exists()
+    assert (Path(svr.branch_dir) / "williams_plot.png").exists()

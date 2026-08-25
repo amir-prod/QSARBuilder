@@ -1,0 +1,8 @@
+{
+  "selected_features": [
+    "RDKit_MinAbsEStateIndex",
+    "RDKit_MolLogP",
+    "RDKit_SMR_VSA10",
+    "RDKit_SMR_VSA9"
+  ]
+}

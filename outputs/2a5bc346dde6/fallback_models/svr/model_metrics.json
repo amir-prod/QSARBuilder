@@ -1,0 +1,37 @@
+{
+  "train": {
+    "r2": 0.5251367609458129,
+    "rmse": 0.6681690254273759,
+    "mae": 0.48697729845883386,
+    "n_samples": 153
+  },
+  "test": {
+    "r2": 0.41311034498206933,
+    "rmse": 0.7767699646358797,
+    "mae": 0.6184799290614021,
+    "n_samples": 19
+  },
+  "selected_features": [
+    "RDKit_MinAbsEStateIndex",
+    "RDKit_MolLogP",
+    "RDKit_SMR_VSA10",
+    "RDKit_SMR_VSA9"
+  ],
+  "hyperparameter_optimization": {
+    "enabled": true,
+    "rounds_completed": 3,
+    "final_model_source": "hpo_round_1",
+    "final_params": {
+      "C": 0.3,
+      "epsilon": 0.2,
+      "gamma": "scale",
+      "kernel": "rbf"
+    }
+  },
+  "val": {
+    "r2": 0.25705713171899125,
+    "rmse": 0.8370523881767966,
+    "mae": 0.6392288921167865,
+    "n_samples": 19
+  }
+}

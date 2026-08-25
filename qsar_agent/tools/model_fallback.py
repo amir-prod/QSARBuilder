@@ -18,7 +18,7 @@ from qsar_agent.schemas.model_fallback import (
 )
 from qsar_agent.services.artifact_manager import save_json
 from qsar_agent.tools.branch_external_evaluation import (
-    evaluate_branches_on_external_test,
+    append_external_eval,
     flatten_branches,
 )
 from qsar_agent.tools.hyperparameter_optimization import select_best_across_models
@@ -40,13 +40,32 @@ def run_model_fallback_if_needed(
     activity_label: str = "activity",
     dataset_hash: str = "",
     config_snapshot: dict[str, Any] | None = None,
+    existing_artifacts: list[BranchExternalArtifacts] | None = None,
 ) -> ModelFallbackResult:
     """
     Compare RF variants (GA, SFS subset, expansion) and optional fallbacks.
 
-    Fallbacks run only when no RF variant is acceptable. When ``test_path`` is
-    provided, each completed branch is fit on train and scored on external test.
+    Fallbacks run only when no RF variant is acceptable. Scatter and Williams
+    plots are written as soon as each variant finishes, not in a final batch.
     """
+    artifacts = list(existing_artifacts or [])
+    eval_kwargs = dict(
+        train_path=train_path,
+        test_path=test_path,
+        activity_label=activity_label,
+        dataset_hash=dataset_hash,
+        config_snapshot=config_snapshot,
+        log_callback=log_callback,
+        val_path=val_path,
+        run_dir=run_dir,
+    )
+    append_external_eval(
+        artifacts,
+        rf_branch,
+        rf_branch.sfs_subset,
+        rf_branch.sfs_subset_hpo,
+        **eval_kwargs,
+    )
     rf_ga_acceptable = (
         rf_branch.hpo_result.final_selection is not None
         and rf_branch.hpo_result.final_selection.assessment.is_acceptable
@@ -78,6 +97,7 @@ def run_model_fallback_if_needed(
         )
         if expansion is not None:
             rf_branch = rf_branch.model_copy(update={"expansion": expansion})
+            append_external_eval(artifacts, expansion, **eval_kwargs)
 
     rf_variant_acceptable = _any_variant_acceptable(rf_branch)
 
@@ -92,15 +112,8 @@ def run_model_fallback_if_needed(
             best = select_best_across_models(candidates)
             cross = _cross_from_best(best)
             _write_comparison(run_dir, cross)
-            artifacts = _maybe_evaluate_branches(
-                [rf_branch],
-                train_path=train_path,
-                test_path=test_path,
-                val_path=val_path,
-                activity_label=activity_label,
-                dataset_hash=dataset_hash,
-                config_snapshot=config_snapshot,
-                log_callback=log_callback,
+            append_external_eval(
+                artifacts, *flatten_branches(rf_branch), **eval_kwargs
             )
             return ModelFallbackResult(
                 triggered=False,
@@ -112,15 +125,8 @@ def run_model_fallback_if_needed(
                 branch_external_artifacts=artifacts,
             )
         cross = _cross_selection_from_branch(rf_branch, reason)
-        artifacts = _maybe_evaluate_branches(
-            [rf_branch],
-            train_path=train_path,
-            test_path=test_path,
-            val_path=val_path,
-            activity_label=activity_label,
-            dataset_hash=dataset_hash,
-            config_snapshot=config_snapshot,
-            log_callback=log_callback,
+        append_external_eval(
+            artifacts, *flatten_branches(rf_branch), **eval_kwargs
         )
         return ModelFallbackResult(
             triggered=False,
@@ -155,6 +161,11 @@ def run_model_fallback_if_needed(
             expansion_settings=expansion_settings,
             sfs_subset_settings=workflow_config.sfs_subset_branch,
             val_path=val_path,
+            test_path=test_path,
+            external_artifacts=artifacts,
+            activity_label=activity_label,
+            dataset_hash=dataset_hash,
+            config_snapshot=config_snapshot,
         )
         fallback_branches.append(branch)
         if log_callback and branch.hpo_result.final_selection:
@@ -180,16 +191,7 @@ def run_model_fallback_if_needed(
         )
 
     all_roots = [rf_branch, *fallback_branches]
-    artifacts = _maybe_evaluate_branches(
-        all_roots,
-        train_path=train_path,
-        test_path=test_path,
-        val_path=val_path,
-        activity_label=activity_label,
-        dataset_hash=dataset_hash,
-        config_snapshot=config_snapshot,
-        log_callback=log_callback,
-    )
+    append_external_eval(artifacts, *flatten_branches(*all_roots), **eval_kwargs)
 
     return ModelFallbackResult(
         triggered=True,
@@ -202,35 +204,6 @@ def run_model_fallback_if_needed(
         comparison_csv_path=str(run_dir / "model_comparison.csv"),
         branch_external_artifacts=artifacts,
     )
-
-
-def _maybe_evaluate_branches(
-    roots: list[ModelBranchResult],
-    *,
-    train_path: str | Path,
-    test_path: str | Path | None,
-    val_path: str | Path | None = None,
-    activity_label: str,
-    dataset_hash: str,
-    config_snapshot: dict[str, Any] | None,
-    log_callback: Callable[[str], None] | None,
-) -> list[BranchExternalArtifacts]:
-    if test_path is None:
-        return []
-    branches = flatten_branches(*roots)
-    if not branches:
-        return []
-    results = evaluate_branches_on_external_test(
-        branches,
-        train_path=train_path,
-        test_path=test_path,
-        val_path=val_path,
-        activity_label=activity_label,
-        dataset_hash=dataset_hash,
-        config_snapshot=config_snapshot,
-        log_callback=log_callback,
-    )
-    return [art for art, _modeling, _ad in results]
 
 
 def _iter_variant_branches(branch: ModelBranchResult):

@@ -1,0 +1,36 @@
+{
+  "train": {
+    "r2": 0.6016951060080951,
+    "rmse": 0.6119414694981075,
+    "mae": 0.47204313725490193,
+    "n_samples": 153
+  },
+  "test": {
+    "r2": 0.2844413681775443,
+    "rmse": 0.8577027641199179,
+    "mae": 0.6136736842105264,
+    "n_samples": 19
+  },
+  "selected_features": [
+    "RDKit_MinPartialCharge",
+    "RDKit_NumAmideBonds",
+    "RDKit_NumSaturatedCarbocycles"
+  ],
+  "hyperparameter_optimization": {
+    "enabled": true,
+    "rounds_completed": 3,
+    "final_model_source": "baseline",
+    "final_params": {
+      "metric": "minkowski",
+      "n_neighbors": 5,
+      "p": 2,
+      "weights": "uniform"
+    }
+  },
+  "val": {
+    "r2": 0.350905253860064,
+    "rmse": 0.7824002448605794,
+    "mae": 0.5876421052631579,
+    "n_samples": 19
+  }
+}

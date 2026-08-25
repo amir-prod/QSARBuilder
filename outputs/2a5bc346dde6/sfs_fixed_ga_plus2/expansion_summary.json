@@ -1,0 +1,25 @@
+{
+  "estimator": "RandomForestRegressor",
+  "fixed_features": [
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SMR_VSA6"
+  ],
+  "extra_features": [
+    "RDKit_PEOE_VSA6",
+    "RDKit_SlogP_VSA11"
+  ],
+  "selected_features": [
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SMR_VSA6",
+    "RDKit_PEOE_VSA6",
+    "RDKit_SlogP_VSA11"
+  ],
+  "n_fixed": 2,
+  "n_extra": 2,
+  "ga_best_fitness": -7.90500767636812,
+  "acceptable_after_hpo": false,
+  "final_source": "baseline",
+  "mean_cv_r2": 0.39164560394221,
+  "status": "overfit",
+  "expansion_dir": "outputs/2a5bc346dde6/sfs_fixed_ga_plus2"
+}

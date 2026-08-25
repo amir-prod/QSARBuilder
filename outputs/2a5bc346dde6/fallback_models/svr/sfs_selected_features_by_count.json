@@ -1,0 +1,27 @@
+{
+  "1": [
+    "RDKit_Chi2v"
+  ],
+  "2": [
+    "RDKit_Chi2v",
+    "RDKit_SlogP_VSA6"
+  ],
+  "3": [
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA6"
+  ],
+  "4": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA6"
+  ],
+  "5": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA6"
+  ]
+}

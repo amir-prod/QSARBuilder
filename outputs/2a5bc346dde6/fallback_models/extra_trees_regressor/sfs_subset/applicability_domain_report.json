@@ -1,0 +1,23 @@
+{
+  "train_in_domain_count": 151,
+  "train_in_domain_pct": 98.69281045751634,
+  "val_in_domain_count": 17,
+  "val_in_domain_pct": 89.47368421052632,
+  "test_in_domain_count": 15,
+  "test_in_domain_pct": 78.94736842105263,
+  "warning_leverage": 0.058823529411764705,
+  "residual_threshold": 3.0,
+  "high_leverage_ids": [
+    "compound_36",
+    "compound_170"
+  ],
+  "response_outlier_ids": [
+    "compound_163",
+    "compound_186",
+    "compound_140",
+    "compound_43",
+    "compound_185",
+    "compound_146"
+  ],
+  "note": "Williams plot is a classical descriptor-space diagnostic; interpret with caution for nonlinear models."
+}

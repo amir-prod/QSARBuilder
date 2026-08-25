@@ -1,0 +1,54 @@
+{
+  "original_grid": {
+    "n_neighbors": [
+      11,
+      13,
+      15,
+      17,
+      19,
+      21,
+      25
+    ],
+    "weights": [
+      "uniform",
+      "distance"
+    ],
+    "p": [
+      1,
+      2
+    ],
+    "metric": [
+      "minkowski",
+      "manhattan"
+    ]
+  },
+  "sanitized_grid": {
+    "n_neighbors": [
+      11,
+      13,
+      15,
+      17,
+      19,
+      21,
+      25
+    ],
+    "weights": [
+      "uniform",
+      "distance"
+    ],
+    "p": [
+      1,
+      2
+    ],
+    "metric": [
+      "minkowski",
+      "manhattan"
+    ]
+  },
+  "removed_params": [],
+  "removed_values": {},
+  "shrink_steps": [],
+  "candidate_count": 56,
+  "used_randomized_search": false,
+  "warnings": []
+}

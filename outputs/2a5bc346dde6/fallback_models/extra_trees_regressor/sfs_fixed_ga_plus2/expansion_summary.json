@@ -1,0 +1,25 @@
+{
+  "estimator": "ExtraTreesRegressor",
+  "fixed_features": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge"
+  ],
+  "extra_features": [
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA7"
+  ],
+  "selected_features": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA7"
+  ],
+  "n_fixed": 2,
+  "n_extra": 2,
+  "ga_best_fitness": -7.273409780039664,
+  "acceptable_after_hpo": false,
+  "final_source": "baseline",
+  "mean_cv_r2": 0.48500295640682933,
+  "status": "overfit",
+  "expansion_dir": "outputs/2a5bc346dde6/fallback_models/extra_trees_regressor/sfs_fixed_ga_plus2"
+}

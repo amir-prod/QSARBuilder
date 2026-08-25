@@ -1,0 +1,14 @@
+{
+  "status": "poor_performance",
+  "is_acceptable": false,
+  "is_overfit": false,
+  "is_underfit": false,
+  "is_unstable": false,
+  "is_severe_overfit": false,
+  "mean_train_r2": 0.5176050954745665,
+  "mean_cv_r2": 0.38491185713558407,
+  "train_cv_r2_gap": 0.1326932383389824,
+  "cv_r2_std": 0.1042956189937921,
+  "warnings": [],
+  "explanation": "CV R\u00b2 (0.385) is below the minimum acceptable threshold (0.50)."
+}

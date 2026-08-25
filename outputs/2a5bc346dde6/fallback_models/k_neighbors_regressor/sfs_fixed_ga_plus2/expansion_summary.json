@@ -1,0 +1,23 @@
+{
+  "estimator": "KNeighborsRegressor",
+  "fixed_features": [
+    "RDKit_MinPartialCharge"
+  ],
+  "extra_features": [
+    "RDKit_NumAmideBonds",
+    "RDKit_NumSaturatedCarbocycles"
+  ],
+  "selected_features": [
+    "RDKit_MinPartialCharge",
+    "RDKit_NumAmideBonds",
+    "RDKit_NumSaturatedCarbocycles"
+  ],
+  "n_fixed": 1,
+  "n_extra": 2,
+  "ga_best_fitness": -7.357432498050632,
+  "acceptable_after_hpo": false,
+  "final_source": "baseline",
+  "mean_cv_r2": 0.3152460058725148,
+  "status": "overfit",
+  "expansion_dir": "outputs/2a5bc346dde6/fallback_models/k_neighbors_regressor/sfs_fixed_ga_plus2"
+}

@@ -1,0 +1,140 @@
+{
+  "python_version": "3.11.15 | packaged by conda-forge | (main, Jun 11 2026, 03:34:02) [GCC 14.3.0]",
+  "platform": "Linux-4.4.0-19041-Microsoft-x86_64-with-glibc2.31",
+  "sklearn_version": "1.9.0",
+  "model_config": {
+    "estimator": "KNeighborsRegressor",
+    "n_estimators": 100,
+    "max_depth": 10,
+    "min_samples_split": 2,
+    "min_samples_leaf": 1,
+    "max_features": "sqrt",
+    "bootstrap": true,
+    "max_samples": null,
+    "criterion": "squared_error",
+    "random_state": 42,
+    "n_jobs": -1,
+    "params": {
+      "n_neighbors": 5,
+      "weights": "uniform",
+      "p": 2,
+      "metric": "minkowski"
+    }
+  },
+  "selected_features": [
+    "RDKit_MinPartialCharge",
+    "RDKit_NumAmideBonds",
+    "RDKit_NumSaturatedCarbocycles"
+  ],
+  "dataset_hash": "8b547ba5d2a0032165ca1bfc37aad3924cde60de3ef2a0014f33a8566e8041d4",
+  "workflow_config": {
+    "val_fraction": 0.1,
+    "test_fraction": 0.1,
+    "split_method": "sorted",
+    "random_seed": 42,
+    "output_dir": "outputs",
+    "umap": {
+      "n_neighbors": 15,
+      "n_components": 2,
+      "min_dist": 0.1,
+      "metric": "euclidean"
+    },
+    "clustering": {
+      "min_clusters": 2,
+      "max_clusters": 10,
+      "random_state": 60
+    },
+    "preprocessing": {
+      "missing_value_threshold": 0.2,
+      "near_constant_std_threshold": 0.01,
+      "correlation_threshold": 0.95
+    },
+    "model": {
+      "estimator": "RandomForestRegressor",
+      "n_estimators": 100,
+      "max_depth": 10,
+      "min_samples_split": 2,
+      "min_samples_leaf": 1,
+      "max_features": "sqrt",
+      "bootstrap": true,
+      "max_samples": null,
+      "criterion": "squared_error",
+      "random_state": 42,
+      "n_jobs": -1,
+      "params": {}
+    },
+    "descriptors": {
+      "backends": [
+        "RDKit"
+      ],
+      "run_geometry_optimization": false,
+      "num_workers": 8,
+      "xtb_timeout": 600,
+      "external_descriptors_path": null
+    },
+    "ga": {
+      "population_size": 50,
+      "n_generations": 30,
+      "crossover_prob": 0.7,
+      "mutation_prob": 0.2,
+      "tournament_size": 3,
+      "cv_folds": 5,
+      "n_jobs": -1,
+      "random_seed": 42
+    },
+    "sfs": {
+      "max_features": 5,
+      "cv_folds": 5,
+      "random_seed": 42,
+      "n_jobs": -1
+    },
+    "hpo": {
+      "enabled": true,
+      "max_hpo_rounds": 3,
+      "cv_folds": 5,
+      "max_candidates_per_round": 120,
+      "min_cv_improvement": 0.02,
+      "overfit_gap_threshold": 0.15,
+      "severe_overfit_gap_threshold": 0.25,
+      "minimum_cv_r2": 0.5,
+      "cv_std_threshold": 0.15,
+      "minimum_train_r2": 0.4,
+      "n_jobs": -1,
+      "openai_model": "gpt-5.4"
+    },
+    "model_fallback": {
+      "enabled": true,
+      "estimators": [
+        "PLSRegression",
+        "ExtraTreesRegressor",
+        "SVR",
+        "KNeighborsRegressor"
+      ]
+    },
+    "sfs_fixed_ga_expansion": {
+      "enabled": true,
+      "extra_features": 2,
+      "output_subdir": "sfs_fixed_ga_plus2"
+    },
+    "sfs_subset_branch": {
+      "enabled": true,
+      "output_subdir": "sfs_subset",
+      "hpo_output_subdir": "sfs_subset_hpo"
+    },
+    "smiles_column": "SMILES",
+    "activity_column": "target",
+    "id_column": null,
+    "min_valid_compounds": 20
+  },
+  "hyperparameter_optimization": {
+    "enabled": true,
+    "rounds_completed": 3,
+    "final_model_source": "baseline",
+    "final_params": {
+      "metric": "minkowski",
+      "n_neighbors": 5,
+      "p": 2,
+      "weights": "uniform"
+    }
+  }
+}

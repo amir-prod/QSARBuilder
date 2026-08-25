@@ -1,0 +1,17 @@
+{
+  "max_hpo_rounds": 3,
+  "rounds_completed": 0,
+  "baseline_acceptable": true,
+  "hpo_triggered": false,
+  "hpo_trigger_reason": "Baseline acceptable.",
+  "iteration_records": [],
+  "logs": [
+    "Baseline CV diagnostics started.",
+    "Baseline CV diagnostics completed.",
+    "Baseline holdout validation R\u00b2 = 0.296.",
+    "HPO dataset context for grid proposals: n_train_samples=153, n_features=4.",
+    "Overfitting assessment: good. Train-CV R\u00b2 gap = 0.116.",
+    "Baseline model acceptable. Skipping HPO rounds."
+  ],
+  "final_source": "baseline"
+}

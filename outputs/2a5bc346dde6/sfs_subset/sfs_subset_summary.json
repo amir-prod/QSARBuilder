@@ -1,0 +1,13 @@
+{
+  "estimator": "RandomForestRegressor",
+  "selected_features": [
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SMR_VSA6"
+  ],
+  "n_features": 2,
+  "baseline_source": "baseline",
+  "hpo_source": "baseline",
+  "mean_cv_r2_baseline": 0.43011118354254696,
+  "mean_cv_r2_hpo": 0.43011118354254696,
+  "subset_dir": "outputs/2a5bc346dde6/sfs_subset"
+}

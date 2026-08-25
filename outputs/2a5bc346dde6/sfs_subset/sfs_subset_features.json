@@ -1,0 +1,7 @@
+{
+  "selected_features": [
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SMR_VSA6"
+  ],
+  "source": "sfs_subset"
+}

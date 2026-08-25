@@ -1,0 +1,6 @@
+{
+  "C": 0.7,
+  "epsilon": 0.1,
+  "gamma": "auto",
+  "kernel": "rbf"
+}
