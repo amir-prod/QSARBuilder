@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from pathlib import Path
 from typing import Callable
 
@@ -149,6 +150,7 @@ def run_sfs_subset_branch(
     parent_dir = Path(branch.branch_dir) if branch.branch_dir else Path(run_dir)
     subset_dir = parent_dir / cfg.output_subdir
     subset_dir.mkdir(parents=True, exist_ok=True)
+    started = time.perf_counter()
 
     if log_callback:
         log_callback(
@@ -195,6 +197,8 @@ def run_sfs_subset_branch(
         sfs_features, subset_dir / "sfs_subset_features.json", fitness
     )
 
+    elapsed = time.perf_counter() - started
+
     baseline_branch = None
     if baseline_fs is not None:
         baseline_config = params_to_model_config(baseline_fs.params, model_config).model_dump()
@@ -208,6 +212,7 @@ def run_sfs_subset_branch(
             estimator=branch.estimator,
             model_config_snapshot=baseline_config,
             branch_dir=str(subset_dir),
+            runtime_seconds=elapsed,
             sfs=branch.sfs,
             feature_count=branch.feature_count,
             ga=synthetic_ga,
@@ -227,6 +232,7 @@ def run_sfs_subset_branch(
                 final.params, model_config
             ).model_dump(),
             branch_dir=str(hpo_dir),
+            runtime_seconds=elapsed,
             sfs=branch.sfs,
             feature_count=branch.feature_count,
             ga=synthetic_ga,

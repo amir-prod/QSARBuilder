@@ -129,6 +129,11 @@ def render_sidebar_config() -> WorkflowConfig:
         ),
     )
     random_seed = st.sidebar.number_input("Random seed", 0, 99999, 42)
+    activity_units = st.sidebar.text_input(
+        "Activity units (optional)",
+        value="",
+        help="Recorded in the modeling handoff. Leave blank if unspecified.",
+    )
     missing_thresh = st.sidebar.slider("Missing value threshold", 0.0, 0.5, 0.2, 0.05)
     near_const = st.sidebar.number_input("Near-constant std threshold", 0.0, 0.1, 0.01, 0.001)
     corr_thresh = st.sidebar.slider("Correlation threshold", 0.8, 0.99, 0.95, 0.01)
@@ -211,6 +216,7 @@ def render_sidebar_config() -> WorkflowConfig:
         output_dir=output_dir,
         smiles_column=mapping.get("smiles", ""),
         activity_column=mapping.get("activity", ""),
+        activity_units=activity_units.strip(),
         id_column=mapping.get("id"),
         umap=UMAPConfig(n_neighbors=int(n_neighbors), min_dist=float(min_dist)),
         clustering=ClusteringConfig(),
@@ -632,7 +638,16 @@ def render_results_dashboard() -> None:
 
     with tabs[7]:
         for name, path in artifacts.items():
-            file_download_button(f"Download {name}", path)
+            if not path or not Path(path).is_file():
+                continue
+            mime = "application/octet-stream"
+            if str(path).endswith(".md"):
+                mime = "text/markdown"
+            elif str(path).endswith(".json"):
+                mime = "application/json"
+            elif str(path).endswith(".csv"):
+                mime = "text/csv"
+            file_download_button(f"Download {name}", path, mime)
         ws = st.session_state.get("workflow_state")
         if ws and ws.zip_path:
             file_download_button("Download complete run ZIP", ws.zip_path, "application/zip")

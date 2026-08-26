@@ -15,6 +15,7 @@ class ModelBranchResult(BaseModel):
     estimator: str
     model_config_snapshot: dict[str, Any] = Field(default_factory=dict)
     branch_dir: str = ""
+    runtime_seconds: float | None = None
     sfs: SFSResult
     feature_count: FeatureCountSelection
     ga: GAResult
@@ -60,9 +61,12 @@ class BranchExternalArtifacts(BaseModel):
     williams_svg_path: str = ""
     ad_report_path: str = ""
     ad_classifications_path: str = ""
+    residual_png_path: str = ""
+    residual_svg_path: str = ""
     train_r2: float = 0.0
     val_r2: float | None = None
     test_r2: float = 0.0
+    runtime_seconds: float | None = None
 
 
 class ModelFallbackResult(BaseModel):

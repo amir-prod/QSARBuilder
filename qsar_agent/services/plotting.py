@@ -288,3 +288,38 @@ def plot_williams(
     ax.grid(True, alpha=0.3)
     fig.tight_layout()
     save_figure(fig, png_path, svg_path)
+
+
+def plot_residuals(
+    predicted,
+    residuals,
+    splits,
+    png_path: Path,
+    svg_path: Path,
+) -> None:
+    fig, ax = plt.subplots(figsize=(10, 8))
+    for split, color, marker in [
+        ("train", "blue", "o"),
+        ("val", "darkorange", "s"),
+        ("test", "gold", "^"),
+    ]:
+        mask = np.array(splits) == split
+        if not np.any(mask):
+            continue
+        ax.scatter(
+            np.array(predicted)[mask],
+            np.array(residuals)[mask],
+            c=color,
+            marker=marker,
+            s=50,
+            alpha=0.7,
+            label=split.capitalize(),
+        )
+    ax.axhline(0, color="k", linestyle="--", linewidth=1, label="Zero residual")
+    ax.set_xlabel("Predicted activity")
+    ax.set_ylabel("Residual (experimental − predicted)")
+    ax.set_title("Residuals vs Predicted Activity")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+    save_figure(fig, png_path, svg_path)

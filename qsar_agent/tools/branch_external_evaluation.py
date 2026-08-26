@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import time
 from pathlib import Path
 from typing import Any, Callable
 
@@ -16,6 +17,7 @@ from qsar_agent.schemas.applicability_domain import (
 from qsar_agent.schemas.model_fallback import BranchExternalArtifacts, ModelBranchResult
 from qsar_agent.schemas.modeling import Metrics, ModelingResult
 from qsar_agent.services.artifact_manager import save_json
+from qsar_agent.services.plotting import plot_residuals
 from qsar_agent.tools.applicability_domain import calculate_applicability_domain
 from qsar_agent.tools.final_model import train_and_evaluate_final_model
 
@@ -74,6 +76,7 @@ def evaluate_branch_on_external_test(
     """Fit branch on train, evaluate on external test; write scatter + Williams into branch_dir."""
     if not branch.branch_dir:
         raise ValueError(f"Branch {branch_display_label(branch)} has empty branch_dir.")
+    started = time.perf_counter()
     branch_dir = Path(branch.branch_dir)
     branch_dir.mkdir(parents=True, exist_ok=True)
 
@@ -110,6 +113,24 @@ def evaluate_branch_on_external_test(
         branch.ga.selected_features,
         val_path=val_path,
     )
+    residual_png = branch_dir / "residual_plot.png"
+    residual_svg = branch_dir / "residual_plot.svg"
+    try:
+        import pandas as pd
+
+        pred_df = pd.read_csv(modeling.predictions_path)
+        plot_residuals(
+            pred_df["predicted_activity"].values,
+            pred_df["residual"].values,
+            pred_df["split"].values,
+            residual_png,
+            residual_svg,
+        )
+        residual_png_path = str(residual_png)
+        residual_svg_path = str(residual_svg)
+    except Exception:
+        residual_png_path = ""
+        residual_svg_path = ""
     artifacts = BranchExternalArtifacts(
         estimator=branch.estimator,
         label=branch_display_label(branch),
@@ -124,11 +145,14 @@ def evaluate_branch_on_external_test(
         scatter_svg_path=modeling.scatter_svg_path,
         williams_png_path=ad.williams_png_path,
         williams_svg_path=ad.williams_svg_path,
+        residual_png_path=residual_png_path,
+        residual_svg_path=residual_svg_path,
         ad_report_path=ad.report_path,
         ad_classifications_path=ad.classifications_path,
         train_r2=modeling.train_metrics.r2,
         val_r2=None if modeling.val_metrics is None else modeling.val_metrics.r2,
         test_r2=modeling.test_metrics.r2,
+        runtime_seconds=time.perf_counter() - started,
     )
     return artifacts, modeling, ad
 

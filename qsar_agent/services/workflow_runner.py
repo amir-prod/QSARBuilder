@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
 
@@ -22,6 +23,7 @@ from qsar_agent.services.artifact_manager import (
     get_run_dir,
     save_json,
 )
+from qsar_agent.services.handoff import write_and_validate_handoff
 from qsar_agent.services.plotting import plot_sfs_r2
 from qsar_agent.tools.branch_external_evaluation import (
     append_external_eval,
@@ -87,6 +89,7 @@ class WorkflowRunner:
         self.progress_callback = progress_callback
         self.warnings: list[str] = []
         self.artifact_paths: dict[str, str] = {}
+        self.started_at = datetime.now(timezone.utc).isoformat()
 
     def _notify(self) -> None:
         if self.progress_callback:
@@ -421,6 +424,7 @@ class WorkflowRunner:
             winner_is_expansion = False
             winner_expansion_label = ""
             fallback_branches: list[ModelBranchResult] = []
+            cross = None
             hpo_metadata.setdefault("winning_estimator", winning_estimator)
             hpo_metadata.setdefault("model_fallback_triggered", False)
             hpo_metadata.setdefault("fallback_models_tried", [])
@@ -578,6 +582,39 @@ class WorkflowRunner:
                 estimator=winning_estimator,
                 model_comparison_summary=model_comparison_summary,
             )
+
+            completed_at = datetime.now(timezone.utc).isoformat()
+            write_and_validate_handoff(
+                run_dir=self.run_dir,
+                run_id=self.run_id,
+                started_at=self.started_at,
+                completed_at=completed_at,
+                config=self.config,
+                state=self.state,
+                validation=validation,
+                descriptors=descriptors,
+                split=split,
+                preprocessing=preprocessing,
+                feature_count=feature_count,
+                ga=ga,
+                rf_branch=rf_branch,
+                fallback_branches=fallback_branches,
+                branch_external_artifacts=branch_external_artifacts,
+                winning_estimator=winning_estimator,
+                winning_features=winning_features,
+                winner_is_expansion=winner_is_expansion,
+                winner_expansion_label=winner_expansion_label,
+                model_comparison_summary=model_comparison_summary,
+                cross_model_selection=cross,
+                dataset_hash=dataset_hash,
+                warnings=self.warnings,
+            )
+            report_dir = self.run_dir / "final_report"
+            self.artifact_paths["modeling_handoff"] = str(report_dir / "modeling_handoff.md")
+            self.artifact_paths["handoff_manifest"] = str(report_dir / "handoff_manifest.json")
+            self.artifact_paths["experiment_ledger"] = str(report_dir / "experiment_ledger.csv")
+            self.artifact_paths["final_report_dir"] = str(report_dir)
+            self.state.artifact_paths = self.artifact_paths
 
             zip_path = create_zip_archive(self.run_dir, self.run_id)
             self.state.zip_path = str(zip_path)

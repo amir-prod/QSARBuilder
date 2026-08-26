@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from pathlib import Path
 from typing import Any, Callable
 
@@ -53,6 +54,7 @@ def run_model_branch(
     When ``test_path`` is set, scatter and Williams plots are written as soon as
     each variant (GA, SFS subset, expansion) finishes HPO.
     """
+    started = time.perf_counter()
     branch_dir = output_subdir if output_subdir is not None else run_dir
     branch_dir.mkdir(parents=True, exist_ok=True)
 
@@ -115,6 +117,7 @@ def run_model_branch(
         estimator=model_config.estimator,
         model_config_snapshot=hpo_result.final_model_config,
         branch_dir=str(branch_dir),
+        runtime_seconds=time.perf_counter() - started,
         sfs=sfs,
         feature_count=feature_count,
         ga=ga,

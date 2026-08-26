@@ -135,6 +135,7 @@ class WorkflowConfig(BaseModel):
     )
     smiles_column: str = ""
     activity_column: str = ""
+    activity_units: str = ""
     id_column: str | None = None
     min_valid_compounds: int = 20
 

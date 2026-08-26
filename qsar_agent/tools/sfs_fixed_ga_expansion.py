@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from pathlib import Path
 from typing import Callable
 
@@ -86,6 +87,7 @@ def run_sfs_fixed_ga_expansion(
     branch_dir = Path(branch.branch_dir) if branch.branch_dir else Path(run_dir)
     expansion_dir = branch_dir / settings.output_subdir
     expansion_dir.mkdir(parents=True, exist_ok=True)
+    started = time.perf_counter()
 
     if log_callback:
         log_callback(
@@ -165,6 +167,7 @@ def run_sfs_fixed_ga_expansion(
         estimator=branch.estimator,
         model_config_snapshot=hpo_result.final_model_config,
         branch_dir=str(expansion_dir),
+        runtime_seconds=time.perf_counter() - started,
         sfs=branch.sfs,
         feature_count=branch.feature_count,
         ga=ga,
