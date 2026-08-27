@@ -47,6 +47,8 @@ from qsar_agent.schemas.handoff import (
     ValidationDesign,
     WinnerADResults,
     WorkflowConclusion,
+    OVERFIT_GAP_DEFINITION,
+    OVERFIT_GAP_STATISTIC,
 )
 from qsar_agent.schemas.hyperparameter_optimization import FoldMetrics
 from qsar_agent.schemas.model_fallback import (
@@ -101,6 +103,9 @@ CANONICAL_RE = re.compile(
     r" cv_r2=(?P<cv_r2>\S+)"
     r" val_r2=(?P<val_r2>\S+)"
     r" train_cv_r2_gap=(?P<train_cv_r2_gap>\S+)"
+    r" cv_fold_train_val_gap=(?P<cv_fold_train_val_gap>\S+)"
+    r" refit_train_cv_gap=(?P<refit_train_cv_gap>\S+)"
+    r" mean_cv_fold_train_r2=(?P<mean_cv_fold_train_r2>\S+)"
     r" cv_r2_std=(?P<cv_r2_std>\S+) -->"
 )
 
@@ -128,6 +133,59 @@ def format_metric(value: float | None) -> str:
     if value is None or (isinstance(value, float) and not math.isfinite(value)):
         return "null"
     return f"{float(value):.{METRIC_DECIMALS}f}"
+
+
+def _is_placeholder_cv_error(error: float | None, r2: float | None) -> bool:
+    """HPO search stores RMSE/MAE as 0.0 because GridSearchCV only scores R²."""
+    if error is None or error != 0.0:
+        return False
+    return r2 is None or r2 < 1.0 - 1e-12
+
+
+def fill_cv_error_metrics_from_folds(
+    metrics: ExperimentMetrics,
+    folds: list[FoldMetrics],
+) -> ExperimentMetrics:
+    """Replace placeholder CV RMSE/MAE with means of per-fold validation errors."""
+    if not folds:
+        return drop_placeholder_cv_errors(metrics)
+    metrics.cv_rmse = float(sum(f.val_rmse for f in folds) / len(folds))
+    metrics.cv_mae = float(sum(f.val_mae for f in folds) / len(folds))
+    return metrics
+
+
+def drop_placeholder_cv_errors(metrics: ExperimentMetrics) -> ExperimentMetrics:
+    if _is_placeholder_cv_error(metrics.cv_rmse, metrics.cv_r2):
+        metrics.cv_rmse = None
+    if _is_placeholder_cv_error(metrics.cv_mae, metrics.cv_r2):
+        metrics.cv_mae = None
+    return metrics
+
+
+def finalize_train_cv_gap_metrics(
+    metrics: ExperimentMetrics,
+    folds: list[FoldMetrics],
+) -> ExperimentMetrics:
+    """Populate explicit refit vs in-fold training gaps from stored scores."""
+    metrics.refit_train_r2 = metrics.train_r2
+    metrics.oof_cv_r2 = metrics.cv_r2
+    if folds:
+        metrics.mean_cv_fold_train_r2 = float(sum(f.train_r2 for f in folds) / len(folds))
+        mean_oof = float(sum(f.val_r2 for f in folds) / len(folds))
+        metrics.cv_fold_train_val_gap = metrics.mean_cv_fold_train_r2 - mean_oof
+    elif metrics.cv_fold_train_val_gap is None:
+        metrics.cv_fold_train_val_gap = metrics.train_cv_r2_gap
+    if (
+        metrics.mean_cv_fold_train_r2 is None
+        and metrics.train_cv_r2_gap is not None
+        and metrics.cv_r2 is not None
+    ):
+        metrics.mean_cv_fold_train_r2 = float(metrics.cv_r2) + float(metrics.train_cv_r2_gap)
+    if metrics.train_r2 is not None and metrics.cv_r2 is not None:
+        metrics.refit_train_cv_gap = float(metrics.train_r2) - float(metrics.cv_r2)
+    if metrics.cv_fold_train_val_gap is not None:
+        metrics.train_cv_r2_gap = metrics.cv_fold_train_val_gap
+    return metrics
 
 
 def write_and_validate_handoff(
@@ -307,6 +365,9 @@ def write_and_validate_handoff(
                 cv_std_threshold=hpo.cv_std_threshold,
                 minimum_train_r2=hpo.minimum_train_r2,
                 min_cv_improvement=hpo.min_cv_improvement,
+                overfit_gap_statistic=OVERFIT_GAP_STATISTIC,
+                overfit_gap_definition=OVERFIT_GAP_DEFINITION,
+                minimum_train_r2_scope="mean_cv_fold_train_r2",
             ),
         ),
         dataset_audit=_dataset_audit(
@@ -443,10 +504,13 @@ def render_modeling_handoff_md(package: HandoffPackage) -> str:
             f"- Primary metric: `{problem.primary_metric}`",
             "- Acceptance criteria:",
             f"  - minimum CV {acc.primary_metric}: {format_metric(acc.minimum_cv_r2)}",
+            f"  - overfit gap statistic: `{acc.overfit_gap_statistic}`",
+            f"  - overfit gap definition: {acc.overfit_gap_definition}",
             f"  - overfit gap threshold: {format_metric(acc.overfit_gap_threshold)}",
             f"  - severe overfit gap threshold: {format_metric(acc.severe_overfit_gap_threshold)}",
             f"  - CV std threshold: {format_metric(acc.cv_std_threshold)}",
-            f"  - minimum train {acc.primary_metric}: {format_metric(acc.minimum_train_r2)}",
+            f"  - minimum train {acc.primary_metric} (`{acc.minimum_train_r2_scope}`): "
+            f"{format_metric(acc.minimum_train_r2)}",
             f"  - min CV improvement: {format_metric(acc.min_cv_improvement)}",
             "",
             "## Dataset audit",
@@ -535,8 +599,8 @@ def render_modeling_handoff_md(package: HandoffPackage) -> str:
             "",
             "## Experiment ledger",
             "",
-            "| run_id | representation | feature_selection | model | n_features | train_r2 | cv_r2 | cv_r2_std | train_cv_gap | val_r2 | runtime_s | status |",
-            "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
+            "| run_id | representation | feature_selection | model | n_features | refit_train_r2 | oof_cv_r2 | cv_r2_std | fold_train_val_gap | refit_train_cv_gap | val_r2 | runtime_s | status |",
+            "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
         ]
     )
     for exp in package.experiments:
@@ -550,10 +614,11 @@ def render_modeling_handoff_md(package: HandoffPackage) -> str:
                     exp.feature_selection_method,
                     exp.model,
                     str(exp.feature_count),
-                    format_metric(m.train_r2),
-                    format_metric(m.cv_r2),
+                    format_metric(m.refit_train_r2 if m.refit_train_r2 is not None else m.train_r2),
+                    format_metric(m.oof_cv_r2 if m.oof_cv_r2 is not None else m.cv_r2),
                     format_metric(m.cv_r2_std),
-                    format_metric(m.train_cv_r2_gap),
+                    format_metric(m.cv_fold_train_val_gap if m.cv_fold_train_val_gap is not None else m.train_cv_r2_gap),
+                    format_metric(m.refit_train_cv_gap),
                     format_metric(m.val_r2),
                     format_metric(exp.runtime_seconds),
                     exp.status,
@@ -686,6 +751,9 @@ def write_experiment_ledger_csv(package: HandoffPackage, path: Path) -> None:
         "cv_mae",
         "cv_r2_std",
         "train_cv_r2_gap",
+        "mean_cv_fold_train_r2",
+        "refit_train_cv_gap",
+        "cv_fold_train_val_gap",
         "val_r2",
         "val_rmse",
         "val_mae",
@@ -722,6 +790,9 @@ def write_experiment_ledger_csv(package: HandoffPackage, path: Path) -> None:
                     "cv_mae": format_metric(m.cv_mae),
                     "cv_r2_std": format_metric(m.cv_r2_std),
                     "train_cv_r2_gap": format_metric(m.train_cv_r2_gap),
+                    "mean_cv_fold_train_r2": format_metric(m.mean_cv_fold_train_r2),
+                    "refit_train_cv_gap": format_metric(m.refit_train_cv_gap),
+                    "cv_fold_train_val_gap": format_metric(m.cv_fold_train_val_gap),
                     "val_r2": format_metric(m.val_r2),
                     "val_rmse": format_metric(m.val_rmse),
                     "val_mae": format_metric(m.val_mae),
@@ -780,7 +851,16 @@ def validate_handoff_package(report_dir: Path, package: HandoffPackage) -> None:
     if len(csv_rows) != len(package.experiments):
         errors.append("experiment_ledger.csv row count does not match experiments.")
 
-    metric_fields = ("train_r2", "cv_r2", "val_r2", "train_cv_r2_gap", "cv_r2_std")
+    metric_fields = (
+        "train_r2",
+        "cv_r2",
+        "val_r2",
+        "train_cv_r2_gap",
+        "cv_fold_train_val_gap",
+        "refit_train_cv_gap",
+        "mean_cv_fold_train_r2",
+        "cv_r2_std",
+    )
     orig_by_id = {e.run_id: e for e in package.experiments}
     reload_by_id = {e.run_id: e for e in reloaded.experiments}
     for exp in package.experiments:
@@ -825,10 +905,14 @@ def _render_experiment_section(exp: ExperimentRecord) -> list[str]:
         f"- Hyperparameters: `{json.dumps(exp.hyperparameters, default=str, sort_keys=True)}`",
         f"- Feature count: {exp.feature_count}",
         f"- Selected features: {', '.join(f'`{n}`' for n in exp.selected_feature_names) or 'none'}",
-        f"- Train r2/rmse/mae: {format_metric(m.train_r2)} / {format_metric(m.train_rmse)} / {format_metric(m.train_mae)}",
-        f"- CV r2/rmse/mae (std): {format_metric(m.cv_r2)} / {format_metric(m.cv_rmse)} / "
-        f"{format_metric(m.cv_mae)} ({format_metric(m.cv_r2_std)})",
-        f"- Train–CV gap: {format_metric(m.train_cv_r2_gap)}",
+        f"- Refit train r2/rmse/mae: {format_metric(m.refit_train_r2 if m.refit_train_r2 is not None else m.train_r2)} / "
+        f"{format_metric(m.train_rmse)} / {format_metric(m.train_mae)}",
+        f"- Mean CV fold-train r2: {format_metric(m.mean_cv_fold_train_r2)}",
+        f"- OOF CV r2/rmse/mae (r2 std): {format_metric(m.oof_cv_r2 if m.oof_cv_r2 is not None else m.cv_r2)} / "
+        f"{format_metric(m.cv_rmse)} / {format_metric(m.cv_mae)} ({format_metric(m.cv_r2_std)})",
+        f"- Refit-train vs OOF gap (`refit_train_cv_gap`): {format_metric(m.refit_train_cv_gap)}",
+        f"- CV fold-train vs fold-val gap (`cv_fold_train_val_gap`, used for acceptance): "
+        f"{format_metric(m.cv_fold_train_val_gap if m.cv_fold_train_val_gap is not None else m.train_cv_r2_gap)}",
         f"- Validation r2/rmse/mae: {format_metric(m.val_r2)} / {format_metric(m.val_rmse)} / {format_metric(m.val_mae)}",
         f"- Runtime (s): {format_metric(exp.runtime_seconds)}",
         f"- Status: {exp.status}",
@@ -899,6 +983,9 @@ def _canonical_comment(exp: ExperimentRecord) -> str:
         f" cv_r2={format_metric(m.cv_r2)}"
         f" val_r2={format_metric(m.val_r2)}"
         f" train_cv_r2_gap={format_metric(m.train_cv_r2_gap)}"
+        f" cv_fold_train_val_gap={format_metric(m.cv_fold_train_val_gap)}"
+        f" refit_train_cv_gap={format_metric(m.refit_train_cv_gap)}"
+        f" mean_cv_fold_train_r2={format_metric(m.mean_cv_fold_train_r2)}"
         f" cv_r2_std={format_metric(m.cv_r2_std)} -->"
     )
 
@@ -956,6 +1043,9 @@ def _build_experiment(
         metrics.cv_mae = cv.mean_cv_mae
         metrics.cv_r2_std = cv.std_cv_r2
         metrics.train_cv_r2_gap = cv.train_cv_r2_gap
+        metrics.mean_cv_fold_train_r2 = cv.mean_train_r2
+        metrics.cv_fold_train_val_gap = cv.train_cv_r2_gap
+        metrics.oof_cv_r2 = cv.mean_cv_r2
         metrics.val_r2 = cv.holdout_val_r2
         flags = DiagnosticFlags(
             status=fs.assessment.status,
@@ -1035,10 +1125,19 @@ def _build_experiment(
             cv_rel = f"predictions/{cv_dest.name}"
             if fold_scores:
                 folds = fold_scores
+                fill_cv_error_metrics_from_folds(metrics, folds)
         else:
             warnings.append("CV predictions could not be written for this run.")
     elif status == "completed":
         warnings.append("CV predictions skipped: missing training data or features.")
+
+    if _is_placeholder_cv_error(metrics.cv_rmse, metrics.cv_r2) or _is_placeholder_cv_error(
+        metrics.cv_mae, metrics.cv_r2
+    ):
+        if folds and fs is not None and fs.source == "baseline":
+            fill_cv_error_metrics_from_folds(metrics, folds)
+        else:
+            drop_placeholder_cv_errors(metrics)
 
     if pred_path and Path(pred_path).exists():
         test_dest = report_dir / "predictions" / f"{run_id}_test_predictions.csv"
@@ -1078,6 +1177,7 @@ def _build_experiment(
         except Exception as exc:
             errors.append(f"Fitted pipeline could not be saved: {exc}")
 
+    finalize_train_cv_gap_metrics(metrics, folds)
     ad = _experiment_ad(artifacts)
     return ExperimentRecord(
         run_id=run_id,

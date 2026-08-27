@@ -31,9 +31,13 @@ from qsar_agent.schemas.handoff import (
     WinnerADResults,
     WorkflowConclusion,
 )
+from qsar_agent.schemas.hyperparameter_optimization import FoldMetrics
 from qsar_agent.schemas.modeling import Metrics
 from qsar_agent.services.handoff import (
     HandoffValidationError,
+    drop_placeholder_cv_errors,
+    fill_cv_error_metrics_from_folds,
+    finalize_train_cv_gap_metrics,
     format_metric,
     render_modeling_handoff_md,
     validate_handoff_package,
@@ -86,6 +90,11 @@ def _experiment(
             val_r2=val_r2,
             val_rmse=0.27,
             val_mae=0.19,
+            refit_train_r2=train_r2,
+            mean_cv_fold_train_r2=cv_r2 + gap,
+            oof_cv_r2=cv_r2,
+            refit_train_cv_gap=train_r2 - cv_r2,
+            cv_fold_train_val_gap=gap,
         ),
         diagnostic_flags=DiagnosticFlags(status="good", is_acceptable=True),
         status="completed",
@@ -299,6 +308,76 @@ def test_plot_residuals_writes_files(tmp_path):
     assert png.is_file()
     assert svg.is_file()
     assert png.stat().st_size > 0
+
+
+def test_placeholder_cv_errors_are_filled_from_folds():
+    metrics = ExperimentMetrics(cv_r2=0.316284, cv_rmse=0.0, cv_mae=0.0, cv_r2_std=0.139249)
+    folds = [
+        FoldMetrics(
+            fold=1, train_r2=0.4, val_r2=0.09, train_rmse=0.78, val_rmse=0.70,
+            train_mae=0.6, val_mae=0.50,
+        ),
+        FoldMetrics(
+            fold=2, train_r2=0.35, val_r2=0.45, train_rmse=0.78, val_rmse=0.80,
+            train_mae=0.6, val_mae=0.60,
+        ),
+    ]
+    fill_cv_error_metrics_from_folds(metrics, folds)
+    assert metrics.cv_rmse == pytest.approx(0.75)
+    assert metrics.cv_mae == pytest.approx(0.55)
+    filled = _experiment("run_filled")
+    filled.metrics.cv_r2 = 0.316284
+    filled.metrics.oof_cv_r2 = 0.316284
+    filled.metrics.cv_rmse = 0.75
+    filled.metrics.cv_mae = 0.55
+    filled.metrics.cv_r2_std = 0.139249
+    text = render_modeling_handoff_md(_package(experiments=[filled]))
+    assert "OOF CV r2/rmse/mae (r2 std): 0.316284 / 0.750000 / 0.550000 (0.139249)" in text
+
+
+def test_placeholder_cv_errors_become_none_without_folds():
+    metrics = ExperimentMetrics(cv_r2=0.316284, cv_rmse=0.0, cv_mae=0.0)
+    drop_placeholder_cv_errors(metrics)
+    assert metrics.cv_rmse is None
+    assert metrics.cv_mae is None
+    exp = _experiment("run1")
+    exp.metrics.cv_rmse = None
+    exp.metrics.cv_mae = None
+    exp.metrics.cv_r2 = 0.316284
+    exp.metrics.oof_cv_r2 = 0.316284
+    text = render_modeling_handoff_md(_package(experiments=[exp]))
+    assert "OOF CV r2/rmse/mae (r2 std): 0.316284 / null / null" in text
+
+
+def test_refit_and_fold_train_cv_gaps_are_distinct():
+    metrics = ExperimentMetrics(
+        train_r2=0.733866,
+        cv_r2=0.534286,
+        train_cv_r2_gap=0.343049,
+        mean_cv_fold_train_r2=0.877335,
+        cv_fold_train_val_gap=0.343049,
+    )
+    folds = [
+        FoldMetrics(fold=1, train_r2=0.881815, val_r2=0.475401, train_rmse=0.3, val_rmse=0.5, train_mae=0.2, val_mae=0.4),
+        FoldMetrics(fold=2, train_r2=0.879004, val_r2=0.592878, train_rmse=0.3, val_rmse=0.6, train_mae=0.2, val_mae=0.4),
+        FoldMetrics(fold=3, train_r2=0.868414, val_r2=0.570995, train_rmse=0.3, val_rmse=0.6, train_mae=0.2, val_mae=0.4),
+        FoldMetrics(fold=4, train_r2=0.874549, val_r2=0.584773, train_rmse=0.3, val_rmse=0.6, train_mae=0.2, val_mae=0.4),
+        FoldMetrics(fold=5, train_r2=0.882895, val_r2=0.447383, train_rmse=0.3, val_rmse=0.7, train_mae=0.2, val_mae=0.4),
+    ]
+    finalize_train_cv_gap_metrics(metrics, folds)
+    assert metrics.refit_train_r2 == pytest.approx(0.733866)
+    assert metrics.mean_cv_fold_train_r2 == pytest.approx(0.877335, abs=1e-6)
+    assert metrics.oof_cv_r2 == pytest.approx(0.534286)
+    assert metrics.refit_train_cv_gap == pytest.approx(0.199580, abs=1e-6)
+    assert metrics.cv_fold_train_val_gap == pytest.approx(0.343049, abs=1e-6)
+    assert metrics.train_cv_r2_gap == metrics.cv_fold_train_val_gap
+    exp = _experiment("rf_ga")
+    exp.metrics = metrics
+    text = render_modeling_handoff_md(_package(experiments=[exp]))
+    assert "`cv_fold_train_val_gap`, used for acceptance" in text
+    assert format_metric(metrics.refit_train_cv_gap) in text
+    assert format_metric(metrics.cv_fold_train_val_gap) in text
+    assert "overfit gap statistic: `cv_fold_train_val_gap`" in text
 
 
 def test_git_provenance_handles_non_repo(tmp_path):

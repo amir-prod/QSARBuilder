@@ -1,0 +1,16 @@
+{
+  "run_id": "c6dc290a4a1b__k_neighbors_regressor__ga",
+  "estimator": "KNeighborsRegressor",
+  "feature_selection_method": "ga",
+  "hyperparameters": {
+    "n_neighbors": 5,
+    "p": 2,
+    "metric": "minkowski",
+    "weights": "uniform"
+  },
+  "selected_features": [
+    "RDKit_MinPartialCharge"
+  ],
+  "cv_folds": 5,
+  "random_seed": 42
+}

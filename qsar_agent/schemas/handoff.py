@@ -56,6 +56,15 @@ class RunMetadata(BaseModel):
     stages: list[StageStatusRecord] = Field(default_factory=list)
 
 
+OVERFIT_GAP_STATISTIC = "cv_fold_train_val_gap"
+OVERFIT_GAP_DEFINITION = (
+    "Overfitting assessment uses cv_fold_train_val_gap = mean in-fold training R² "
+    "minus mean out-of-fold R². refit_train_cv_gap (full-training refit R² minus "
+    "OOF R²) is reported for interpretation and is not used for acceptance. "
+    "minimum_train_r2 is applied to mean_cv_fold_train_r2, not to the refit score."
+)
+
+
 class AcceptanceCriteria(BaseModel):
     primary_metric: str
     minimum_cv_r2: float
@@ -64,6 +73,9 @@ class AcceptanceCriteria(BaseModel):
     cv_std_threshold: float
     minimum_train_r2: float
     min_cv_improvement: float
+    overfit_gap_statistic: str = OVERFIT_GAP_STATISTIC
+    overfit_gap_definition: str = OVERFIT_GAP_DEFINITION
+    minimum_train_r2_scope: str = "mean_cv_fold_train_r2"
 
 
 class ProblemDefinition(BaseModel):
@@ -168,6 +180,11 @@ class ExperimentMetrics(BaseModel):
     val_rmse: float | None = None
     val_mae: float | None = None
     val_n: int | None = None
+    refit_train_r2: float | None = None
+    mean_cv_fold_train_r2: float | None = None
+    oof_cv_r2: float | None = None
+    refit_train_cv_gap: float | None = None
+    cv_fold_train_val_gap: float | None = None
 
 
 class ExternalTestMetrics(BaseModel):

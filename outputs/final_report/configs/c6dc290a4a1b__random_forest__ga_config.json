@@ -1,0 +1,24 @@
+{
+  "run_id": "c6dc290a4a1b__random_forest__ga",
+  "estimator": "RandomForestRegressor",
+  "feature_selection_method": "ga",
+  "hyperparameters": {
+    "bootstrap": false,
+    "criterion": "squared_error",
+    "max_depth": 5,
+    "max_features": "log2",
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "n_estimators": 100
+  },
+  "selected_features": [
+    "RDKit_AvgIpc",
+    "RDKit_Chi2v",
+    "RDKit_MinAbsPartialCharge",
+    "RDKit_PEOE_VSA2",
+    "RDKit_Phi",
+    "RDKit_fr_Imine"
+  ],
+  "cv_folds": 5,
+  "random_seed": 42
+}
