@@ -1,0 +1,75 @@
+{
+  "source": "baseline",
+  "params": {
+    "min_samples_leaf": 1,
+    "max_features": "sqrt",
+    "bootstrap": false,
+    "n_estimators": 100,
+    "max_depth": 10,
+    "min_samples_split": 2
+  },
+  "cv_summary": {
+    "mean_train_r2": 0.9480131297499085,
+    "mean_cv_r2": 0.5269288366355482,
+    "std_cv_r2": 0.09293814684627903,
+    "mean_train_rmse": 0.2205629604643437,
+    "mean_cv_rmse": 0.6546299691469936,
+    "mean_train_mae": 0.1545763009220014,
+    "mean_cv_mae": 0.48667460192362527,
+    "train_cv_r2_gap": 0.42108429311436024,
+    "n_folds": 5,
+    "holdout_val_r2": 0.6512258866484701
+  },
+  "assessment": {
+    "status": "overfit",
+    "is_acceptable": false,
+    "is_overfit": true,
+    "is_underfit": false,
+    "is_unstable": false,
+    "is_severe_overfit": true,
+    "mean_train_r2": 0.9480131297499085,
+    "mean_cv_r2": 0.5269288366355482,
+    "train_cv_r2_gap": 0.42108429311436024,
+    "cv_r2_std": 0.09293814684627903,
+    "warnings": [
+      "Severe overfitting: train-CV R\u00b2 gap (0.421) exceeds 0.25."
+    ],
+    "explanation": "Training R\u00b2 (0.948) is much higher than CV R\u00b2 (0.527); gap=0.421 exceeds 0.15."
+  },
+  "selection_rationale": "Selected baseline with combined R\u00b2=0.5891 (mean CV R\u00b2=0.5269, holdout val R\u00b2=0.6512), train-CV gap=0.4211, status=overfit. No acceptable models; chose best combined R\u00b2 with warning.",
+  "warning": "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.5269288366355482,
+      "holdout_val_r2": 0.6512258866484701,
+      "combined_r2": 0.5890773616420092,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.5198184416666088,
+      "holdout_val_r2": 0.6475838170166357,
+      "combined_r2": 0.5837011293416223,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.5056107222232005,
+      "holdout_val_r2": 0.645686334890412,
+      "combined_r2": 0.5756485285568063,
+      "status": "overfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_3",
+      "mean_cv_r2": 0.506486022028492,
+      "holdout_val_r2": 0.6360344139484375,
+      "combined_r2": 0.5712602179884647,
+      "status": "overfit",
+      "acceptable": false
+    }
+  ]
+}

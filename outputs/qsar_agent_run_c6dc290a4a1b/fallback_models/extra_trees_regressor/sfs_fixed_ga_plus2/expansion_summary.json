@@ -1,0 +1,37 @@
+{
+  "estimator": "ExtraTreesRegressor",
+  "fixed_features": [
+    "RDKit_EState_VSA10",
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_PEOE_VSA11",
+    "RDKit_PEOE_VSA2",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1"
+  ],
+  "extra_features": [
+    "RDKit_PEOE_VSA8",
+    "RDKit_SMR_VSA4"
+  ],
+  "selected_features": [
+    "RDKit_EState_VSA10",
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_PEOE_VSA11",
+    "RDKit_PEOE_VSA2",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1",
+    "RDKit_PEOE_VSA8",
+    "RDKit_SMR_VSA4"
+  ],
+  "n_fixed": 8,
+  "n_extra": 2,
+  "ga_best_fitness": -6.168781405838111,
+  "acceptable_after_hpo": false,
+  "final_source": "baseline",
+  "mean_cv_r2": 0.5354534040389831,
+  "status": "overfit",
+  "expansion_dir": "outputs/c6dc290a4a1b/fallback_models/extra_trees_regressor/sfs_fixed_ga_plus2"
+}

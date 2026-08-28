@@ -1,0 +1,11 @@
+# HPO Round 3 Agent Grid Proposal
+
+**Strategy:** Grid search focusing on increasing model capacity by expanding the range of n_components while maintaining the current max_iter and exploring both scaling options.
+
+In this round, I focused on addressing the underfitting issue identified in the previous assessment. The best_params from round 3 were used as a foundation, specifically keeping 'max_iter' at 100 and 'n_components' at 3, while exploring a wider range of 'n_components' to increase model capacity. Given the dataset size (n_train_samples = 153, n_features = 3), I included 'n_components' values of 4 and 5 to allow for more complexity. I retained both scaling options to evaluate their impact on performance. This adjustment aims to enhance the model's ability to capture the underlying patterns in the data.
+
+**Expected overfitting effect:** Increasing n_components may lead to overfitting if the model becomes too complex for the dataset size, but the current focus is on addressing underfitting.
+
+**Expected underfitting effect:** By increasing n_components, the model should gain more capacity to fit the training data better, potentially improving both training and cross-validation R² scores.
+
+**Cost estimate:** Moderate, as the grid search will evaluate 8 combinations (2 scale options * 2 max_iter options * 3 n_components options).

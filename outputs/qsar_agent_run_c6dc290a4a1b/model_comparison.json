@@ -1,0 +1,267 @@
+{
+  "winning_estimator": "SVR (sfs_fixed_ga_plus2)",
+  "selected_features": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA10",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA6",
+    "RDKit_Kappa1",
+    "RDKit_NumRotatableBonds"
+  ],
+  "final_model_config": {
+    "estimator": "SVR",
+    "n_estimators": 100,
+    "max_depth": 10,
+    "min_samples_split": 2,
+    "min_samples_leaf": 1,
+    "max_features": "sqrt",
+    "bootstrap": true,
+    "max_samples": null,
+    "criterion": "squared_error",
+    "random_state": 42,
+    "n_jobs": -1,
+    "params": {
+      "C": 1.0,
+      "epsilon": 0.1,
+      "gamma": "scale",
+      "kernel": "rbf"
+    }
+  },
+  "final_selection": {
+    "source": "baseline",
+    "params": {
+      "epsilon": 0.1,
+      "kernel": "rbf",
+      "gamma": "scale",
+      "C": 1.0
+    },
+    "cv_summary": {
+      "mean_train_r2": 0.735795737064381,
+      "mean_cv_r2": 0.5349015521444443,
+      "std_cv_r2": 0.07696355429258192,
+      "mean_train_rmse": 0.4980441411177666,
+      "mean_cv_rmse": 0.6546700303753467,
+      "mean_train_mae": 0.32059542427240323,
+      "mean_cv_mae": 0.4557223915709496,
+      "train_cv_r2_gap": 0.2008941849199366,
+      "n_folds": 5,
+      "holdout_val_r2": 0.48699124108799374
+    },
+    "assessment": {
+      "status": "overfit",
+      "is_acceptable": false,
+      "is_overfit": true,
+      "is_underfit": false,
+      "is_unstable": false,
+      "is_severe_overfit": false,
+      "mean_train_r2": 0.735795737064381,
+      "mean_cv_r2": 0.5349015521444443,
+      "train_cv_r2_gap": 0.2008941849199366,
+      "cv_r2_std": 0.07696355429258192,
+      "warnings": [
+        "Train-CV R\u00b2 gap (0.201) suggests overfitting."
+      ],
+      "explanation": "Training R\u00b2 (0.736) is much higher than CV R\u00b2 (0.535); gap=0.201 exceeds 0.15."
+    },
+    "selection_rationale": "Selected baseline with combined R\u00b2=0.5109 (mean CV R\u00b2=0.5349, holdout val R\u00b2=0.4870), train-CV gap=0.2009, status=overfit. No acceptable models; chose best combined R\u00b2 with warning.",
+    "warning": "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+    "compared_candidates": [
+      {
+        "source": "baseline",
+        "mean_cv_r2": 0.5349015521444443,
+        "holdout_val_r2": 0.48699124108799374,
+        "combined_r2": 0.5109463966162191,
+        "status": "overfit",
+        "acceptable": false
+      },
+      {
+        "source": "hpo_round_1",
+        "mean_cv_r2": 0.541021873340227,
+        "holdout_val_r2": 0.4928764375965803,
+        "combined_r2": 0.5169491554684036,
+        "status": "overfit",
+        "acceptable": false
+      },
+      {
+        "source": "hpo_round_2",
+        "mean_cv_r2": 0.541021873340227,
+        "holdout_val_r2": 0.4928764375965803,
+        "combined_r2": 0.5169491554684036,
+        "status": "overfit",
+        "acceptable": false
+      },
+      {
+        "source": "hpo_round_3",
+        "mean_cv_r2": 0.541021873340227,
+        "holdout_val_r2": 0.4928764375965803,
+        "combined_r2": 0.5169491554684036,
+        "status": "overfit",
+        "acceptable": false
+      }
+    ]
+  },
+  "selection_rationale": "Selected SVR (sfs_fixed_ga_plus2) (baseline) with combined R\u00b2=0.5109 (mean CV R\u00b2=0.5349, holdout val R\u00b2=0.4870), train-CV gap=0.2009, status=overfit. Compared 13 model branch(es); no acceptable models; chose best combined R\u00b2 with warning.",
+  "warning": "No acceptable model found across estimators; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+  "compared_models": [
+    {
+      "estimator": "RandomForestRegressor",
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.5342860366128532,
+      "holdout_val_r2": 0.5714954377783039,
+      "combined_r2": 0.5528907371955786,
+      "train_cv_r2_gap": 0.3430493535037411,
+      "status": "overfit",
+      "acceptable": false,
+      "n_features": 6,
+      "is_expansion": false
+    },
+    {
+      "estimator": "RandomForestRegressor (sfs_subset)",
+      "source": "baseline",
+      "mean_cv_r2": 0.5384432246983131,
+      "holdout_val_r2": 0.5111485386855952,
+      "combined_r2": 0.5247958816919541,
+      "train_cv_r2_gap": 0.3864017986357452,
+      "status": "overfit",
+      "acceptable": false,
+      "n_features": 6,
+      "is_expansion": true
+    },
+    {
+      "estimator": "RandomForestRegressor (sfs_fixed_ga_plus2)",
+      "source": "baseline",
+      "mean_cv_r2": 0.49143058774325443,
+      "holdout_val_r2": 0.4306609839995831,
+      "combined_r2": 0.46104578587141876,
+      "train_cv_r2_gap": 0.3669653254805666,
+      "status": "overfit",
+      "acceptable": false,
+      "n_features": 8,
+      "is_expansion": true
+    },
+    {
+      "estimator": "PLSRegression",
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.23909047475804232,
+      "holdout_val_r2": 0.1508200497346487,
+      "combined_r2": 0.19495526224634552,
+      "train_cv_r2_gap": 0.04198734750786662,
+      "status": "underfit",
+      "acceptable": false,
+      "n_features": 1,
+      "is_expansion": false
+    },
+    {
+      "estimator": "PLSRegression (sfs_fixed_ga_plus2)",
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.31628437946934107,
+      "holdout_val_r2": 0.050827794639128565,
+      "combined_r2": 0.18355608705423482,
+      "train_cv_r2_gap": 0.05257401394394645,
+      "status": "underfit",
+      "acceptable": false,
+      "n_features": 3,
+      "is_expansion": true
+    },
+    {
+      "estimator": "ExtraTreesRegressor",
+      "source": "baseline",
+      "mean_cv_r2": 0.5269288366355482,
+      "holdout_val_r2": 0.6512258866484701,
+      "combined_r2": 0.5890773616420092,
+      "train_cv_r2_gap": 0.42108429311436024,
+      "status": "overfit",
+      "acceptable": false,
+      "n_features": 8,
+      "is_expansion": false
+    },
+    {
+      "estimator": "ExtraTreesRegressor (sfs_subset)",
+      "source": "baseline",
+      "mean_cv_r2": 0.560481731271193,
+      "holdout_val_r2": 0.6742355360636729,
+      "combined_r2": 0.617358633667433,
+      "train_cv_r2_gap": 0.3824698903730608,
+      "status": "overfit",
+      "acceptable": false,
+      "n_features": 8,
+      "is_expansion": true
+    },
+    {
+      "estimator": "ExtraTreesRegressor (sfs_fixed_ga_plus2)",
+      "source": "baseline",
+      "mean_cv_r2": 0.5354534040389831,
+      "holdout_val_r2": 0.6641912530659828,
+      "combined_r2": 0.599822328552483,
+      "train_cv_r2_gap": 0.4259730342061149,
+      "status": "overfit",
+      "acceptable": false,
+      "n_features": 10,
+      "is_expansion": true
+    },
+    {
+      "estimator": "SVR",
+      "source": "baseline",
+      "mean_cv_r2": 0.4064002563332033,
+      "holdout_val_r2": 0.19418765788275583,
+      "combined_r2": 0.30029395710797957,
+      "train_cv_r2_gap": 0.12229037106770424,
+      "status": "poor_performance",
+      "acceptable": false,
+      "n_features": 6,
+      "is_expansion": false
+    },
+    {
+      "estimator": "SVR (sfs_subset)",
+      "source": "baseline",
+      "mean_cv_r2": 0.5221069230155283,
+      "holdout_val_r2": 0.42123693928389283,
+      "combined_r2": 0.47167193114971057,
+      "train_cv_r2_gap": 0.1781880007871538,
+      "status": "overfit",
+      "acceptable": false,
+      "n_features": 6,
+      "is_expansion": true
+    },
+    {
+      "estimator": "SVR (sfs_fixed_ga_plus2)",
+      "source": "baseline",
+      "mean_cv_r2": 0.5349015521444443,
+      "holdout_val_r2": 0.48699124108799374,
+      "combined_r2": 0.5109463966162191,
+      "train_cv_r2_gap": 0.2008941849199366,
+      "status": "overfit",
+      "acceptable": false,
+      "n_features": 8,
+      "is_expansion": true
+    },
+    {
+      "estimator": "KNeighborsRegressor",
+      "source": "baseline",
+      "mean_cv_r2": 0.3367418062380919,
+      "holdout_val_r2": 0.3143248779302582,
+      "combined_r2": 0.32553334208417506,
+      "train_cv_r2_gap": 0.21867122572901732,
+      "status": "overfit",
+      "acceptable": false,
+      "n_features": 1,
+      "is_expansion": false
+    },
+    {
+      "estimator": "KNeighborsRegressor (sfs_fixed_ga_plus2)",
+      "source": "baseline",
+      "mean_cv_r2": 0.3278671302602831,
+      "holdout_val_r2": 0.16075675990677352,
+      "combined_r2": 0.2443119450835283,
+      "train_cv_r2_gap": 0.29411894029963376,
+      "status": "unstable",
+      "acceptable": false,
+      "n_features": 3,
+      "is_expansion": true
+    }
+  ],
+  "winner_is_expansion": true,
+  "winner_expansion_label": "sfs_fixed_ga_plus2"
+}

@@ -11,6 +11,7 @@ import streamlit as st
 
 from qsar_agent.app_state import init_session_state, reset_session, set_workflow_state
 from qsar_agent.config import (
+    AgenticImprovementSettings,
     ClusteringConfig,
     DescriptorConfig,
     GAConfig,
@@ -207,6 +208,14 @@ def render_sidebar_config() -> WorkflowConfig:
         value=True,
         help="Runs PLS, ExtraTrees, SVR, and KNN with per-model feature selection and HPO.",
     )
+    agentic_enabled = st.sidebar.checkbox(
+        "Run modeling-improvement agent after workflow",
+        value=False,
+        help=(
+            "Opt-in LangGraph loop. Uses only train/CV/validation metrics; "
+            "the sealed external test is evaluated once after freeze."
+        ),
+    )
 
     return WorkflowConfig(
         val_fraction=val_fraction,
@@ -254,6 +263,7 @@ def render_sidebar_config() -> WorkflowConfig:
             openai_model=hpo_openai_model,
         ),
         model_fallback=ModelFallbackSettings(enabled=model_fallback_enabled),
+        agentic_improvement=AgenticImprovementSettings(enabled=bool(agentic_enabled)),
     )
 
 
@@ -492,6 +502,18 @@ def render_results_dashboard() -> None:
         run_dir = Path(artifacts["prediction_scatter"]).parent
 
     st.header("Results Dashboard")
+    agent_report = artifacts.get("agent_final_report") or str(run_dir / "agent_results" / "agent_final_report.md")
+    if Path(agent_report).is_file():
+        with st.expander("Modeling-improvement agent report", expanded=False):
+            st.markdown(Path(agent_report).read_text(encoding="utf-8"))
+        proposal = run_dir / "agent_results" / "exclusion_proposals" / "pending.json"
+        if proposal.is_file():
+            st.warning(
+                "The modeling agent proposed a compound exclusion and is waiting for approval. "
+                "Resume with: python scripts/run_modeling_agent.py "
+                f"{run_dir} --approve-exclusion pending"
+            )
+
     tabs = st.tabs(
         [
             "Dataset",

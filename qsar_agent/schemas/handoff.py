@@ -322,9 +322,19 @@ class AgentConstraints(BaseModel):
     stopping_conditions: list[str] = Field(default_factory=list)
 
 
+HandoffStatus = Literal["COMPLETE", "INCOMPLETE"]
+
+
 class HandoffPackage(BaseModel):
     """Single structured results object for the modeling handoff."""
 
+    schema_version: str = "1.0"
+    handoff_status: HandoffStatus = "COMPLETE"
+    validation_passed: bool = True
+    validation_errors: list[str] = Field(default_factory=list)
+    dataset_hash: str = ""
+    development_split_hash: str = ""
+    sealed_test_hash: str = ""
     run_metadata: RunMetadata
     problem_definition: ProblemDefinition
     dataset_audit: DatasetAudit

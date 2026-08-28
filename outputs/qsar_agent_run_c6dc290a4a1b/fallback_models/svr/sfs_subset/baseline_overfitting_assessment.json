@@ -1,0 +1,16 @@
+{
+  "status": "overfit",
+  "is_acceptable": false,
+  "is_overfit": true,
+  "is_underfit": false,
+  "is_unstable": false,
+  "is_severe_overfit": false,
+  "mean_train_r2": 0.7002949238026821,
+  "mean_cv_r2": 0.5221069230155283,
+  "train_cv_r2_gap": 0.1781880007871538,
+  "cv_r2_std": 0.06403370466391671,
+  "warnings": [
+    "Train-CV R\u00b2 gap (0.178) suggests overfitting."
+  ],
+  "explanation": "Training R\u00b2 (0.700) is much higher than CV R\u00b2 (0.522); gap=0.178 exceeds 0.15."
+}

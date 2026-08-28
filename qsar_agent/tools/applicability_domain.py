@@ -18,7 +18,7 @@ from qsar_agent.tools.descriptor_calculation import META_COLUMNS
 
 def calculate_applicability_domain(
     train_path: str | Path,
-    test_path: str | Path,
+    test_path: str | Path | None,
     predictions_path: str | Path,
     run_dir: Path,
     selected_features: list[str],
@@ -31,16 +31,14 @@ def calculate_applicability_domain(
     limitations for nonlinear models such as RandomForest.
     """
     train_df = pd.read_csv(train_path)
-    test_df = pd.read_csv(test_path)
+    test_df = pd.read_csv(test_path) if test_path is not None else None
     val_df = pd.read_csv(val_path) if val_path is not None else None
     pred_df = pd.read_csv(predictions_path)
+    if test_path is None and "split" in pred_df.columns:
+        pred_df = pred_df[pred_df["split"].astype(str) != "test"].reset_index(drop=True)
 
     X_train = train_df[selected_features].values
-    X_test = test_df[selected_features].values
-
     X_train_aug = np.column_stack([np.ones(len(X_train)), X_train])
-    X_test_aug = np.column_stack([np.ones(len(X_test)), X_test])
-
     XtX_inv = np.linalg.pinv(X_train_aug.T @ X_train_aug)
 
     def leverage(X_aug):
@@ -48,7 +46,11 @@ def calculate_applicability_domain(
         return h
 
     h_train = leverage(X_train_aug)
-    h_test = leverage(X_test_aug)
+    h_test = None
+    if test_df is not None:
+        X_test = test_df[selected_features].values
+        X_test_aug = np.column_stack([np.ones(len(X_test)), X_test])
+        h_test = leverage(X_test_aug)
     h_val = None
     if val_df is not None:
         X_val = val_df[selected_features].values
@@ -67,7 +69,9 @@ def calculate_applicability_domain(
         std_residuals = residuals / np.sqrt(mse)
 
     train_id_to_lev = dict(zip(train_df["compound_id"], h_train))
-    test_id_to_lev = dict(zip(test_df["compound_id"], h_test))
+    test_id_to_lev = (
+        dict(zip(test_df["compound_id"], h_test)) if test_df is not None and h_test is not None else {}
+    )
     val_id_to_lev = (
         dict(zip(val_df["compound_id"], h_val)) if val_df is not None and h_val is not None else {}
     )
@@ -77,9 +81,13 @@ def calculate_applicability_domain(
         if row["split"] == "train":
             lev = train_id_to_lev[row["compound_id"]]
         elif row["split"] == "val":
-            lev = val_id_to_lev[row["compound_id"]]
-        else:
+            lev = val_id_to_lev.get(row["compound_id"], 0.0)
+        elif row["split"] == "test":
+            if row["compound_id"] not in test_id_to_lev:
+                continue
             lev = test_id_to_lev[row["compound_id"]]
+        else:
+            lev = train_id_to_lev.get(row["compound_id"], 0.0)
 
         high_leverage = lev > h_star
         response_outlier = abs(std_residuals[i]) > 3

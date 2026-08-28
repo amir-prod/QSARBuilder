@@ -1,0 +1,33 @@
+{
+  "train": {
+    "r2": 0.2806301181533146,
+    "rmse": 0.8223906977800245,
+    "mae": 0.6429491786835068,
+    "n_samples": 153
+  },
+  "test": {
+    "r2": 0.05495824288827622,
+    "rmse": 0.9856885152409303,
+    "mae": 0.7989434282984144,
+    "n_samples": 19
+  },
+  "selected_features": [
+    "RDKit_BCUT2D_LOGPHI"
+  ],
+  "hyperparameter_optimization": {
+    "enabled": true,
+    "rounds_completed": 3,
+    "final_model_source": "hpo_round_1",
+    "final_params": {
+      "max_iter": 100,
+      "n_components": 1,
+      "scale": false
+    }
+  },
+  "val": {
+    "r2": 0.1508200497346487,
+    "rmse": 0.8949005944166312,
+    "mae": 0.7043745095993598,
+    "n_samples": 19
+  }
+}

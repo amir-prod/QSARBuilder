@@ -1,0 +1,13 @@
+{
+  "selected_features": [
+    "RDKit_EState_VSA10",
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_PEOE_VSA11",
+    "RDKit_PEOE_VSA2",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1"
+  ],
+  "source": "sfs_subset"
+}

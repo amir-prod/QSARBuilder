@@ -1,0 +1,19 @@
+{
+  "estimator": "ExtraTreesRegressor",
+  "selected_features": [
+    "RDKit_EState_VSA10",
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_PEOE_VSA11",
+    "RDKit_PEOE_VSA2",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1"
+  ],
+  "n_features": 8,
+  "baseline_source": "baseline",
+  "hpo_source": "baseline",
+  "mean_cv_r2_baseline": 0.560481731271193,
+  "mean_cv_r2_hpo": 0.560481731271193,
+  "subset_dir": "outputs/c6dc290a4a1b/fallback_models/extra_trees_regressor/sfs_subset"
+}

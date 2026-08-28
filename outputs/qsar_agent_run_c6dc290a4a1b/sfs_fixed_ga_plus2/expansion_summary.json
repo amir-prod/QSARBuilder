@@ -1,0 +1,33 @@
+{
+  "estimator": "RandomForestRegressor",
+  "fixed_features": [
+    "RDKit_BCUT2D_MWLOW",
+    "RDKit_EState_VSA2",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SMR_VSA6",
+    "RDKit_SlogP_VSA10",
+    "RDKit_fr_ether"
+  ],
+  "extra_features": [
+    "RDKit_NumHAcceptors",
+    "RDKit_SlogP_VSA11"
+  ],
+  "selected_features": [
+    "RDKit_BCUT2D_MWLOW",
+    "RDKit_EState_VSA2",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SMR_VSA6",
+    "RDKit_SlogP_VSA10",
+    "RDKit_fr_ether",
+    "RDKit_NumHAcceptors",
+    "RDKit_SlogP_VSA11"
+  ],
+  "n_fixed": 6,
+  "n_extra": 2,
+  "ga_best_fitness": -7.806453588962979,
+  "acceptable_after_hpo": false,
+  "final_source": "baseline",
+  "mean_cv_r2": 0.49143058774325443,
+  "status": "overfit",
+  "expansion_dir": "outputs/c6dc290a4a1b/sfs_fixed_ga_plus2"
+}

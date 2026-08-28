@@ -1,0 +1,17 @@
+{
+  "estimator": "SVR",
+  "selected_features": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA10",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA6"
+  ],
+  "n_features": 6,
+  "baseline_source": "baseline",
+  "hpo_source": "baseline",
+  "mean_cv_r2_baseline": 0.5221069230155283,
+  "mean_cv_r2_hpo": 0.5221069230155283,
+  "subset_dir": "outputs/c6dc290a4a1b/fallback_models/svr/sfs_subset"
+}

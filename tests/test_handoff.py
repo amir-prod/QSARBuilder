@@ -218,6 +218,18 @@ def _package(experiments: list[ExperimentRecord] | None = None, **kwargs) -> Han
     return HandoffPackage(**data)
 
 
+def test_handoff_package_top_level_integrity_fields_default():
+    package = _package()
+    assert package.schema_version == "1.0"
+    assert package.handoff_status == "COMPLETE"
+    assert package.validation_passed is True
+    assert package.validation_errors == []
+    dumped = package.model_dump(mode="json")
+    assert "dataset_hash" in dumped
+    assert "development_split_hash" in dumped
+    assert "sealed_test_hash" in dumped
+
+
 def _write_views(tmp_path: Path, package: HandoffPackage) -> Path:
     report_dir = tmp_path / "final_report"
     report_dir.mkdir()

@@ -1,0 +1,50 @@
+{
+  "original_grid": {
+    "C": [
+      0.1,
+      1.0,
+      10.0
+    ],
+    "epsilon": [
+      0.01,
+      0.05,
+      0.1
+    ],
+    "gamma": [
+      "scale",
+      0.005,
+      0.01
+    ],
+    "kernel": [
+      "rbf",
+      "linear"
+    ]
+  },
+  "sanitized_grid": {
+    "C": [
+      0.1,
+      1.0,
+      10.0
+    ],
+    "epsilon": [
+      0.01,
+      0.05,
+      0.1
+    ],
+    "gamma": [
+      "scale",
+      0.005,
+      0.01
+    ],
+    "kernel": [
+      "rbf",
+      "linear"
+    ]
+  },
+  "removed_params": [],
+  "removed_values": {},
+  "shrink_steps": [],
+  "candidate_count": 54,
+  "used_randomized_search": false,
+  "warnings": []
+}

@@ -1,0 +1,3526 @@
+{
+  "project_id": "qsar_agent_run_c6dc290a4a1b",
+  "run_dir": "outputs/qsar_agent_run_c6dc290a4a1b",
+  "dataset_hash": "8b547ba5d2a0032165ca1bfc37aad3924cde60de3ef2a0014f33a8566e8041d4",
+  "development_split_hash": "",
+  "sealed_test_hash": "5598edd2f4bc942297800f3f92b170a7585719b30bf50943000255545a1b6789",
+  "phase": "DEVELOPMENT",
+  "requirements": {},
+  "handoff_validation": {
+    "passed": false,
+    "errors": [
+      "Markdown missing canonical metrics for c6dc290a4a1b__random_forest__ga.",
+      "Markdown missing canonical metrics for c6dc290a4a1b__random_forest__sfs_subset.",
+      "Markdown missing canonical metrics for c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2.",
+      "Markdown missing canonical metrics for c6dc290a4a1b__pls_regression__ga.",
+      "Markdown missing canonical metrics for c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2.",
+      "Markdown missing canonical metrics for c6dc290a4a1b__extra_trees_regressor__ga.",
+      "Markdown missing canonical metrics for c6dc290a4a1b__extra_trees_regressor__sfs_subset.",
+      "Markdown missing canonical metrics for c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2.",
+      "Markdown missing canonical metrics for c6dc290a4a1b__svr__ga.",
+      "Markdown missing canonical metrics for c6dc290a4a1b__svr__sfs_subset.",
+      "Markdown missing canonical metrics for c6dc290a4a1b__svr__sfs_fixed_ga_plus2.",
+      "Markdown missing canonical metrics for c6dc290a4a1b__k_neighbors_regressor__ga.",
+      "Markdown missing canonical metrics for c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2.",
+      "c6dc290a4a1b__random_forest__ga.cv_rmse is a suspicious zero placeholder while cv_r2 is not perfect.",
+      "c6dc290a4a1b__random_forest__ga.cv_mae is a suspicious zero placeholder while cv_r2 is not perfect.",
+      "c6dc290a4a1b__pls_regression__ga.cv_rmse is a suspicious zero placeholder while cv_r2 is not perfect.",
+      "c6dc290a4a1b__pls_regression__ga.cv_mae is a suspicious zero placeholder while cv_r2 is not perfect.",
+      "c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2.cv_rmse is a suspicious zero placeholder while cv_r2 is not perfect.",
+      "c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2.cv_mae is a suspicious zero placeholder while cv_r2 is not perfect.",
+      "Metric disagreement for c6dc290a4a1b__random_forest__ga.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__random_forest__ga.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__random_forest__ga.mean_cv_fold_train_r2: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__random_forest__sfs_subset.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__random_forest__sfs_subset.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__random_forest__sfs_subset.mean_cv_fold_train_r2: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2.mean_cv_fold_train_r2: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__pls_regression__ga.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__pls_regression__ga.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__pls_regression__ga.mean_cv_fold_train_r2: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2.mean_cv_fold_train_r2: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__ga.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__ga.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__ga.mean_cv_fold_train_r2: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__sfs_subset.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__sfs_subset.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__sfs_subset.mean_cv_fold_train_r2: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2.mean_cv_fold_train_r2: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__svr__ga.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__svr__ga.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__svr__ga.mean_cv_fold_train_r2: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__svr__sfs_subset.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__svr__sfs_subset.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__svr__sfs_subset.mean_cv_fold_train_r2: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__svr__sfs_fixed_ga_plus2.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__svr__sfs_fixed_ga_plus2.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__svr__sfs_fixed_ga_plus2.mean_cv_fold_train_r2: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__k_neighbors_regressor__ga.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__k_neighbors_regressor__ga.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__k_neighbors_regressor__ga.mean_cv_fold_train_r2: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2.cv_fold_train_val_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2.refit_train_cv_gap: json=null csv=",
+      "Metric disagreement for c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2.mean_cv_fold_train_r2: json=null csv="
+    ],
+    "warnings": [],
+    "package": {
+      "schema_version": "1.0",
+      "handoff_status": "COMPLETE",
+      "validation_passed": true,
+      "validation_errors": [],
+      "dataset_hash": "",
+      "development_split_hash": "",
+      "sealed_test_hash": "",
+      "run_metadata": {
+        "run_id": "c6dc290a4a1b",
+        "started_at": "2026-08-26T22:28:39.084655+00:00",
+        "completed_at": "2026-08-26T22:57:00.896276+00:00",
+        "git": {
+          "available": true,
+          "commit": "6799fd3a15e1e0eb7df0e84ab6ee4a7f7f71e0c9",
+          "dirty": true,
+          "reason": ""
+        },
+        "random_seeds": {
+          "workflow": 42,
+          "sfs": 42,
+          "ga": 42,
+          "hpo": 42,
+          "model": 42,
+          "clustering": 60
+        },
+        "configuration": {
+          "val_fraction": 0.1,
+          "test_fraction": 0.1,
+          "split_method": "sorted",
+          "random_seed": 42,
+          "output_dir": "outputs",
+          "umap": {
+            "n_neighbors": 15,
+            "n_components": 2,
+            "min_dist": 0.1,
+            "metric": "euclidean"
+          },
+          "clustering": {
+            "min_clusters": 2,
+            "max_clusters": 10,
+            "random_state": 60
+          },
+          "preprocessing": {
+            "missing_value_threshold": 0.2,
+            "near_constant_std_threshold": 0.01,
+            "correlation_threshold": 0.95
+          },
+          "model": {
+            "estimator": "RandomForestRegressor",
+            "n_estimators": 100,
+            "max_depth": 10,
+            "min_samples_split": 2,
+            "min_samples_leaf": 1,
+            "max_features": "sqrt",
+            "bootstrap": true,
+            "max_samples": null,
+            "criterion": "squared_error",
+            "random_state": 42,
+            "n_jobs": -1,
+            "params": {}
+          },
+          "descriptors": {
+            "backends": [
+              "RDKit"
+            ],
+            "run_geometry_optimization": false,
+            "num_workers": 16,
+            "xtb_timeout": 600,
+            "external_descriptors_path": null
+          },
+          "ga": {
+            "population_size": 50,
+            "n_generations": 30,
+            "crossover_prob": 0.7,
+            "mutation_prob": 0.2,
+            "tournament_size": 3,
+            "cv_folds": 5,
+            "n_jobs": -1,
+            "random_seed": 42
+          },
+          "sfs": {
+            "max_features": 10,
+            "cv_folds": 5,
+            "random_seed": 42,
+            "n_jobs": -1
+          },
+          "hpo": {
+            "enabled": true,
+            "max_hpo_rounds": 3,
+            "cv_folds": 5,
+            "max_candidates_per_round": 120,
+            "min_cv_improvement": 0.02,
+            "overfit_gap_threshold": 0.15,
+            "severe_overfit_gap_threshold": 0.25,
+            "minimum_cv_r2": 0.5,
+            "cv_std_threshold": 0.15,
+            "minimum_train_r2": 0.4,
+            "n_jobs": -1,
+            "openai_model": "gpt-4o-mini"
+          },
+          "model_fallback": {
+            "enabled": true,
+            "estimators": [
+              "PLSRegression",
+              "ExtraTreesRegressor",
+              "SVR",
+              "KNeighborsRegressor"
+            ]
+          },
+          "sfs_fixed_ga_expansion": {
+            "enabled": true,
+            "extra_features": 2,
+            "output_subdir": "sfs_fixed_ga_plus2"
+          },
+          "sfs_subset_branch": {
+            "enabled": true,
+            "output_subdir": "sfs_subset",
+            "hpo_output_subdir": "sfs_subset_hpo"
+          },
+          "smiles_column": "SMILES",
+          "activity_column": "target",
+          "activity_units": "",
+          "id_column": null,
+          "min_valid_compounds": 20
+        },
+        "package_versions": {
+          "python": "3.12.2",
+          "qsar_agent": "1.0.0",
+          "scikit-learn": "1.9.0",
+          "pandas": "3.0.5",
+          "numpy": "1.26.4",
+          "rdkit": "2026.3.4",
+          "umap-learn": "0.5.12",
+          "deap": "1.4.4",
+          "mlxtend": "0.23.4",
+          "joblib": "1.5.3",
+          "streamlit": "1.60.0",
+          "mordred": "1.2.0"
+        },
+        "workflow_status": "completed",
+        "stages": [
+          {
+            "stage": "dataset_validation",
+            "status": "Completed",
+            "message": ""
+          },
+          {
+            "stage": "descriptor_calculation",
+            "status": "Completed",
+            "message": "backends=RDKit; 3D_descriptors=False"
+          },
+          {
+            "stage": "umap_split",
+            "status": "Completed",
+            "message": "method=sorted"
+          },
+          {
+            "stage": "descriptor_preprocessing",
+            "status": "Completed",
+            "message": ""
+          },
+          {
+            "stage": "sequential_feature_selection",
+            "status": "Completed",
+            "message": ""
+          },
+          {
+            "stage": "feature_count_selection",
+            "status": "Completed",
+            "message": ""
+          },
+          {
+            "stage": "genetic_algorithm",
+            "status": "Completed",
+            "message": ""
+          },
+          {
+            "stage": "baseline_cv_diagnostics",
+            "status": "Completed",
+            "message": ""
+          },
+          {
+            "stage": "overfitting_assessment",
+            "status": "Completed",
+            "message": ""
+          },
+          {
+            "stage": "hpo_round_1",
+            "status": "Completed",
+            "message": "Best CV R\u00b2=0.534"
+          },
+          {
+            "stage": "hpo_round_2",
+            "status": "Completed",
+            "message": "Best CV R\u00b2=0.534"
+          },
+          {
+            "stage": "hpo_round_3",
+            "status": "Completed",
+            "message": "Best CV R\u00b2=0.537"
+          },
+          {
+            "stage": "final_model_selection",
+            "status": "Completed",
+            "message": ""
+          },
+          {
+            "stage": "model_fallback",
+            "status": "Completed",
+            "message": "Tried 4 fallback model(s); winner: SVR (sfs_fixed_ga_plus2)"
+          },
+          {
+            "stage": "final_model",
+            "status": "Completed",
+            "message": ""
+          },
+          {
+            "stage": "applicability_domain",
+            "status": "Completed",
+            "message": ""
+          }
+        ]
+      },
+      "problem_definition": {
+        "task": "regression",
+        "target": "target",
+        "target_transformation": "identity",
+        "units": "unspecified",
+        "primary_metric": "r2",
+        "acceptance_criteria": {
+          "primary_metric": "r2",
+          "minimum_cv_r2": 0.5,
+          "overfit_gap_threshold": 0.15,
+          "severe_overfit_gap_threshold": 0.25,
+          "cv_std_threshold": 0.15,
+          "minimum_train_r2": 0.4,
+          "min_cv_improvement": 0.02,
+          "overfit_gap_statistic": "cv_fold_train_val_gap",
+          "overfit_gap_definition": "Overfitting assessment uses cv_fold_train_val_gap = mean in-fold training R\u00b2 minus mean out-of-fold R\u00b2. refit_train_cv_gap (full-training refit R\u00b2 minus OOF R\u00b2) is reported for interpretation and is not used for acceptance. minimum_train_r2 is applied to mean_cv_fold_train_r2, not to the refit score.",
+          "minimum_train_r2_scope": "mean_cv_fold_train_r2"
+        }
+      },
+      "dataset_audit": {
+        "curation_steps": [
+          {
+            "step": "input",
+            "n_compounds": 191,
+            "n_features": null,
+            "n_removed": null,
+            "notes": ""
+          },
+          {
+            "step": "after_structure_and_activity_validation",
+            "n_compounds": 191,
+            "n_features": null,
+            "n_removed": 0,
+            "notes": ""
+          },
+          {
+            "step": "after_descriptor_calculation",
+            "n_compounds": 191,
+            "n_features": 220,
+            "n_removed": null,
+            "notes": ""
+          },
+          {
+            "step": "after_nonnumeric_filter",
+            "n_compounds": null,
+            "n_features": 220,
+            "n_removed": 0,
+            "notes": ""
+          },
+          {
+            "step": "after_missing_filter",
+            "n_compounds": null,
+            "n_features": 220,
+            "n_removed": 0,
+            "notes": ""
+          },
+          {
+            "step": "after_constant_filter",
+            "n_compounds": null,
+            "n_features": 176,
+            "n_removed": 44,
+            "notes": ""
+          },
+          {
+            "step": "after_near_constant_filter",
+            "n_compounds": null,
+            "n_features": 176,
+            "n_removed": 0,
+            "notes": ""
+          },
+          {
+            "step": "after_correlation_filter",
+            "n_compounds": null,
+            "n_features": 139,
+            "n_removed": 37,
+            "notes": ""
+          },
+          {
+            "step": "after_split",
+            "n_compounds": 191,
+            "n_features": null,
+            "n_removed": null,
+            "notes": "train=153, val=19, test=19"
+          }
+        ],
+        "invalid_structures": 0,
+        "duplicates": 0,
+        "missing_or_invalid_activity": 0,
+        "descriptors_with_missing": 0,
+        "target_statistics": {
+          "min": 1.077,
+          "max": 5.31,
+          "mean": 2.6542251308900524,
+          "median": 2.43,
+          "std": 0.9771871967388733
+        },
+        "feature_counts": {
+          "raw_descriptors": 220,
+          "generated_descriptors": 220,
+          "external_descriptors": 0,
+          "after_preprocessing": 139,
+          "one_se_selected_feature_count": 6,
+          "ga_selected_feature_count": 6
+        },
+        "train_size": 153,
+        "validation_size": 19,
+        "test_size": 19,
+        "split_strategy": "sorted",
+        "dataset_hash": "8b547ba5d2a0032165ca1bfc37aad3924cde60de3ef2a0014f33a8566e8041d4",
+        "duplicate_overlap": {
+          "train_val": [],
+          "train_test": [],
+          "val_test": [],
+          "any_overlap": false
+        }
+      },
+      "leakage_safeguards": {
+        "test_lock_status": "locked_from_selection",
+        "test_compound_id_hash": "5598edd2f4bc942297800f3f92b170a7585719b30bf50943000255545a1b6789",
+        "preprocessing_scope": "train_only_fit",
+        "feature_selection_scope": "train_cv_and_holdout_validation",
+        "duplicate_overlap": {
+          "train_val": [],
+          "train_test": [],
+          "val_test": [],
+          "any_overlap": false
+        },
+        "test_results_used_for_selection": false,
+        "selection_criterion": "Highest combined R\u00b2 (equal-weight mean training CV R\u00b2 and holdout validation R\u00b2) among acceptable models, with a one-standard-error rule and estimator-simplicity tie-break. External-test metrics were not used for model selection.",
+        "confirmation": "Model selection used training cross-validation and held-out validation only. External-test predictions were generated after selection and did not influence the winning run.",
+        "selection_records": [
+          {
+            "estimator": "RandomForestRegressor",
+            "source": "hpo_round_1",
+            "mean_cv_r2": 0.5342860366128532,
+            "holdout_val_r2": 0.5714954377783039,
+            "combined_r2": 0.5528907371955786,
+            "train_cv_r2_gap": 0.3430493535037411,
+            "status": "overfit",
+            "acceptable": false,
+            "n_features": 6,
+            "is_expansion": false
+          },
+          {
+            "estimator": "RandomForestRegressor (sfs_subset)",
+            "source": "baseline",
+            "mean_cv_r2": 0.5384432246983131,
+            "holdout_val_r2": 0.5111485386855952,
+            "combined_r2": 0.5247958816919541,
+            "train_cv_r2_gap": 0.3864017986357452,
+            "status": "overfit",
+            "acceptable": false,
+            "n_features": 6,
+            "is_expansion": true
+          },
+          {
+            "estimator": "RandomForestRegressor (sfs_fixed_ga_plus2)",
+            "source": "baseline",
+            "mean_cv_r2": 0.49143058774325443,
+            "holdout_val_r2": 0.4306609839995831,
+            "combined_r2": 0.46104578587141876,
+            "train_cv_r2_gap": 0.3669653254805666,
+            "status": "overfit",
+            "acceptable": false,
+            "n_features": 8,
+            "is_expansion": true
+          },
+          {
+            "estimator": "PLSRegression",
+            "source": "hpo_round_1",
+            "mean_cv_r2": 0.23909047475804232,
+            "holdout_val_r2": 0.1508200497346487,
+            "combined_r2": 0.19495526224634552,
+            "train_cv_r2_gap": 0.04198734750786662,
+            "status": "underfit",
+            "acceptable": false,
+            "n_features": 1,
+            "is_expansion": false
+          },
+          {
+            "estimator": "PLSRegression (sfs_fixed_ga_plus2)",
+            "source": "hpo_round_1",
+            "mean_cv_r2": 0.31628437946934107,
+            "holdout_val_r2": 0.050827794639128565,
+            "combined_r2": 0.18355608705423482,
+            "train_cv_r2_gap": 0.05257401394394645,
+            "status": "underfit",
+            "acceptable": false,
+            "n_features": 3,
+            "is_expansion": true
+          },
+          {
+            "estimator": "ExtraTreesRegressor",
+            "source": "baseline",
+            "mean_cv_r2": 0.5269288366355482,
+            "holdout_val_r2": 0.6512258866484701,
+            "combined_r2": 0.5890773616420092,
+            "train_cv_r2_gap": 0.42108429311436024,
+            "status": "overfit",
+            "acceptable": false,
+            "n_features": 8,
+            "is_expansion": false
+          },
+          {
+            "estimator": "ExtraTreesRegressor (sfs_subset)",
+            "source": "baseline",
+            "mean_cv_r2": 0.560481731271193,
+            "holdout_val_r2": 0.6742355360636729,
+            "combined_r2": 0.617358633667433,
+            "train_cv_r2_gap": 0.3824698903730608,
+            "status": "overfit",
+            "acceptable": false,
+            "n_features": 8,
+            "is_expansion": true
+          },
+          {
+            "estimator": "ExtraTreesRegressor (sfs_fixed_ga_plus2)",
+            "source": "baseline",
+            "mean_cv_r2": 0.5354534040389831,
+            "holdout_val_r2": 0.6641912530659828,
+            "combined_r2": 0.599822328552483,
+            "train_cv_r2_gap": 0.4259730342061149,
+            "status": "overfit",
+            "acceptable": false,
+            "n_features": 10,
+            "is_expansion": true
+          },
+          {
+            "estimator": "SVR",
+            "source": "baseline",
+            "mean_cv_r2": 0.4064002563332033,
+            "holdout_val_r2": 0.19418765788275583,
+            "combined_r2": 0.30029395710797957,
+            "train_cv_r2_gap": 0.12229037106770424,
+            "status": "poor_performance",
+            "acceptable": false,
+            "n_features": 6,
+            "is_expansion": false
+          },
+          {
+            "estimator": "SVR (sfs_subset)",
+            "source": "baseline",
+            "mean_cv_r2": 0.5221069230155283,
+            "holdout_val_r2": 0.42123693928389283,
+            "combined_r2": 0.47167193114971057,
+            "train_cv_r2_gap": 0.1781880007871538,
+            "status": "overfit",
+            "acceptable": false,
+            "n_features": 6,
+            "is_expansion": true
+          },
+          {
+            "estimator": "SVR (sfs_fixed_ga_plus2)",
+            "source": "baseline",
+            "mean_cv_r2": 0.5349015521444443,
+            "holdout_val_r2": 0.48699124108799374,
+            "combined_r2": 0.5109463966162191,
+            "train_cv_r2_gap": 0.2008941849199366,
+            "status": "overfit",
+            "acceptable": false,
+            "n_features": 8,
+            "is_expansion": true
+          },
+          {
+            "estimator": "KNeighborsRegressor",
+            "source": "baseline",
+            "mean_cv_r2": 0.3367418062380919,
+            "holdout_val_r2": 0.3143248779302582,
+            "combined_r2": 0.32553334208417506,
+            "train_cv_r2_gap": 0.21867122572901732,
+            "status": "overfit",
+            "acceptable": false,
+            "n_features": 1,
+            "is_expansion": false
+          },
+          {
+            "estimator": "KNeighborsRegressor (sfs_fixed_ga_plus2)",
+            "source": "baseline",
+            "mean_cv_r2": 0.3278671302602831,
+            "holdout_val_r2": 0.16075675990677352,
+            "combined_r2": 0.2443119450835283,
+            "train_cv_r2_gap": 0.29411894029963376,
+            "status": "unstable",
+            "acceptable": false,
+            "n_features": 3,
+            "is_expansion": true
+          },
+          {
+            "source": "baseline",
+            "mean_cv_r2": 0.5349015521444443,
+            "holdout_val_r2": 0.48699124108799374,
+            "combined_r2": 0.5109463966162191,
+            "status": "overfit",
+            "acceptable": false
+          },
+          {
+            "source": "hpo_round_1",
+            "mean_cv_r2": 0.541021873340227,
+            "holdout_val_r2": 0.4928764375965803,
+            "combined_r2": 0.5169491554684036,
+            "status": "overfit",
+            "acceptable": false
+          },
+          {
+            "source": "hpo_round_2",
+            "mean_cv_r2": 0.541021873340227,
+            "holdout_val_r2": 0.4928764375965803,
+            "combined_r2": 0.5169491554684036,
+            "status": "overfit",
+            "acceptable": false
+          },
+          {
+            "source": "hpo_round_3",
+            "mean_cv_r2": 0.541021873340227,
+            "holdout_val_r2": 0.4928764375965803,
+            "combined_r2": 0.5169491554684036,
+            "status": "overfit",
+            "acceptable": false
+          },
+          {
+            "source": "baseline",
+            "mean_cv_r2": 0.5196321807162869,
+            "holdout_val_r2": 0.5958381054047004,
+            "combined_r2": 0.5577351430604937,
+            "status": "overfit",
+            "acceptable": false
+          },
+          {
+            "source": "hpo_round_1",
+            "mean_cv_r2": 0.5342860366128532,
+            "holdout_val_r2": 0.5714954377783039,
+            "combined_r2": 0.5528907371955786,
+            "status": "overfit",
+            "acceptable": false
+          },
+          {
+            "source": "hpo_round_2",
+            "mean_cv_r2": 0.5342860366128532,
+            "holdout_val_r2": 0.5714954377783038,
+            "combined_r2": 0.5528907371955785,
+            "status": "overfit",
+            "acceptable": false
+          },
+          {
+            "source": "hpo_round_3",
+            "mean_cv_r2": 0.536581828588788,
+            "holdout_val_r2": 0.608932729431605,
+            "combined_r2": 0.5727572790101965,
+            "status": "overfit",
+            "acceptable": false
+          }
+        ]
+      },
+      "representation_preprocessing": {
+        "descriptor_backends": [
+          "RDKit"
+        ],
+        "fingerprint_settings": {
+          "enabled": false,
+          "types": [],
+          "note": "Hashed fingerprints were not used; representation is 2D molecular descriptors."
+        },
+        "geometry_optimization": false,
+        "three_d_descriptors_included": false,
+        "filters": {
+          "missing_value_threshold": 0.2,
+          "near_constant_std_threshold": 0.01,
+          "correlation_threshold": 0.95
+        },
+        "scaling": "StandardScaler",
+        "imputation": "median",
+        "pipeline_order": [
+          "drop_nonnumeric_descriptors",
+          "drop_high_missing_fraction",
+          "median_imputation",
+          "drop_constant_descriptors",
+          "drop_near_constant_descriptors",
+          "drop_highly_correlated_descriptors",
+          "standard_scaler"
+        ],
+        "preprocessor_relative_path": "models/descriptor_preprocessor.joblib"
+      },
+      "validation_design": {
+        "cv_method": "KFold",
+        "folds": 5,
+        "repeats": 1,
+        "shuffle": true,
+        "seed": 42,
+        "tuning_method": "GridSearchCV",
+        "search_budget": 120,
+        "optimization_metric": "r2",
+        "combined_score_description": "0.5\u00b7mean training CV R\u00b2 + 0.5\u00b7holdout validation R\u00b2"
+      },
+      "experiments": [
+        {
+          "run_id": "c6dc290a4a1b__random_forest__ga",
+          "representation": "RDKit",
+          "feature_selection_method": "ga",
+          "model": "RandomForestRegressor",
+          "hyperparameters": {
+            "bootstrap": false,
+            "criterion": "squared_error",
+            "max_depth": 5,
+            "max_features": "log2",
+            "min_samples_leaf": 1,
+            "min_samples_split": 2,
+            "n_estimators": 100
+          },
+          "feature_count": 6,
+          "selected_feature_names": [
+            "RDKit_AvgIpc",
+            "RDKit_Chi2v",
+            "RDKit_MinAbsPartialCharge",
+            "RDKit_PEOE_VSA2",
+            "RDKit_Phi",
+            "RDKit_fr_Imine"
+          ],
+          "metrics": {
+            "train_r2": 0.7338658891706631,
+            "train_rmse": 0.5002099599079233,
+            "train_mae": 0.3229092681015336,
+            "train_n": 153,
+            "cv_r2": 0.5342860366128532,
+            "cv_rmse": 0.0,
+            "cv_mae": 0.0,
+            "cv_r2_std": 0.06057879997137814,
+            "train_cv_r2_gap": 0.3430493535037411,
+            "val_r2": 0.48699124108799374,
+            "val_rmse": 0.6955643595489243,
+            "val_mae": 0.5780390250326747,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.4349908798572629,
+            "rmse": 0.7621525836807979,
+            "mae": 0.6430177342961695,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.881814765279313,
+              "val_r2": 0.47540127549849887,
+              "train_rmse": 0.3487301526637155,
+              "val_rmse": 0.5324649696892177,
+              "train_mae": 0.27817383567061577,
+              "val_mae": 0.4465327135581431
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.8790036451750322,
+              "val_r2": 0.5928778012419015,
+              "train_rmse": 0.33772322734589477,
+              "val_rmse": 0.6133533748658788,
+              "train_mae": 0.2674336655469919,
+              "val_mae": 0.48650351331677816
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.8684141929239377,
+              "val_r2": 0.570994585825842,
+              "train_rmse": 0.3444976649125955,
+              "val_rmse": 0.6830791098298592,
+              "train_mae": 0.2675745759138584,
+              "val_mae": 0.5314299744397474
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.8745491130591493,
+              "val_r2": 0.5847731699238455,
+              "train_rmse": 0.332535496245908,
+              "val_rmse": 0.6936524804788934,
+              "train_mae": 0.26331613750662153,
+              "val_mae": 0.5269084025100265
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.8828952341455394,
+              "val_r2": 0.4473833505741779,
+              "train_rmse": 0.3320628828831512,
+              "val_rmse": 0.7141671732862337,
+              "train_mae": 0.2566421222803576,
+              "val_mae": 0.4964268126716397
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "overfit",
+            "is_acceptable": false,
+            "is_overfit": true,
+            "is_underfit": false,
+            "is_unstable": false,
+            "is_severe_overfit": true
+          },
+          "warnings": [
+            "Severe overfitting: train-CV R\u00b2 gap (0.343) exceeds 0.25.",
+            "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 1.8942266670055687,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__random_forest__ga_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__random_forest__ga_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__random_forest__ga_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__random_forest__ga_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__random_forest__ga_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__random_forest__ga_config.json",
+            "pipeline": "models/c6dc290a4a1b__random_forest__ga_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.17647058823529413,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [
+              "compound_133",
+              "compound_180",
+              "compound_36",
+              "compound_178",
+              "compound_141",
+              "compound_119",
+              "compound_182"
+            ],
+            "response_outlier_ids": [
+              "compound_71",
+              "compound_167"
+            ],
+            "structural_outlier_count": 7,
+            "response_outlier_count": 2,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [
+                  "compound_133",
+                  "compound_180",
+                  "compound_36",
+                  "compound_178",
+                  "compound_141"
+                ],
+                "response": [
+                  "compound_71",
+                  "compound_167"
+                ]
+              },
+              "val": {
+                "structural": [
+                  "compound_119"
+                ],
+                "response": []
+              },
+              "test": {
+                "structural": [
+                  "compound_182"
+                ],
+                "response": []
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": false
+        },
+        {
+          "run_id": "c6dc290a4a1b__random_forest__sfs_subset",
+          "representation": "RDKit",
+          "feature_selection_method": "sfs_subset",
+          "model": "RandomForestRegressor",
+          "hyperparameters": {
+            "min_samples_leaf": 1,
+            "max_features": "sqrt",
+            "bootstrap": true,
+            "criterion": "squared_error",
+            "n_estimators": 100,
+            "max_depth": 10,
+            "min_samples_split": 2,
+            "max_samples": null
+          },
+          "feature_count": 6,
+          "selected_feature_names": [
+            "RDKit_BCUT2D_MWLOW",
+            "RDKit_EState_VSA2",
+            "RDKit_MaxAbsPartialCharge",
+            "RDKit_SMR_VSA6",
+            "RDKit_SlogP_VSA10",
+            "RDKit_fr_ether"
+          ],
+          "metrics": {
+            "train_r2": 0.9320954637305643,
+            "train_rmse": 0.2526687068181807,
+            "train_mae": 0.19992527215382966,
+            "train_n": 153,
+            "cv_r2": 0.5384432246983131,
+            "cv_rmse": 0.6439121904484455,
+            "cv_mae": 0.4954182595707636,
+            "cv_r2_std": 0.06848725328443404,
+            "train_cv_r2_gap": 0.3864017986357452,
+            "val_r2": 0.5111485386855952,
+            "val_rmse": 0.6789900179398283,
+            "val_mae": 0.5561123222628407,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.5606847173097933,
+            "rmse": 0.6720511877140508,
+            "mae": 0.5088457980126598,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.9270450663002766,
+              "val_r2": 0.45671475763058356,
+              "train_rmse": 0.2739903217964014,
+              "val_rmse": 0.5418653494845008,
+              "train_mae": 0.2085689881307317,
+              "val_mae": 0.4544540676335311
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.9262833817002192,
+              "val_r2": 0.643560519542294,
+              "train_rmse": 0.2636073343247733,
+              "val_rmse": 0.573906665177239,
+              "train_mae": 0.2076324101287279,
+              "val_mae": 0.4938877454554027
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.923505524283236,
+              "val_r2": 0.5657196319871614,
+              "train_rmse": 0.26266172639436436,
+              "val_rmse": 0.6872657729378454,
+              "train_mae": 0.2112348983167235,
+              "val_mae": 0.5356485050519495
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.9203735096071295,
+              "val_r2": 0.5560980814518024,
+              "train_rmse": 0.2649292619400717,
+              "val_rmse": 0.7172040787245997,
+              "train_mae": 0.2085188405876366,
+              "val_mae": 0.5563104143199938
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.9270176347794297,
+              "val_r2": 0.4701231328797242,
+              "train_rmse": 0.2621452639530765,
+              "val_rmse": 0.6993190859180437,
+              "train_mae": 0.21066735417270188,
+              "val_mae": 0.4367905653929408
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "overfit",
+            "is_acceptable": false,
+            "is_overfit": true,
+            "is_underfit": false,
+            "is_unstable": false,
+            "is_severe_overfit": true
+          },
+          "warnings": [
+            "Severe overfitting: train-CV R\u00b2 gap (0.386) exceeds 0.25."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 32.98949470696971,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__random_forest__sfs_subset_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__random_forest__sfs_subset_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__random_forest__sfs_subset_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__random_forest__sfs_subset_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__random_forest__sfs_subset_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__random_forest__sfs_subset_config.json",
+            "pipeline": "models/c6dc290a4a1b__random_forest__sfs_subset_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/sfs_subset/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/sfs_subset/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.13725490196078433,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [
+              "compound_121",
+              "compound_36",
+              "compound_178",
+              "compound_134",
+              "compound_141",
+              "compound_119"
+            ],
+            "response_outlier_ids": [
+              "compound_163",
+              "compound_186",
+              "compound_42",
+              "compound_131",
+              "compound_185"
+            ],
+            "structural_outlier_count": 6,
+            "response_outlier_count": 5,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [
+                  "compound_121",
+                  "compound_36",
+                  "compound_178",
+                  "compound_134",
+                  "compound_141"
+                ],
+                "response": []
+              },
+              "val": {
+                "structural": [
+                  "compound_119"
+                ],
+                "response": [
+                  "compound_163",
+                  "compound_186",
+                  "compound_42"
+                ]
+              },
+              "test": {
+                "structural": [],
+                "response": [
+                  "compound_131",
+                  "compound_185"
+                ]
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": false
+        },
+        {
+          "run_id": "c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2",
+          "representation": "RDKit",
+          "feature_selection_method": "sfs_fixed_ga_plus2",
+          "model": "RandomForestRegressor",
+          "hyperparameters": {
+            "min_samples_leaf": 1,
+            "max_features": "log2",
+            "bootstrap": false,
+            "criterion": "squared_error",
+            "n_estimators": 100,
+            "max_depth": 5,
+            "min_samples_split": 2,
+            "max_samples": null
+          },
+          "feature_count": 8,
+          "selected_feature_names": [
+            "RDKit_BCUT2D_MWLOW",
+            "RDKit_EState_VSA2",
+            "RDKit_MaxAbsPartialCharge",
+            "RDKit_SMR_VSA6",
+            "RDKit_SlogP_VSA10",
+            "RDKit_fr_ether",
+            "RDKit_NumHAcceptors",
+            "RDKit_SlogP_VSA11"
+          ],
+          "metrics": {
+            "train_r2": 0.846858704132126,
+            "train_rmse": 0.37944446544830496,
+            "train_mae": 0.3042886688675931,
+            "train_n": 153,
+            "cv_r2": 0.49143058774325443,
+            "cv_rmse": 0.6806696206411965,
+            "cv_mae": 0.524717082460414,
+            "cv_r2_std": 0.06316496205385783,
+            "train_cv_r2_gap": 0.3669653254805666,
+            "val_r2": 0.4306609839995831,
+            "val_rmse": 0.7327577221774715,
+            "val_mae": 0.5926124916039641,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.36598884740299475,
+            "rmse": 0.8073514802761863,
+            "mae": 0.6099835371237186,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.8604133011183592,
+              "val_r2": 0.5236188891523297,
+              "train_rmse": 0.37899188175168863,
+              "val_rmse": 0.5074049416259753,
+              "train_mae": 0.2895572954864383,
+              "val_mae": 0.44177035683419086
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.8561337253514416,
+              "val_r2": 0.5460203238362138,
+              "train_rmse": 0.3682597774419459,
+              "val_rmse": 0.647689076987991,
+              "train_mae": 0.28435599165049275,
+              "val_mae": 0.5114258254550271
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.8627789744282527,
+              "val_r2": 0.5284832266852078,
+              "train_rmse": 0.3517969651959847,
+              "val_rmse": 0.7161239368219244,
+              "train_mae": 0.28159407681971393,
+              "val_mae": 0.5586499972746368
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.8473043448469944,
+              "val_r2": 0.488222233156836,
+              "train_rmse": 0.36687192823426706,
+              "val_rmse": 0.7700872750427978,
+              "train_mae": 0.29282658132729533,
+              "val_mae": 0.6037780723787043
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.8653492203740567,
+              "val_r2": 0.37080826588568505,
+              "train_rmse": 0.35607172222733985,
+              "val_rmse": 0.7620428727272941,
+              "train_mae": 0.28166904118712044,
+              "val_mae": 0.5079611603595112
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "overfit",
+            "is_acceptable": false,
+            "is_overfit": true,
+            "is_underfit": false,
+            "is_unstable": false,
+            "is_severe_overfit": true
+          },
+          "warnings": [
+            "Severe overfitting: train-CV R\u00b2 gap (0.367) exceeds 0.25.",
+            "CV R\u00b2 (0.491) is below minimum threshold.",
+            "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 264.1244017141871,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2_config.json",
+            "pipeline": "models/c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/sfs_fixed_ga_plus2/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/sfs_fixed_ga_plus2/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.17647058823529413,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [
+              "compound_121",
+              "compound_133",
+              "compound_36",
+              "compound_178",
+              "compound_134",
+              "compound_30",
+              "compound_141",
+              "compound_119"
+            ],
+            "response_outlier_ids": [
+              "compound_186",
+              "compound_131",
+              "compound_185"
+            ],
+            "structural_outlier_count": 8,
+            "response_outlier_count": 3,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [
+                  "compound_121",
+                  "compound_133",
+                  "compound_36",
+                  "compound_178",
+                  "compound_134",
+                  "compound_30",
+                  "compound_141"
+                ],
+                "response": []
+              },
+              "val": {
+                "structural": [
+                  "compound_119"
+                ],
+                "response": [
+                  "compound_186"
+                ]
+              },
+              "test": {
+                "structural": [],
+                "response": [
+                  "compound_131",
+                  "compound_185"
+                ]
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": false
+        },
+        {
+          "run_id": "c6dc290a4a1b__pls_regression__ga",
+          "representation": "RDKit",
+          "feature_selection_method": "ga",
+          "model": "PLSRegression",
+          "hyperparameters": {
+            "max_iter": 100,
+            "n_components": 1,
+            "scale": false
+          },
+          "feature_count": 1,
+          "selected_feature_names": [
+            "RDKit_BCUT2D_LOGPHI"
+          ],
+          "metrics": {
+            "train_r2": 0.2806301181533146,
+            "train_rmse": 0.8223906977800245,
+            "train_mae": 0.6429491786835068,
+            "train_n": 153,
+            "cv_r2": 0.23909047475804232,
+            "cv_rmse": 0.0,
+            "cv_mae": 0.0,
+            "cv_r2_std": 0.12480189795433512,
+            "train_cv_r2_gap": 0.04198734750786662,
+            "val_r2": 0.1508200497346487,
+            "val_rmse": 0.8949005944166312,
+            "val_mae": 0.7043745095993598,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.05495824288827622,
+            "rmse": 0.9856885152409303,
+            "mae": 0.7989434282984144,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.30207239203677283,
+              "val_r2": 0.014967876725031415,
+              "train_rmse": 0.8474480367615044,
+              "val_rmse": 0.7296299000301639,
+              "train_mae": 0.6609810781639254,
+              "val_mae": 0.596807699046661
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.2702873918202333,
+              "val_r2": 0.31637550661773073,
+              "train_rmse": 0.8293745651443853,
+              "val_rmse": 0.7947987489197389,
+              "train_mae": 0.6432197336298628,
+              "val_mae": 0.6368199580594797
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.2947932647046515,
+              "val_r2": 0.2306174884030291,
+              "train_rmse": 0.7975170636632203,
+              "val_rmse": 0.9147675966345971,
+              "train_mae": 0.6225124020960573,
+              "val_mae": 0.7113544602788062
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.286722557751929,
+              "val_r2": 0.2476762997238937,
+              "train_rmse": 0.7929218529899468,
+              "val_rmse": 0.9336876437017035,
+              "train_mae": 0.6165315392992989,
+              "val_mae": 0.7548097858992987
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.25151350501595804,
+              "val_r2": 0.3858152023205267,
+              "train_rmse": 0.8395083755701174,
+              "val_rmse": 0.7529002347767528,
+              "train_mae": 0.6683882133397742,
+              "val_mae": 0.5385391068040786
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "underfit",
+            "is_acceptable": false,
+            "is_overfit": false,
+            "is_underfit": true,
+            "is_unstable": false,
+            "is_severe_overfit": false
+          },
+          "warnings": [
+            "CV R\u00b2 (0.239) is below minimum threshold.",
+            "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 36.31183621706441,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__pls_regression__ga_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__pls_regression__ga_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__pls_regression__ga_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__pls_regression__ga_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__pls_regression__ga_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__pls_regression__ga_config.json",
+            "pipeline": "models/c6dc290a4a1b__pls_regression__ga_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/fallback_models/pls_regression/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/fallback_models/pls_regression/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.0392156862745098,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [
+              "compound_128"
+            ],
+            "response_outlier_ids": [
+              "compound_71"
+            ],
+            "structural_outlier_count": 1,
+            "response_outlier_count": 1,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [
+                  "compound_128"
+                ],
+                "response": [
+                  "compound_71"
+                ]
+              },
+              "val": {
+                "structural": [],
+                "response": []
+              },
+              "test": {
+                "structural": [],
+                "response": []
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": false
+        },
+        {
+          "run_id": "c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2",
+          "representation": "RDKit",
+          "feature_selection_method": "sfs_fixed_ga_plus2",
+          "model": "PLSRegression",
+          "hyperparameters": {
+            "max_iter": 100,
+            "n_components": 2,
+            "scale": false
+          },
+          "feature_count": 3,
+          "selected_feature_names": [
+            "RDKit_BCUT2D_LOGPHI",
+            "RDKit_BCUT2D_CHGHI",
+            "RDKit_SlogP_VSA7"
+          ],
+          "metrics": {
+            "train_r2": 0.3680299253777001,
+            "train_rmse": 0.7708152897709599,
+            "train_mae": 0.5977160251849782,
+            "train_n": 153,
+            "cv_r2": 0.31628437946934107,
+            "cv_rmse": 0.0,
+            "cv_mae": 0.0,
+            "cv_r2_std": 0.13924922418272034,
+            "train_cv_r2_gap": 0.05257401394394645,
+            "val_r2": 0.050827794639128565,
+            "val_rmse": 0.9461226442111262,
+            "val_mae": 0.7112529969429848,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.3537362143595243,
+            "rmse": 0.8151154168094417,
+            "mae": 0.6421607207601788,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.4015065963736004,
+              "val_r2": 0.09149036008182465,
+              "train_rmse": 0.7847612909691063,
+              "val_rmse": 0.7007162611144596,
+              "train_mae": 0.6024977056337943,
+              "val_mae": 0.5500638854641404
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.3524408789869369,
+              "val_r2": 0.449684907239812,
+              "train_rmse": 0.7812940192963769,
+              "val_rmse": 0.713105981736561,
+              "train_mae": 0.5967886592685566,
+              "val_mae": 0.5858143466487221
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.3588625885832575,
+              "val_r2": 0.4055437992289881,
+              "train_rmse": 0.7604266309936122,
+              "val_rmse": 0.8040805332324247,
+              "train_mae": 0.5858687745308627,
+              "val_mae": 0.6282692147734061
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.38795274915965083,
+              "val_r2": 0.21572917602978714,
+              "train_rmse": 0.734503074897801,
+              "val_rmse": 0.953305874268207,
+              "train_mae": 0.5720407981458553,
+              "val_mae": 0.7603118974605907
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.3435291539629922,
+              "val_r2": 0.41897365476629345,
+              "train_rmse": 0.7862139961887672,
+              "val_rmse": 0.7322945698014355,
+              "train_mae": 0.6230262556664956,
+              "val_mae": 0.5145918730611434
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "underfit",
+            "is_acceptable": false,
+            "is_overfit": false,
+            "is_underfit": true,
+            "is_unstable": false,
+            "is_severe_overfit": false
+          },
+          "warnings": [
+            "CV R\u00b2 (0.316) is below minimum threshold.",
+            "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 33.83227861998603,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2_config.json",
+            "pipeline": "models/c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/fallback_models/pls_regression/sfs_fixed_ga_plus2/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/fallback_models/pls_regression/sfs_fixed_ga_plus2/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.0784313725490196,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [
+              "compound_121",
+              "compound_128",
+              "compound_133",
+              "compound_119"
+            ],
+            "response_outlier_ids": [
+              "compound_71",
+              "compound_142"
+            ],
+            "structural_outlier_count": 4,
+            "response_outlier_count": 2,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [
+                  "compound_121",
+                  "compound_128",
+                  "compound_133"
+                ],
+                "response": [
+                  "compound_71"
+                ]
+              },
+              "val": {
+                "structural": [
+                  "compound_119"
+                ],
+                "response": [
+                  "compound_142"
+                ]
+              },
+              "test": {
+                "structural": [],
+                "response": []
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": false
+        },
+        {
+          "run_id": "c6dc290a4a1b__extra_trees_regressor__ga",
+          "representation": "RDKit",
+          "feature_selection_method": "ga",
+          "model": "ExtraTreesRegressor",
+          "hyperparameters": {
+            "min_samples_leaf": 1,
+            "max_features": "sqrt",
+            "bootstrap": false,
+            "n_estimators": 100,
+            "max_depth": 10,
+            "min_samples_split": 2
+          },
+          "feature_count": 8,
+          "selected_feature_names": [
+            "RDKit_MinPartialCharge",
+            "RDKit_SMR_VSA10",
+            "RDKit_SMR_VSA9",
+            "RDKit_SPS",
+            "RDKit_SlogP_VSA11",
+            "RDKit_fr_alkyl_halide",
+            "RDKit_fr_aniline",
+            "RDKit_fr_nitro_arom"
+          ],
+          "metrics": {
+            "train_r2": 0.9258149034164598,
+            "train_rmse": 0.26409513256814227,
+            "train_mae": 0.18824502059482875,
+            "train_n": 153,
+            "cv_r2": 0.5269288366355482,
+            "cv_rmse": 0.6546299691469936,
+            "cv_mae": 0.48667460192362527,
+            "cv_r2_std": 0.09293814684627903,
+            "train_cv_r2_gap": 0.42108429311436024,
+            "val_r2": 0.6512258866484701,
+            "val_rmse": 0.5735179993672124,
+            "val_mae": 0.4583339294759498,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.5009098743118132,
+            "rmse": 0.716314406845413,
+            "mae": 0.5550010475348095,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.9511433864731554,
+              "val_r2": 0.5407436098777565,
+              "train_rmse": 0.22421753269961248,
+              "val_rmse": 0.49820149912074063,
+              "train_mae": 0.15645189578884777,
+              "val_mae": 0.42427126995404635
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.9544216202558244,
+              "val_r2": 0.6819349444851524,
+              "train_rmse": 0.2072784863948323,
+              "val_rmse": 0.5421336272384639,
+              "train_mae": 0.14295677330233858,
+              "val_mae": 0.44722882167328165
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.9462037792194714,
+              "val_r2": 0.5191265750561957,
+              "train_rmse": 0.22027116150440954,
+              "val_rmse": 0.7231943185298504,
+              "train_mae": 0.15311934642915842,
+              "val_mae": 0.5257906887345097
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.9494615979563051,
+              "val_r2": 0.5009419124887362,
+              "train_rmse": 0.2110628972939418,
+              "val_rmse": 0.7604572219412521,
+              "train_mae": 0.15327842920968257,
+              "val_mae": 0.5266852544478746
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.9388352648447859,
+              "val_r2": 0.3918971412699004,
+              "train_rmse": 0.23998472442892255,
+              "val_rmse": 0.7491631789046611,
+              "train_mae": 0.16707505987997975,
+              "val_mae": 0.5093969748084137
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "overfit",
+            "is_acceptable": false,
+            "is_overfit": true,
+            "is_underfit": false,
+            "is_unstable": false,
+            "is_severe_overfit": true
+          },
+          "warnings": [
+            "Severe overfitting: train-CV R\u00b2 gap (0.421) exceeds 0.25.",
+            "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 313.08098827069625,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__extra_trees_regressor__ga_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__extra_trees_regressor__ga_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__extra_trees_regressor__ga_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__extra_trees_regressor__ga_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__extra_trees_regressor__ga_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__extra_trees_regressor__ga_config.json",
+            "pipeline": "models/c6dc290a4a1b__extra_trees_regressor__ga_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/fallback_models/extra_trees_regressor/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/fallback_models/extra_trees_regressor/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.17647058823529413,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [
+              "compound_7",
+              "compound_133",
+              "compound_70",
+              "compound_90",
+              "compound_89",
+              "compound_0",
+              "compound_141",
+              "compound_184"
+            ],
+            "response_outlier_ids": [
+              "compound_163",
+              "compound_140",
+              "compound_146",
+              "compound_64"
+            ],
+            "structural_outlier_count": 8,
+            "response_outlier_count": 4,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [
+                  "compound_7",
+                  "compound_133",
+                  "compound_70",
+                  "compound_90",
+                  "compound_89",
+                  "compound_0",
+                  "compound_141",
+                  "compound_184"
+                ],
+                "response": []
+              },
+              "val": {
+                "structural": [],
+                "response": [
+                  "compound_163"
+                ]
+              },
+              "test": {
+                "structural": [],
+                "response": [
+                  "compound_140",
+                  "compound_146",
+                  "compound_64"
+                ]
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": false
+        },
+        {
+          "run_id": "c6dc290a4a1b__extra_trees_regressor__sfs_subset",
+          "representation": "RDKit",
+          "feature_selection_method": "sfs_subset",
+          "model": "ExtraTreesRegressor",
+          "hyperparameters": {
+            "min_samples_leaf": 1,
+            "max_features": "sqrt",
+            "bootstrap": false,
+            "n_estimators": 100,
+            "max_depth": 10,
+            "min_samples_split": 2
+          },
+          "feature_count": 8,
+          "selected_feature_names": [
+            "RDKit_EState_VSA10",
+            "RDKit_HallKierAlpha",
+            "RDKit_MaxAbsPartialCharge",
+            "RDKit_PEOE_VSA11",
+            "RDKit_PEOE_VSA2",
+            "RDKit_SlogP_VSA11",
+            "RDKit_SlogP_VSA8",
+            "RDKit_fr_NH1"
+          ],
+          "metrics": {
+            "train_r2": 0.9219581897218586,
+            "train_rmse": 0.27087300839700507,
+            "train_mae": 0.1916654307290887,
+            "train_n": 153,
+            "cv_r2": 0.560481731271193,
+            "cv_rmse": 0.6280376238479657,
+            "cv_mae": 0.4764229890153798,
+            "cv_r2_std": 0.1111289680736901,
+            "train_cv_r2_gap": 0.3824698903730608,
+            "val_r2": 0.6742355360636729,
+            "val_rmse": 0.5542769065543808,
+            "val_mae": 0.4617102647245514,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.3227454557393129,
+            "rmse": 0.8344304828424374,
+            "mae": 0.6571205325243993,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.9469982063255373,
+              "val_r2": 0.5928363280265673,
+              "train_rmse": 0.23353564246133757,
+              "val_rmse": 0.46909622420997454,
+              "train_mae": 0.1661061923878847,
+              "val_mae": 0.397536314662236
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.941421060470731,
+              "val_r2": 0.6185556746696923,
+              "train_rmse": 0.2349879215847422,
+              "val_rmse": 0.5936957591848356,
+              "train_mae": 0.1643984493395726,
+              "val_mae": 0.47103034345377054
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.9535230660887337,
+              "val_r2": 0.6290438252992352,
+              "train_rmse": 0.20473896012685378,
+              "val_rmse": 0.6351860030985129,
+              "train_mae": 0.14837958497910445,
+              "val_mae": 0.5090107172248137
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.9354589010163543,
+              "val_r2": 0.6223884355170384,
+              "train_rmse": 0.23851699026661352,
+              "val_rmse": 0.6614878670652363,
+              "train_mae": 0.16683551494961757,
+              "val_mae": 0.5002706344050194
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.9373568743199121,
+              "val_r2": 0.33958439284343245,
+              "train_rmse": 0.242867699271794,
+              "val_rmse": 0.7807222656812689,
+              "train_mae": 0.17126812567398655,
+              "val_mae": 0.5042669353310594
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "overfit",
+            "is_acceptable": false,
+            "is_overfit": true,
+            "is_underfit": false,
+            "is_unstable": false,
+            "is_severe_overfit": true
+          },
+          "warnings": [
+            "Severe overfitting: train-CV R\u00b2 gap (0.382) exceeds 0.25."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 31.530771502293646,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__extra_trees_regressor__sfs_subset_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__extra_trees_regressor__sfs_subset_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__extra_trees_regressor__sfs_subset_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__extra_trees_regressor__sfs_subset_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__extra_trees_regressor__sfs_subset_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__extra_trees_regressor__sfs_subset_config.json",
+            "pipeline": "models/c6dc290a4a1b__extra_trees_regressor__sfs_subset_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/fallback_models/extra_trees_regressor/sfs_subset/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/fallback_models/extra_trees_regressor/sfs_subset/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.17647058823529413,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [
+              "compound_133",
+              "compound_132",
+              "compound_129",
+              "compound_30",
+              "compound_170",
+              "compound_141"
+            ],
+            "response_outlier_ids": [
+              "compound_140",
+              "compound_146",
+              "compound_64"
+            ],
+            "structural_outlier_count": 6,
+            "response_outlier_count": 3,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [
+                  "compound_133",
+                  "compound_132",
+                  "compound_129",
+                  "compound_30",
+                  "compound_170",
+                  "compound_141"
+                ],
+                "response": []
+              },
+              "val": {
+                "structural": [],
+                "response": []
+              },
+              "test": {
+                "structural": [],
+                "response": [
+                  "compound_140",
+                  "compound_146",
+                  "compound_64"
+                ]
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": false
+        },
+        {
+          "run_id": "c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2",
+          "representation": "RDKit",
+          "feature_selection_method": "sfs_fixed_ga_plus2",
+          "model": "ExtraTreesRegressor",
+          "hyperparameters": {
+            "min_samples_leaf": 1,
+            "max_features": "sqrt",
+            "bootstrap": false,
+            "n_estimators": 100,
+            "max_depth": 10,
+            "min_samples_split": 2
+          },
+          "feature_count": 10,
+          "selected_feature_names": [
+            "RDKit_EState_VSA10",
+            "RDKit_HallKierAlpha",
+            "RDKit_MaxAbsPartialCharge",
+            "RDKit_PEOE_VSA11",
+            "RDKit_PEOE_VSA2",
+            "RDKit_SlogP_VSA11",
+            "RDKit_SlogP_VSA8",
+            "RDKit_fr_NH1",
+            "RDKit_PEOE_VSA8",
+            "RDKit_SMR_VSA4"
+          ],
+          "metrics": {
+            "train_r2": 0.9443829251543581,
+            "train_rmse": 0.22866839081414625,
+            "train_mae": 0.16392806923463188,
+            "train_n": 153,
+            "cv_r2": 0.5354534040389831,
+            "cv_rmse": 0.643358483350495,
+            "cv_mae": 0.48640221885472296,
+            "cv_r2_std": 0.1119216914432916,
+            "train_cv_r2_gap": 0.4259730342061149,
+            "val_r2": 0.6641912530659826,
+            "val_rmse": 0.5627570350385627,
+            "val_mae": 0.45316819773852607,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.31430373801918277,
+            "rmse": 0.8396148054325959,
+            "mae": 0.6325497333906677,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.9604807089550019,
+              "val_r2": 0.5026728905632301,
+              "train_rmse": 0.20165660966189916,
+              "val_rmse": 0.5184399890894826,
+              "train_mae": 0.14299590260719622,
+              "val_mae": 0.4190258876059411
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.9598244896272851,
+              "val_r2": 0.6109604901682106,
+              "train_rmse": 0.19460566957008554,
+              "val_rmse": 0.599577355422204,
+              "train_mae": 0.13964069341575394,
+              "val_mae": 0.4725078306003616
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.9691132708508322,
+              "val_r2": 0.6467984179704082,
+              "train_rmse": 0.1669043739480369,
+              "val_rmse": 0.6197990943297182,
+              "train_mae": 0.12218528892205899,
+              "val_mae": 0.497400922269835
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.9612869426714281,
+              "val_r2": 0.5840951822030046,
+              "train_rmse": 0.18472678755910887,
+              "val_rmse": 0.694218551856983,
+              "train_mae": 0.13318430531090464,
+              "val_mae": 0.5136235593926404
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.9564267791209425,
+              "val_r2": 0.33274003929006246,
+              "train_rmse": 0.20255495930108167,
+              "val_rmse": 0.7847574260540864,
+              "train_mae": 0.14257709184666015,
+              "val_mae": 0.5294528944048366
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "overfit",
+            "is_acceptable": false,
+            "is_overfit": true,
+            "is_underfit": false,
+            "is_unstable": false,
+            "is_severe_overfit": true
+          },
+          "warnings": [
+            "Severe overfitting: train-CV R\u00b2 gap (0.426) exceeds 0.25.",
+            "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 298.843445295468,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2_config.json",
+            "pipeline": "models/c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/fallback_models/extra_trees_regressor/sfs_fixed_ga_plus2/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/fallback_models/extra_trees_regressor/sfs_fixed_ga_plus2/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.21568627450980393,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [
+              "compound_133",
+              "compound_36",
+              "compound_177",
+              "compound_30",
+              "compound_141"
+            ],
+            "response_outlier_ids": [
+              "compound_140",
+              "compound_146",
+              "compound_64"
+            ],
+            "structural_outlier_count": 5,
+            "response_outlier_count": 3,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [
+                  "compound_133",
+                  "compound_36",
+                  "compound_177",
+                  "compound_30",
+                  "compound_141"
+                ],
+                "response": []
+              },
+              "val": {
+                "structural": [],
+                "response": []
+              },
+              "test": {
+                "structural": [],
+                "response": [
+                  "compound_140",
+                  "compound_146",
+                  "compound_64"
+                ]
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": false
+        },
+        {
+          "run_id": "c6dc290a4a1b__svr__ga",
+          "representation": "RDKit",
+          "feature_selection_method": "ga",
+          "model": "SVR",
+          "hyperparameters": {
+            "epsilon": 0.1,
+            "kernel": "rbf",
+            "gamma": "scale",
+            "C": 1.0
+          },
+          "feature_count": 6,
+          "selected_feature_names": [
+            "RDKit_BCUT2D_LOGPHI",
+            "RDKit_ExactMolWt",
+            "RDKit_MaxAbsPartialCharge",
+            "RDKit_fr_ArN",
+            "RDKit_fr_NH2",
+            "RDKit_qed"
+          ],
+          "metrics": {
+            "train_r2": 0.5274508957641226,
+            "train_rmse": 0.6665389544043147,
+            "train_mae": 0.4442772977802367,
+            "train_n": 153,
+            "cv_r2": 0.4064002563332033,
+            "cv_rmse": 0.7334448789698138,
+            "cv_mae": 0.5271707822574261,
+            "cv_r2_std": 0.11522198192923448,
+            "train_cv_r2_gap": 0.12229037106770424,
+            "val_r2": 0.19418765788275583,
+            "val_rmse": 0.8717498638128769,
+            "val_mae": 0.6611554427865227,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.5029822630160659,
+            "rmse": 0.7148256716123409,
+            "mae": 0.5863041208069572,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.5240679965846469,
+              "val_r2": 0.45764028709280846,
+              "train_rmse": 0.6998103214146493,
+              "val_rmse": 0.5414035974617945,
+              "train_mae": 0.46820277111552333,
+              "val_mae": 0.43773743716012914
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.5178956870255522,
+              "val_r2": 0.5002522193008065,
+              "train_rmse": 0.6741325477535326,
+              "val_rmse": 0.6795537362930089,
+              "train_mae": 0.44349332701027666,
+              "val_mae": 0.5264141236563775
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.525831515669749,
+              "val_r2": 0.46744895988936874,
+              "train_rmse": 0.6539553556131668,
+              "val_rmse": 0.7610623465781755,
+              "train_mae": 0.42602436555749607,
+              "val_mae": 0.5509607336738578
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.5035689279143711,
+              "val_r2": 0.42574897513866716,
+              "train_rmse": 0.6615011762483073,
+              "val_rmse": 0.8157369395024918,
+              "train_mae": 0.42852293506393824,
+              "val_mae": 0.6047266972096974
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.5720890098102188,
+              "val_r2": 0.18091084024436543,
+              "train_rmse": 0.6347603184722356,
+              "val_rmse": 0.8694677750135985,
+              "train_mae": 0.4531814322809314,
+              "val_mae": 0.5160149195870682
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "poor_performance",
+            "is_acceptable": false,
+            "is_overfit": false,
+            "is_underfit": false,
+            "is_unstable": false,
+            "is_severe_overfit": false
+          },
+          "warnings": [
+            "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 44.085118224378675,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__svr__ga_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__svr__ga_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__svr__ga_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__svr__ga_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__svr__ga_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__svr__ga_config.json",
+            "pipeline": "models/c6dc290a4a1b__svr__ga_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/fallback_models/svr/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/fallback_models/svr/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.13725490196078433,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [
+              "compound_128",
+              "compound_133",
+              "compound_113",
+              "compound_90",
+              "compound_36",
+              "compound_88",
+              "compound_111",
+              "compound_40"
+            ],
+            "response_outlier_ids": [
+              "compound_143",
+              "compound_167",
+              "compound_142"
+            ],
+            "structural_outlier_count": 8,
+            "response_outlier_count": 3,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [
+                  "compound_128",
+                  "compound_133",
+                  "compound_113",
+                  "compound_90",
+                  "compound_36",
+                  "compound_88",
+                  "compound_111"
+                ],
+                "response": [
+                  "compound_143",
+                  "compound_167"
+                ]
+              },
+              "val": {
+                "structural": [
+                  "compound_40"
+                ],
+                "response": [
+                  "compound_142"
+                ]
+              },
+              "test": {
+                "structural": [],
+                "response": []
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": false
+        },
+        {
+          "run_id": "c6dc290a4a1b__svr__sfs_subset",
+          "representation": "RDKit",
+          "feature_selection_method": "sfs_subset",
+          "model": "SVR",
+          "hyperparameters": {
+            "epsilon": 0.1,
+            "kernel": "rbf",
+            "gamma": "scale",
+            "C": 1.0
+          },
+          "feature_count": 6,
+          "selected_feature_names": [
+            "RDKit_BCUT2D_LOGPHI",
+            "RDKit_Chi2v",
+            "RDKit_PEOE_VSA1",
+            "RDKit_SlogP_VSA10",
+            "RDKit_SlogP_VSA11",
+            "RDKit_SlogP_VSA6"
+          ],
+          "metrics": {
+            "train_r2": 0.6977773239808334,
+            "train_rmse": 0.5330471026435737,
+            "train_mae": 0.3461917028645914,
+            "train_n": 153,
+            "cv_r2": 0.5221069230155283,
+            "cv_rmse": 0.6633677093991922,
+            "cv_mae": 0.4785958195141884,
+            "cv_r2_std": 0.06403370466391671,
+            "train_cv_r2_gap": 0.1781880007871538,
+            "val_r2": 0.42123693928389283,
+            "val_rmse": 0.7387973569598041,
+            "val_mae": 0.5679652475137141,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.2848422934797842,
+            "rmse": 0.8574624463415202,
+            "mae": 0.6677705255786467,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.691285182671354,
+              "val_r2": 0.60054481756703,
+              "train_rmse": 0.563620299321965,
+              "val_rmse": 0.46463450239189985,
+              "train_mae": 0.37071607220478975,
+              "val_mae": 0.3670026335080067
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.7206564849122563,
+              "val_r2": 0.5055690947854699,
+              "train_rmse": 0.513149705836072,
+              "val_rmse": 0.675929143787883,
+              "train_mae": 0.32360043946806505,
+              "val_mae": 0.5356670617343939
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.7315344570842074,
+              "val_r2": 0.44894235859102627,
+              "train_rmse": 0.492069032765133,
+              "val_rmse": 0.7741731977160602,
+              "train_mae": 0.32051234462709965,
+              "val_mae": 0.5519258127703561
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.6858728275538368,
+              "val_r2": 0.46193994846029673,
+              "train_rmse": 0.526203697010035,
+              "val_rmse": 0.7896135896265891,
+              "train_mae": 0.34389077822945296,
+              "val_mae": 0.5153823670735019
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.6721256667917563,
+              "val_r2": 0.5935383956738189,
+              "train_rmse": 0.5556313724149239,
+              "val_rmse": 0.6124881134735294,
+              "train_mae": 0.35907765515673895,
+              "val_mae": 0.42300122248468314
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "overfit",
+            "is_acceptable": false,
+            "is_overfit": true,
+            "is_underfit": false,
+            "is_unstable": false,
+            "is_severe_overfit": false
+          },
+          "warnings": [
+            "Train-CV R\u00b2 gap (0.178) suggests overfitting."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 20.090917411725968,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__svr__sfs_subset_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__svr__sfs_subset_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__svr__sfs_subset_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__svr__sfs_subset_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__svr__sfs_subset_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__svr__sfs_subset_config.json",
+            "pipeline": "models/c6dc290a4a1b__svr__sfs_subset_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/fallback_models/svr/sfs_subset/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/fallback_models/svr/sfs_subset/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.13725490196078433,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [
+              "compound_18",
+              "compound_133",
+              "compound_180",
+              "compound_36",
+              "compound_141"
+            ],
+            "response_outlier_ids": [
+              "compound_137",
+              "compound_181",
+              "compound_71",
+              "compound_179",
+              "compound_186",
+              "compound_185"
+            ],
+            "structural_outlier_count": 5,
+            "response_outlier_count": 6,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [
+                  "compound_18",
+                  "compound_133",
+                  "compound_180",
+                  "compound_36",
+                  "compound_141"
+                ],
+                "response": [
+                  "compound_137",
+                  "compound_181",
+                  "compound_71",
+                  "compound_179"
+                ]
+              },
+              "val": {
+                "structural": [],
+                "response": [
+                  "compound_186"
+                ]
+              },
+              "test": {
+                "structural": [],
+                "response": [
+                  "compound_185"
+                ]
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": false
+        },
+        {
+          "run_id": "c6dc290a4a1b__svr__sfs_fixed_ga_plus2",
+          "representation": "RDKit",
+          "feature_selection_method": "sfs_fixed_ga_plus2",
+          "model": "SVR",
+          "hyperparameters": {
+            "epsilon": 0.1,
+            "kernel": "rbf",
+            "gamma": "scale",
+            "C": 1.0
+          },
+          "feature_count": 8,
+          "selected_feature_names": [
+            "RDKit_BCUT2D_LOGPHI",
+            "RDKit_Chi2v",
+            "RDKit_PEOE_VSA1",
+            "RDKit_SlogP_VSA10",
+            "RDKit_SlogP_VSA11",
+            "RDKit_SlogP_VSA6",
+            "RDKit_Kappa1",
+            "RDKit_NumRotatableBonds"
+          ],
+          "metrics": {
+            "train_r2": 0.7338658891706631,
+            "train_rmse": 0.5002099599079233,
+            "train_mae": 0.3229092681015336,
+            "train_n": 153,
+            "cv_r2": 0.5349015521444443,
+            "cv_rmse": 0.6546700303753467,
+            "cv_mae": 0.4557223915709496,
+            "cv_r2_std": 0.07696355429258192,
+            "train_cv_r2_gap": 0.2008941849199366,
+            "val_r2": 0.48699124108799374,
+            "val_rmse": 0.6955643595489243,
+            "val_mae": 0.5780390250326747,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.4349908798572629,
+            "rmse": 0.7621525836807979,
+            "mae": 0.6430177342961695,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.7255342243602749,
+              "val_r2": 0.6453490730341649,
+              "train_rmse": 0.5314372448437872,
+              "val_rmse": 0.43780223645361027,
+              "train_mae": 0.34424477645626156,
+              "val_mae": 0.34613064366005863
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.7352968798874309,
+              "val_r2": 0.590894677070599,
+              "train_rmse": 0.49952165196514364,
+              "val_rmse": 0.6148454063276476,
+              "train_mae": 0.31163918029474214,
+              "val_mae": 0.48146445456597436
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.7398302972009498,
+              "val_r2": 0.5350380277227915,
+              "train_rmse": 0.4844066746371518,
+              "val_rmse": 0.7111289099344692,
+              "train_mae": 0.3076922383996037,
+              "val_mae": 0.5019988521535714
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.7334534824790611,
+              "val_r2": 0.4373113966852338,
+              "train_rmse": 0.4847163273110754,
+              "val_rmse": 0.8074828351799392,
+              "train_mae": 0.31683400742135004,
+              "val_mae": 0.5129098907387898
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.7448638013941878,
+              "val_r2": 0.4659145862094328,
+              "train_rmse": 0.49013880683167516,
+              "val_rmse": 0.702090763981067,
+              "train_mae": 0.3225669187900585,
+              "val_mae": 0.4361081167363537
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "overfit",
+            "is_acceptable": false,
+            "is_overfit": true,
+            "is_underfit": false,
+            "is_unstable": false,
+            "is_severe_overfit": false
+          },
+          "warnings": [
+            "Train-CV R\u00b2 gap (0.201) suggests overfitting.",
+            "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+            "No acceptable model found across estimators; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 41.0342143191956,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__svr__sfs_fixed_ga_plus2_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__svr__sfs_fixed_ga_plus2_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__svr__sfs_fixed_ga_plus2_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__svr__sfs_fixed_ga_plus2_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__svr__sfs_fixed_ga_plus2_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__svr__sfs_fixed_ga_plus2_config.json",
+            "pipeline": "models/c6dc290a4a1b__svr__sfs_fixed_ga_plus2_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/fallback_models/svr/sfs_fixed_ga_plus2/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/fallback_models/svr/sfs_fixed_ga_plus2/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.17647058823529413,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [
+              "compound_133",
+              "compound_180",
+              "compound_36",
+              "compound_178",
+              "compound_141",
+              "compound_119",
+              "compound_182"
+            ],
+            "response_outlier_ids": [
+              "compound_71",
+              "compound_167"
+            ],
+            "structural_outlier_count": 7,
+            "response_outlier_count": 2,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [
+                  "compound_133",
+                  "compound_180",
+                  "compound_36",
+                  "compound_178",
+                  "compound_141"
+                ],
+                "response": [
+                  "compound_71",
+                  "compound_167"
+                ]
+              },
+              "val": {
+                "structural": [
+                  "compound_119"
+                ],
+                "response": []
+              },
+              "test": {
+                "structural": [
+                  "compound_182"
+                ],
+                "response": []
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": true
+        },
+        {
+          "run_id": "c6dc290a4a1b__k_neighbors_regressor__ga",
+          "representation": "RDKit",
+          "feature_selection_method": "ga",
+          "model": "KNeighborsRegressor",
+          "hyperparameters": {
+            "n_neighbors": 5,
+            "p": 2,
+            "metric": "minkowski",
+            "weights": "uniform"
+          },
+          "feature_count": 1,
+          "selected_feature_names": [
+            "RDKit_MinPartialCharge"
+          ],
+          "metrics": {
+            "train_r2": 0.5685788008222481,
+            "train_rmse": 0.6368729516954753,
+            "train_mae": 0.4923111111111111,
+            "train_n": 153,
+            "cv_r2": 0.3367418062380919,
+            "cv_rmse": 0.7654610944398891,
+            "cv_mae": 0.610493247311828,
+            "cv_r2_std": 0.13913805306411411,
+            "train_cv_r2_gap": 0.21867122572901732,
+            "val_r2": 0.3143248779302582,
+            "val_rmse": 0.8041445575726321,
+            "val_mae": 0.5994421052631578,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.30469557982490103,
+            "rmse": 0.8454767947887842,
+            "mae": 0.6077263157894738,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.5879083328179628,
+              "val_r2": 0.08173441981286422,
+              "train_rmse": 0.6511856256217526,
+              "val_rmse": 0.704468500635122,
+              "train_mae": 0.4931229508196722,
+              "val_mae": 0.5767354838709677
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.5654130214331383,
+              "val_r2": 0.4287413136482163,
+              "train_rmse": 0.6400488803055029,
+              "val_rmse": 0.7265487768631163,
+              "train_mae": 0.48890163934426234,
+              "val_mae": 0.6112645161290322
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.5318306071503907,
+              "val_r2": 0.485522110478951,
+              "train_rmse": 0.6498053267117399,
+              "val_rmse": 0.7480368190006728,
+              "train_mae": 0.49840000000000007,
+              "val_mae": 0.5686129032258066
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.5045483000825577,
+              "val_r2": 0.3669588583863823,
+              "train_rmse": 0.660848340718878,
+              "val_rmse": 0.8564760195125138,
+              "train_mae": 0.49924227642276414,
+              "val_mae": 0.6764866666666667
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.5873648983514963,
+              "val_r2": 0.32075232886404537,
+              "train_rmse": 0.6233272791323745,
+              "val_rmse": 0.7917753561880204,
+              "train_mae": 0.49243577235772357,
+              "val_mae": 0.6193666666666667
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "overfit",
+            "is_acceptable": false,
+            "is_overfit": true,
+            "is_underfit": false,
+            "is_unstable": false,
+            "is_severe_overfit": false
+          },
+          "warnings": [
+            "Train-CV R\u00b2 gap (0.219) suggests overfitting.",
+            "CV R\u00b2 (0.337) is below minimum threshold.",
+            "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 84.00903040496632,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__k_neighbors_regressor__ga_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__k_neighbors_regressor__ga_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__k_neighbors_regressor__ga_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__k_neighbors_regressor__ga_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__k_neighbors_regressor__ga_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__k_neighbors_regressor__ga_config.json",
+            "pipeline": "models/c6dc290a4a1b__k_neighbors_regressor__ga_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/fallback_models/k_neighbors_regressor/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/fallback_models/k_neighbors_regressor/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.0392156862745098,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [],
+            "response_outlier_ids": [],
+            "structural_outlier_count": 0,
+            "response_outlier_count": 0,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [],
+                "response": []
+              },
+              "val": {
+                "structural": [],
+                "response": []
+              },
+              "test": {
+                "structural": [],
+                "response": []
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": false
+        },
+        {
+          "run_id": "c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2",
+          "representation": "RDKit",
+          "feature_selection_method": "sfs_fixed_ga_plus2",
+          "model": "KNeighborsRegressor",
+          "hyperparameters": {
+            "n_neighbors": 5,
+            "p": 2,
+            "metric": "minkowski",
+            "weights": "uniform"
+          },
+          "feature_count": 3,
+          "selected_feature_names": [
+            "RDKit_MinPartialCharge",
+            "RDKit_fr_bicyclic",
+            "RDKit_fr_phenol_noOrthoHbond"
+          ],
+          "metrics": {
+            "train_r2": 0.6431183723854255,
+            "train_rmse": 0.579247488168071,
+            "train_mae": 0.44822614379084963,
+            "train_n": 153,
+            "cv_r2": 0.3278671302602831,
+            "cv_rmse": 0.7614222864733788,
+            "cv_mae": 0.6066060215053763,
+            "cv_r2_std": 0.21761090842813186,
+            "train_cv_r2_gap": 0.29411894029963376,
+            "val_r2": 0.16075675990677352,
+            "val_rmse": 0.8896493312713605,
+            "val_mae": 0.6933052631578946,
+            "val_n": 19,
+            "refit_train_r2": null,
+            "mean_cv_fold_train_r2": null,
+            "oof_cv_r2": null,
+            "refit_train_cv_gap": null,
+            "cv_fold_train_val_gap": null
+          },
+          "external_test": {
+            "reported_after_selection": true,
+            "r2": 0.23758656304983228,
+            "rmse": 0.885338739811224,
+            "mae": 0.6033999999999999,
+            "n": 19
+          },
+          "per_fold_scores": [
+            {
+              "fold": 1,
+              "train_r2": 0.6838924786434003,
+              "val_r2": -0.09514298787775588,
+              "train_rmse": 0.5703288010538091,
+              "val_rmse": 0.7693303036596391,
+              "train_mae": 0.440283606557377,
+              "val_mae": 0.6220580645161291
+            },
+            {
+              "fold": 2,
+              "train_r2": 0.6235236405514909,
+              "val_r2": 0.4163101582400275,
+              "train_rmse": 0.5957220049764107,
+              "val_rmse": 0.7344114430902717,
+              "train_mae": 0.4445262295081967,
+              "val_mae": 0.6296645161290322
+            },
+            {
+              "fold": 3,
+              "train_r2": 0.6264088738395588,
+              "val_r2": 0.5226385290720652,
+              "train_rmse": 0.5804703406664656,
+              "val_rmse": 0.7205486332671972,
+              "train_mae": 0.4573180327868853,
+              "val_mae": 0.5439741935483873
+            },
+            {
+              "fold": 4,
+              "train_r2": 0.5386607491495283,
+              "val_r2": 0.3638128579246621,
+              "train_rmse": 0.6376925532890636,
+              "val_rmse": 0.8586015800901682,
+              "train_mae": 0.47276097560975605,
+              "val_mae": 0.6881266666666668
+            },
+            {
+              "fold": 5,
+              "train_r2": 0.6374446106156059,
+              "val_r2": 0.43171709394241653,
+              "train_rmse": 0.5842789385634061,
+              "val_rmse": 0.7242194722596182,
+              "train_mae": 0.46449918699186993,
+              "val_mae": 0.5492066666666666
+            }
+          ],
+          "diagnostic_flags": {
+            "status": "unstable",
+            "is_acceptable": false,
+            "is_overfit": true,
+            "is_underfit": false,
+            "is_unstable": true,
+            "is_severe_overfit": true
+          },
+          "warnings": [
+            "Severe overfitting: train-CV R\u00b2 gap (0.294) exceeds 0.25.",
+            "High CV R\u00b2 standard deviation: 0.218.",
+            "CV R\u00b2 (0.328) is below minimum threshold.",
+            "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing."
+          ],
+          "errors": [],
+          "failure_reason": "",
+          "runtime_seconds": 73.89165733382106,
+          "status": "completed",
+          "artifacts": {
+            "observed_vs_predicted": {
+              "name": "observed_vs_predicted",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2_observed_vs_predicted.png",
+              "reason": ""
+            },
+            "williams": {
+              "name": "williams",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2_williams.png",
+              "reason": ""
+            },
+            "residuals": {
+              "name": "residuals",
+              "status": "available",
+              "relative_path": "plots/c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2_residuals.png",
+              "reason": ""
+            },
+            "cv_predictions": "predictions/c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2_cv_predictions.csv",
+            "test_predictions": "predictions/c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2_test_predictions.csv",
+            "config": "configs/c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2_config.json",
+            "pipeline": "models/c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2_pipeline.joblib",
+            "source_predictions": "outputs/c6dc290a4a1b/fallback_models/k_neighbors_regressor/sfs_fixed_ga_plus2/predictions.csv",
+            "source_model": "outputs/c6dc290a4a1b/fallback_models/k_neighbors_regressor/sfs_fixed_ga_plus2/final_model.joblib"
+          },
+          "applicability_domain": {
+            "method": "williams_leverage",
+            "warning_leverage": 0.0784313725490196,
+            "residual_threshold": 3.0,
+            "structural_outlier_ids": [
+              "compound_7",
+              "compound_129",
+              "compound_30",
+              "compound_184",
+              "compound_6"
+            ],
+            "response_outlier_ids": [
+              "compound_179",
+              "compound_186",
+              "compound_185",
+              "compound_64"
+            ],
+            "structural_outlier_count": 5,
+            "response_outlier_count": 4,
+            "outliers_by_partition": {
+              "train": {
+                "structural": [
+                  "compound_7",
+                  "compound_129",
+                  "compound_30",
+                  "compound_184"
+                ],
+                "response": [
+                  "compound_179"
+                ]
+              },
+              "val": {
+                "structural": [
+                  "compound_6"
+                ],
+                "response": [
+                  "compound_186"
+                ]
+              },
+              "test": {
+                "structural": [],
+                "response": [
+                  "compound_185",
+                  "compound_64"
+                ]
+              }
+            },
+            "handling_decision": "informational_only",
+            "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+          },
+          "is_winner": false
+        }
+      ],
+      "applicability_domain": {
+        "winner_run_id": "c6dc290a4a1b__svr__sfs_fixed_ga_plus2",
+        "method": "williams_leverage",
+        "warning_leverage": 0.17647058823529413,
+        "residual_threshold": 3.0,
+        "structural_outlier_count": 7,
+        "response_outlier_count": 2,
+        "structural_outlier_ids": [
+          "compound_133",
+          "compound_180",
+          "compound_36",
+          "compound_178",
+          "compound_141",
+          "compound_119",
+          "compound_182"
+        ],
+        "response_outlier_ids": [
+          "compound_71",
+          "compound_167"
+        ],
+        "outliers_by_partition": {
+          "train": {
+            "structural": [
+              "compound_133",
+              "compound_180",
+              "compound_36",
+              "compound_178",
+              "compound_141"
+            ],
+            "response": [
+              "compound_71",
+              "compound_167"
+            ]
+          },
+          "val": {
+            "structural": [
+              "compound_119"
+            ],
+            "response": []
+          },
+          "test": {
+            "structural": [
+              "compound_182"
+            ],
+            "response": []
+          }
+        },
+        "handling_decision": "informational_only",
+        "handling_justification": "Williams-plot applicability domain is a diagnostic report. Structural and response outliers were not excluded from training and were not used for model selection."
+      },
+      "error_analysis": {
+        "winner_run_id": "c6dc290a4a1b__svr__sfs_fixed_ga_plus2",
+        "largest_error_compounds": [
+          {
+            "compound_id": "compound_71",
+            "split": "train",
+            "activity": 4.643,
+            "predicted_activity": 2.236214084506478,
+            "residual": 2.406785915493521,
+            "abs_residual": 2.406785915493521,
+            "applicability_domain": "response_outlier"
+          },
+          {
+            "compound_id": "compound_167",
+            "split": "train",
+            "activity": 5.31,
+            "predicted_activity": 3.552080722236211,
+            "residual": 1.7579192777637886,
+            "abs_residual": 1.7579192777637886,
+            "applicability_domain": "response_outlier"
+          },
+          {
+            "compound_id": "compound_131",
+            "split": "test",
+            "activity": 2.13,
+            "predicted_activity": 3.749297669839862,
+            "residual": -1.6192976698398622,
+            "abs_residual": 1.6192976698398622,
+            "applicability_domain": "in_domain"
+          },
+          {
+            "compound_id": "compound_179",
+            "split": "train",
+            "activity": 4.68,
+            "predicted_activity": 3.080856406859804,
+            "residual": 1.5991435931401958,
+            "abs_residual": 1.5991435931401958,
+            "applicability_domain": "in_domain"
+          },
+          {
+            "compound_id": "compound_181",
+            "split": "train",
+            "activity": 3.96,
+            "predicted_activity": 2.407520245710925,
+            "residual": 1.5524797542890751,
+            "abs_residual": 1.5524797542890751,
+            "applicability_domain": "in_domain"
+          },
+          {
+            "compound_id": "compound_186",
+            "split": "val",
+            "activity": 3.94,
+            "predicted_activity": 2.5191706156564884,
+            "residual": 1.4208293843435116,
+            "abs_residual": 1.4208293843435116,
+            "applicability_domain": "in_domain"
+          },
+          {
+            "compound_id": "compound_184",
+            "split": "train",
+            "activity": 4.54,
+            "predicted_activity": 3.186143842739949,
+            "residual": 1.3538561572600512,
+            "abs_residual": 1.3538561572600512,
+            "applicability_domain": "in_domain"
+          },
+          {
+            "compound_id": "compound_42",
+            "split": "val",
+            "activity": 4.452,
+            "predicted_activity": 3.110437515245829,
+            "residual": 1.3415624847541707,
+            "abs_residual": 1.3415624847541707,
+            "applicability_domain": "in_domain"
+          },
+          {
+            "compound_id": "compound_137",
+            "split": "train",
+            "activity": 1.47,
+            "predicted_activity": 2.7708319275769764,
+            "residual": -1.3008319275769764,
+            "abs_residual": 1.3008319275769764,
+            "applicability_domain": "in_domain"
+          },
+          {
+            "compound_id": "compound_185",
+            "split": "test",
+            "activity": 4.01,
+            "predicted_activity": 2.725245641478684,
+            "residual": 1.284754358521316,
+            "abs_residual": 1.284754358521316,
+            "applicability_domain": "in_domain"
+          }
+        ],
+        "target_range_performance": [
+          {
+            "range_label": "low",
+            "n": 64,
+            "r2": -2.3968822628008826,
+            "rmse": 0.43689696049838933,
+            "mae": 0.3203496335470425,
+            "activity_min": 1.077,
+            "activity_max": 2.1
+          },
+          {
+            "range_label": "mid",
+            "n": 63,
+            "r2": -2.68764237782807,
+            "rmse": 0.3729468368400828,
+            "mae": 0.25441502265118515,
+            "activity_min": 2.107,
+            "activity_max": 2.808
+          },
+          {
+            "range_label": "high",
+            "n": 64,
+            "r2": -0.18799780265559596,
+            "rmse": 0.7657950257684342,
+            "mae": 0.5636667730116766,
+            "activity_min": 2.83,
+            "activity_max": 5.31
+          }
+        ],
+        "inside_domain": {
+          "n": 182,
+          "r2": 0.7084950194469969,
+          "rmse": 0.5173095565859799,
+          "mae": 0.365461386237007
+        },
+        "outside_domain": {
+          "n": 9,
+          "r2": 0.2838568727142451,
+          "rmse": 1.043833787230049,
+          "mae": 0.6768026835163788
+        },
+        "residual_diagnostics": {
+          "mean": 0.08645391442450863,
+          "std": 0.5481239953037921,
+          "residual_vs_predicted_correlation": 0.14289162462561894
+        }
+      },
+      "conclusion": {
+        "best_run_id": "c6dc290a4a1b__svr__sfs_fixed_ga_plus2",
+        "selection_criterion": "Highest combined R\u00b2 (equal-weight mean training CV R\u00b2 and holdout validation R\u00b2) among acceptable models, with a one-standard-error rule and estimator-simplicity tie-break. External-test metrics were not used for model selection.",
+        "acceptance_status": false,
+        "failed_criteria": [
+          "train_cv_gap"
+        ],
+        "completed_searches": [
+          {
+            "name": "dataset_validation",
+            "completed": true,
+            "detail": ""
+          },
+          {
+            "name": "descriptor_calculation",
+            "completed": true,
+            "detail": "backends=RDKit; 3D_descriptors=False"
+          },
+          {
+            "name": "umap_split",
+            "completed": true,
+            "detail": "method=sorted"
+          },
+          {
+            "name": "descriptor_preprocessing",
+            "completed": true,
+            "detail": ""
+          },
+          {
+            "name": "sequential_feature_selection",
+            "completed": true,
+            "detail": ""
+          },
+          {
+            "name": "feature_count_selection",
+            "completed": true,
+            "detail": ""
+          },
+          {
+            "name": "genetic_algorithm",
+            "completed": true,
+            "detail": ""
+          },
+          {
+            "name": "baseline_cv_diagnostics",
+            "completed": true,
+            "detail": ""
+          },
+          {
+            "name": "overfitting_assessment",
+            "completed": true,
+            "detail": ""
+          },
+          {
+            "name": "hpo_round_1",
+            "completed": true,
+            "detail": "Best CV R\u00b2=0.534"
+          },
+          {
+            "name": "hpo_round_2",
+            "completed": true,
+            "detail": "Best CV R\u00b2=0.534"
+          },
+          {
+            "name": "hpo_round_3",
+            "completed": true,
+            "detail": "Best CV R\u00b2=0.537"
+          },
+          {
+            "name": "final_model_selection",
+            "completed": true,
+            "detail": ""
+          },
+          {
+            "name": "model_fallback",
+            "completed": true,
+            "detail": "Tried 4 fallback model(s); winner: SVR (sfs_fixed_ga_plus2)"
+          },
+          {
+            "name": "final_model",
+            "completed": true,
+            "detail": ""
+          },
+          {
+            "name": "applicability_domain",
+            "completed": true,
+            "detail": ""
+          }
+        ],
+        "winner_model": "SVR",
+        "winner_train_metrics": {
+          "r2": 0.7338658891706631,
+          "rmse": 0.5002099599079233,
+          "mae": 0.3229092681015336,
+          "n_samples": 153
+        },
+        "winner_cv_r2": 0.5349015521444443,
+        "winner_val_metrics": {
+          "r2": 0.48699124108799374,
+          "rmse": 0.6955643595489243,
+          "mae": 0.5780390250326747,
+          "n_samples": 19
+        }
+      },
+      "agent_constraints": {
+        "permitted_actions": [
+          "Explain the deterministic one-SE feature-count selection without changing it",
+          "Propose hyperparameter grids within the allowed estimator parameter space"
+        ],
+        "prohibited_actions": [
+          "Override the selected feature count",
+          "Invent metrics or training results",
+          "Train models or execute the scientific pipeline",
+          "Use the external test set for tuning, feature selection, or model selection"
+        ],
+        "iteration_budget": {
+          "max_hpo_rounds": 3
+        },
+        "compute_budget": {
+          "max_candidates_per_round": 120,
+          "hpo_n_jobs": -1,
+          "sfs_n_jobs": -1,
+          "ga_n_jobs": -1
+        },
+        "approval_required_actions": [],
+        "stopping_conditions": [
+          "Model meets acceptance criteria (overfitting status good)",
+          "CV improvement below min_cv_improvement",
+          "Maximum HPO rounds reached"
+        ]
+      }
+    },
+    "dataset_hash": "8b547ba5d2a0032165ca1bfc37aad3924cde60de3ef2a0014f33a8566e8041d4",
+    "development_split_hash": "",
+    "sealed_test_hash": "5598edd2f4bc942297800f3f92b170a7585719b30bf50943000255545a1b6789"
+  },
+  "dataset_summary": {},
+  "available_representations": [],
+  "available_model_families": [],
+  "completed_experiments": [],
+  "completed_experiment_ids": [],
+  "current_best_candidate": null,
+  "failed_requirements": [],
+  "current_diagnosis": "",
+  "current_hypothesis": "",
+  "proposed_action": null,
+  "last_tool_result": null,
+  "last_decision": null,
+  "adaptive_experiments_used": 0,
+  "compute_budget_used": 0.0,
+  "stagnation_count": 0,
+  "pending_capability_request": null,
+  "pending_exclusion_proposal": null,
+  "stopping_reason": "integrity_check_failed",
+  "route": "invalid_handoff",
+  "validation_passed": false,
+  "validation_errors": [
+    "Markdown missing canonical metrics for c6dc290a4a1b__random_forest__ga.",
+    "Markdown missing canonical metrics for c6dc290a4a1b__random_forest__sfs_subset.",
+    "Markdown missing canonical metrics for c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2.",
+    "Markdown missing canonical metrics for c6dc290a4a1b__pls_regression__ga.",
+    "Markdown missing canonical metrics for c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2.",
+    "Markdown missing canonical metrics for c6dc290a4a1b__extra_trees_regressor__ga.",
+    "Markdown missing canonical metrics for c6dc290a4a1b__extra_trees_regressor__sfs_subset.",
+    "Markdown missing canonical metrics for c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2.",
+    "Markdown missing canonical metrics for c6dc290a4a1b__svr__ga.",
+    "Markdown missing canonical metrics for c6dc290a4a1b__svr__sfs_subset.",
+    "Markdown missing canonical metrics for c6dc290a4a1b__svr__sfs_fixed_ga_plus2.",
+    "Markdown missing canonical metrics for c6dc290a4a1b__k_neighbors_regressor__ga.",
+    "Markdown missing canonical metrics for c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2.",
+    "c6dc290a4a1b__random_forest__ga.cv_rmse is a suspicious zero placeholder while cv_r2 is not perfect.",
+    "c6dc290a4a1b__random_forest__ga.cv_mae is a suspicious zero placeholder while cv_r2 is not perfect.",
+    "c6dc290a4a1b__pls_regression__ga.cv_rmse is a suspicious zero placeholder while cv_r2 is not perfect.",
+    "c6dc290a4a1b__pls_regression__ga.cv_mae is a suspicious zero placeholder while cv_r2 is not perfect.",
+    "c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2.cv_rmse is a suspicious zero placeholder while cv_r2 is not perfect.",
+    "c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2.cv_mae is a suspicious zero placeholder while cv_r2 is not perfect.",
+    "Metric disagreement for c6dc290a4a1b__random_forest__ga.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__random_forest__ga.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__random_forest__ga.mean_cv_fold_train_r2: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__random_forest__sfs_subset.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__random_forest__sfs_subset.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__random_forest__sfs_subset.mean_cv_fold_train_r2: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__random_forest__sfs_fixed_ga_plus2.mean_cv_fold_train_r2: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__pls_regression__ga.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__pls_regression__ga.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__pls_regression__ga.mean_cv_fold_train_r2: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2.mean_cv_fold_train_r2: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__ga.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__ga.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__ga.mean_cv_fold_train_r2: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__sfs_subset.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__sfs_subset.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__sfs_subset.mean_cv_fold_train_r2: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__extra_trees_regressor__sfs_fixed_ga_plus2.mean_cv_fold_train_r2: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__svr__ga.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__svr__ga.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__svr__ga.mean_cv_fold_train_r2: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__svr__sfs_subset.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__svr__sfs_subset.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__svr__sfs_subset.mean_cv_fold_train_r2: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__svr__sfs_fixed_ga_plus2.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__svr__sfs_fixed_ga_plus2.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__svr__sfs_fixed_ga_plus2.mean_cv_fold_train_r2: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__k_neighbors_regressor__ga.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__k_neighbors_regressor__ga.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__k_neighbors_regressor__ga.mean_cv_fold_train_r2: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2.cv_fold_train_val_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2.refit_train_cv_gap: json=null csv=",
+    "Metric disagreement for c6dc290a4a1b__k_neighbors_regressor__sfs_fixed_ga_plus2.mean_cv_fold_train_r2: json=null csv="
+  ],
+  "acceptance_status": "unknown",
+  "development_view": null,
+  "sealed_test_result": null,
+  "agent_iteration": 0,
+  "started_at": "2026-08-28T00:05:47.711804+00:00",
+  "use_openai": true,
+  "openai_model": "",
+  "exclusion_decision": null,
+  "report_path": "outputs/qsar_agent_run_c6dc290a4a1b/agent_results/agent_final_report.md",
+  "rankings": [],
+  "best_cv_r2_history": [],
+  "model_families_used": [],
+  "representation_changes_used": 0,
+  "action_error": "",
+  "requirement_evaluation": null
+}

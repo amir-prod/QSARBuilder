@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import csv
-import hashlib
 import json
 import math
 import re
@@ -61,7 +60,7 @@ from qsar_agent.schemas.preprocessing import PreprocessingResult
 from qsar_agent.schemas.split import SplitResult
 from qsar_agent.schemas.workflow import WorkflowState
 from qsar_agent.services import build_estimator
-from qsar_agent.services.artifact_manager import save_json
+from qsar_agent.services.artifact_manager import hash_sorted_ids, save_json
 from qsar_agent.services.plotting import plot_residuals
 from qsar_agent.tools.branch_external_evaluation import branch_display_label
 from qsar_agent.tools.combined_score import CV_VAL_WEIGHT
@@ -235,6 +234,7 @@ def write_and_validate_handoff(
     )
     overlap = _duplicate_overlap(split)
     test_id_hash = _hash_compound_ids(split.test_path)
+    development_split_hash = _hash_development_split(split)
     preprocessor_rel = _copy_preprocessor(preprocessing.preprocessor_path, models_dir)
 
     selection_records = _collect_selection_records(cross_model_selection, rf_branch)
@@ -337,6 +337,13 @@ def write_and_validate_handoff(
     hpo = config.hpo
     fp_types = [b for b in backends if _looks_like_fingerprint(b)]
     package = HandoffPackage(
+        schema_version="1.0",
+        handoff_status="COMPLETE",
+        validation_passed=True,
+        validation_errors=[],
+        dataset_hash=dataset_hash,
+        development_split_hash=development_split_hash,
+        sealed_test_hash=test_id_hash,
         run_metadata=RunMetadata(
             run_id=run_id,
             started_at=started_at,
@@ -452,7 +459,17 @@ def write_and_validate_handoff(
     save_json(manifest_path, package.model_dump(mode="json"))
     md_path.write_text(render_modeling_handoff_md(package), encoding="utf-8")
     write_experiment_ledger_csv(package, csv_path)
-    validate_handoff_package(report_dir, package)
+    try:
+        validate_handoff_package(report_dir, package)
+        package.validation_passed = True
+        package.validation_errors = []
+    except HandoffValidationError as exc:
+        package.validation_passed = False
+        package.handoff_status = "INCOMPLETE"
+        package.validation_errors = [part.strip() for part in str(exc).split(";") if part.strip()]
+        save_json(manifest_path, package.model_dump(mode="json"))
+        raise
+    save_json(manifest_path, package.model_dump(mode="json"))
     return package
 
 
@@ -1500,8 +1517,25 @@ def _hash_compound_ids(path: str) -> str:
     df = pd.read_csv(path)
     if "compound_id" not in df.columns:
         return ""
-    payload = "\n".join(sorted(df["compound_id"].astype(str)))
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return hash_sorted_ids(df["compound_id"].astype(str).tolist())
+
+
+def _hash_development_split(split: SplitResult) -> str:
+    """Hash sorted train+val compound IDs (development partition)."""
+    ids: list[str] = []
+    assignments = getattr(split, "split_assignments_path", "") or ""
+    if assignments and Path(assignments).is_file():
+        df = pd.read_csv(assignments)
+        if "compound_id" in df.columns and "split" in df.columns:
+            mask = df["split"].astype(str).isin(["train", "val"])
+            return hash_sorted_ids(df.loc[mask, "compound_id"].astype(str).tolist())
+    for path in (split.train_path, split.val_path):
+        if not path or not Path(path).exists():
+            continue
+        df = pd.read_csv(path)
+        if "compound_id" in df.columns:
+            ids.extend(df["compound_id"].astype(str).tolist())
+    return hash_sorted_ids(ids) if ids else ""
 
 
 def _iter_branch_variants(*roots: ModelBranchResult | None) -> Iterable[ModelBranchResult]:

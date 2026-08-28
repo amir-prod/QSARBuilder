@@ -1,0 +1,11 @@
+# HPO Round 2 Agent Grid Proposal
+
+**Strategy:** Grid search with a focus on regularization parameters to combat overfitting.
+
+In this round, I focused on addressing the overfitting issue identified in the previous round. The best_params from round 1 were used as a foundation, and I made local adjustments to increase regularization. Specifically, I reduced the max_depth to 5 and increased min_samples_leaf to 15 to help combat overfitting. The dataset size of 153 samples suggests that a more constrained model is necessary to improve generalization. I retained the bootstrap option to leverage sampling variability while exploring a wider range of min_samples_split values to find a balance between bias and variance.
+
+**Expected overfitting effect:** The adjustments are expected to reduce overfitting by increasing the minimum samples required for leaf nodes and limiting the depth of the trees, which should help improve the model's generalization to unseen data.
+
+**Expected underfitting effect:** There is a risk of underfitting due to the increased constraints, but the dataset size suggests that the model should still capture the underlying patterns effectively.
+
+**Cost estimate:** Moderate, as the grid search will evaluate a total of 6 combinations (3 n_estimators x 2 max_depth x 3 min_samples_split x 1 min_samples_leaf x 2 max_features x 1 bootstrap x 1 max_samples x 1 criterion).

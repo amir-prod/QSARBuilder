@@ -1,0 +1,12 @@
+{
+  "selected_features": [
+    "RDKit_MinPartialCharge",
+    "RDKit_SMR_VSA10",
+    "RDKit_SMR_VSA9",
+    "RDKit_SPS",
+    "RDKit_SlogP_VSA11",
+    "RDKit_fr_alkyl_halide",
+    "RDKit_fr_aniline",
+    "RDKit_fr_nitro_arom"
+  ]
+}

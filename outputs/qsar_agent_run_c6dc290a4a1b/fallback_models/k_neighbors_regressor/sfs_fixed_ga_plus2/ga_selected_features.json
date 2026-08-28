@@ -1,0 +1,14 @@
+{
+  "selected_features": [
+    "RDKit_MinPartialCharge",
+    "RDKit_fr_bicyclic",
+    "RDKit_fr_phenol_noOrthoHbond"
+  ],
+  "fixed_features": [
+    "RDKit_MinPartialCharge"
+  ],
+  "extra_features": [
+    "RDKit_fr_bicyclic",
+    "RDKit_fr_phenol_noOrthoHbond"
+  ]
+}

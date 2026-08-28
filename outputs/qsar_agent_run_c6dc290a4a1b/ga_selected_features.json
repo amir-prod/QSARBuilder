@@ -1,0 +1,10 @@
+{
+  "selected_features": [
+    "RDKit_AvgIpc",
+    "RDKit_Chi2v",
+    "RDKit_MinAbsPartialCharge",
+    "RDKit_PEOE_VSA2",
+    "RDKit_Phi",
+    "RDKit_fr_Imine"
+  ]
+}

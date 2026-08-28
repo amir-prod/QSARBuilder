@@ -36,7 +36,7 @@ def test_missing_activity(tmp_run_dir):
 
 
 def test_duplicate_compounds(tmp_run_dir):
-    smiles = ["CCO"] * 10 + [f"C{'C' * i}O" for i in range(1, 16)]
+    smiles = ["CCO"] * 10 + [f"C{'C' * i}O" for i in range(2, 17)]
     df = pd.DataFrame({
         "smiles": smiles,
         "activity": list(range(len(smiles))),

@@ -1,0 +1,16 @@
+{
+  "status": "underfit",
+  "is_acceptable": false,
+  "is_overfit": false,
+  "is_underfit": true,
+  "is_unstable": false,
+  "is_severe_overfit": false,
+  "mean_train_r2": 0.3688583934132875,
+  "mean_cv_r2": 0.31628437946934107,
+  "train_cv_r2_gap": 0.05257401394394645,
+  "cv_r2_std": 0.13924922418272034,
+  "warnings": [
+    "CV R\u00b2 (0.316) is below minimum threshold."
+  ],
+  "explanation": "Both training R\u00b2 (0.369) and CV R\u00b2 (0.316) are low. The model lacks capacity or informative descriptors."
+}

@@ -1,0 +1,77 @@
+{
+  "1": [
+    "RDKit_MinPartialCharge"
+  ],
+  "2": [
+    "RDKit_MinPartialCharge",
+    "RDKit_fr_ArN"
+  ],
+  "3": [
+    "RDKit_EState_VSA2",
+    "RDKit_MinPartialCharge",
+    "RDKit_fr_ArN"
+  ],
+  "4": [
+    "RDKit_EState_VSA2",
+    "RDKit_MinPartialCharge",
+    "RDKit_fr_ArN",
+    "RDKit_fr_Ndealkylation1"
+  ],
+  "5": [
+    "RDKit_EState_VSA2",
+    "RDKit_MinPartialCharge",
+    "RDKit_fr_ArN",
+    "RDKit_fr_Imine",
+    "RDKit_fr_Ndealkylation1"
+  ],
+  "6": [
+    "RDKit_EState_VSA2",
+    "RDKit_MinPartialCharge",
+    "RDKit_fr_Al_OH",
+    "RDKit_fr_ArN",
+    "RDKit_fr_Imine",
+    "RDKit_fr_Ndealkylation1"
+  ],
+  "7": [
+    "RDKit_EState_VSA2",
+    "RDKit_MinPartialCharge",
+    "RDKit_fr_Al_OH",
+    "RDKit_fr_ArN",
+    "RDKit_fr_Imine",
+    "RDKit_fr_Ndealkylation1",
+    "RDKit_fr_epoxide"
+  ],
+  "8": [
+    "RDKit_EState_VSA2",
+    "RDKit_MinPartialCharge",
+    "RDKit_fr_Al_OH",
+    "RDKit_fr_ArN",
+    "RDKit_fr_Imine",
+    "RDKit_fr_Ndealkylation1",
+    "RDKit_fr_epoxide",
+    "RDKit_fr_furan"
+  ],
+  "9": [
+    "RDKit_EState_VSA2",
+    "RDKit_MinPartialCharge",
+    "RDKit_fr_Al_OH",
+    "RDKit_fr_ArN",
+    "RDKit_fr_Imine",
+    "RDKit_fr_Ndealkylation1",
+    "RDKit_fr_epoxide",
+    "RDKit_fr_furan",
+    "RDKit_fr_urea"
+  ],
+  "10": [
+    "RDKit_EState_VSA2",
+    "RDKit_MinPartialCharge",
+    "RDKit_fr_Al_OH",
+    "RDKit_fr_ArN",
+    "RDKit_fr_Imine",
+    "RDKit_fr_Ndealkylation1",
+    "RDKit_fr_epoxide",
+    "RDKit_fr_furan",
+    "RDKit_fr_imide",
+    "RDKit_fr_urea"
+  ]
+}

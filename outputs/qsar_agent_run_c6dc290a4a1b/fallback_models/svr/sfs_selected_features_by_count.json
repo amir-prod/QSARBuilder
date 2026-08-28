@@ -1,0 +1,77 @@
+{
+  "1": [
+    "RDKit_Chi2v"
+  ],
+  "2": [
+    "RDKit_Chi2v",
+    "RDKit_SlogP_VSA6"
+  ],
+  "3": [
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA6"
+  ],
+  "4": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA6"
+  ],
+  "5": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA6"
+  ],
+  "6": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA10",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA6"
+  ],
+  "7": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_Chi2v",
+    "RDKit_NumHeteroatoms",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA10",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA6"
+  ],
+  "8": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_BalabanJ",
+    "RDKit_Chi2v",
+    "RDKit_NumHeteroatoms",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA10",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA6"
+  ],
+  "9": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_BalabanJ",
+    "RDKit_Chi2v",
+    "RDKit_NumHeteroatoms",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA10",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA6",
+    "RDKit_fr_ether"
+  ],
+  "10": [
+    "RDKit_BCUT2D_CHGLO",
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_BalabanJ",
+    "RDKit_Chi2v",
+    "RDKit_NumHeteroatoms",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA10",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA6",
+    "RDKit_fr_ether"
+  ]
+}

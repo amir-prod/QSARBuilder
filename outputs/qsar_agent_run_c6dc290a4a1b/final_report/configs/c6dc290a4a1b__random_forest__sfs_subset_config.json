@@ -1,0 +1,25 @@
+{
+  "run_id": "c6dc290a4a1b__random_forest__sfs_subset",
+  "estimator": "RandomForestRegressor",
+  "feature_selection_method": "sfs_subset",
+  "hyperparameters": {
+    "min_samples_leaf": 1,
+    "max_features": "sqrt",
+    "bootstrap": true,
+    "criterion": "squared_error",
+    "n_estimators": 100,
+    "max_depth": 10,
+    "min_samples_split": 2,
+    "max_samples": null
+  },
+  "selected_features": [
+    "RDKit_BCUT2D_MWLOW",
+    "RDKit_EState_VSA2",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SMR_VSA6",
+    "RDKit_SlogP_VSA10",
+    "RDKit_fr_ether"
+  ],
+  "cv_folds": 5,
+  "random_seed": 42
+}

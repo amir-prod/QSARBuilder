@@ -1,0 +1,5 @@
+{
+  "max_iter": 200,
+  "n_components": 1,
+  "scale": false
+}

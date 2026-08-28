@@ -112,6 +112,48 @@ class SFSSubsetBranchSettings(BaseModel):
     hpo_output_subdir: str = "sfs_subset_hpo"
 
 
+class AgentLimits(BaseModel):
+    maximum_agent_iterations: int = 12
+    maximum_adaptive_experiments: int = 12
+    maximum_runtime_hours: float = 6.0
+    maximum_new_model_families: int = 4
+    maximum_representation_changes: int = 3
+    stagnation_window: int = 3
+    minimum_meaningful_cv_improvement: float = 0.02
+
+
+class MultiSeedGASettings(BaseModel):
+    seeds: list[int] = Field(default_factory=lambda: [11, 23, 42, 67, 91])
+    population_size: int = 100
+    generations: int = 75
+    feature_count_range: tuple[int, int] = (3, 25)
+
+
+class ModelingRequirements(BaseModel):
+    """Deterministic acceptance gates for the modeling-improvement agent."""
+
+    minimum_cv_r2: float | None = None
+    maximum_train_cv_gap: float | None = None
+    maximum_cv_r2_std: float | None = None
+    maximum_rmse: float | None = None
+    maximum_mae: float | None = None
+    maximum_feature_count: int | None = None
+    minimum_ad_coverage: float | None = None
+    maximum_runtime_seconds: float | None = None
+    maximum_model_complexity: float | None = None
+    allow_latent_components: bool = False
+
+
+class AgenticImprovementSettings(BaseModel):
+    enabled: bool = False
+    limits: AgentLimits = Field(default_factory=AgentLimits)
+    ga: MultiSeedGASettings = Field(default_factory=MultiSeedGASettings)
+    requirements: ModelingRequirements = Field(default_factory=ModelingRequirements)
+    allow_latent_components: bool = False
+    openai_model: str = ""
+    recursion_limit: int | None = None
+
+
 class WorkflowConfig(BaseModel):
     val_fraction: float = 0.10
     test_fraction: float = 0.10
@@ -132,6 +174,9 @@ class WorkflowConfig(BaseModel):
     )
     sfs_subset_branch: SFSSubsetBranchSettings = Field(
         default_factory=SFSSubsetBranchSettings
+    )
+    agentic_improvement: AgenticImprovementSettings = Field(
+        default_factory=AgenticImprovementSettings
     )
     smiles_column: str = ""
     activity_column: str = ""

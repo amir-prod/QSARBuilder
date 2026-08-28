@@ -1,0 +1,15 @@
+{
+  "run_id": "c6dc290a4a1b__pls_regression__ga",
+  "estimator": "PLSRegression",
+  "feature_selection_method": "ga",
+  "hyperparameters": {
+    "max_iter": 100,
+    "n_components": 1,
+    "scale": false
+  },
+  "selected_features": [
+    "RDKit_BCUT2D_LOGPHI"
+  ],
+  "cv_folds": 5,
+  "random_seed": 42
+}

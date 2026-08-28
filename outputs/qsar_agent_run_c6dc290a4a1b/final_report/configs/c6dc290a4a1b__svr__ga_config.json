@@ -1,0 +1,21 @@
+{
+  "run_id": "c6dc290a4a1b__svr__ga",
+  "estimator": "SVR",
+  "feature_selection_method": "ga",
+  "hyperparameters": {
+    "epsilon": 0.1,
+    "kernel": "rbf",
+    "gamma": "scale",
+    "C": 1.0
+  },
+  "selected_features": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_ExactMolWt",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_fr_ArN",
+    "RDKit_fr_NH2",
+    "RDKit_qed"
+  ],
+  "cv_folds": 5,
+  "random_seed": 42
+}

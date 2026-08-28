@@ -1,0 +1,77 @@
+{
+  "1": [
+    "RDKit_MaxAbsPartialCharge"
+  ],
+  "2": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge"
+  ],
+  "3": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_fr_NH1"
+  ],
+  "4": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1"
+  ],
+  "5": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_PEOE_VSA2",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1"
+  ],
+  "6": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_PEOE_VSA11",
+    "RDKit_PEOE_VSA2",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1"
+  ],
+  "7": [
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_PEOE_VSA11",
+    "RDKit_PEOE_VSA2",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1"
+  ],
+  "8": [
+    "RDKit_EState_VSA10",
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_PEOE_VSA11",
+    "RDKit_PEOE_VSA2",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1"
+  ],
+  "9": [
+    "RDKit_EState_VSA10",
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_PEOE_VSA11",
+    "RDKit_PEOE_VSA2",
+    "RDKit_SlogP_VSA10",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1"
+  ],
+  "10": [
+    "RDKit_EState_VSA10",
+    "RDKit_HallKierAlpha",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_PEOE_VSA11",
+    "RDKit_PEOE_VSA2",
+    "RDKit_SlogP_VSA10",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA8",
+    "RDKit_fr_NH1",
+    "RDKit_fr_Ndealkylation1"
+  ]
+}

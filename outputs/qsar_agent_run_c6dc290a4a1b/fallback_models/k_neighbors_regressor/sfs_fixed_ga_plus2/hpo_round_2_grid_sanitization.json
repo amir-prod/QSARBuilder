@@ -1,0 +1,48 @@
+{
+  "original_grid": {
+    "n_neighbors": [
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "weights": [
+      "uniform",
+      "distance"
+    ],
+    "p": [
+      2
+    ],
+    "metric": [
+      "minkowski",
+      "euclidean"
+    ]
+  },
+  "sanitized_grid": {
+    "n_neighbors": [
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "weights": [
+      "uniform",
+      "distance"
+    ],
+    "p": [
+      2
+    ],
+    "metric": [
+      "minkowski",
+      "euclidean"
+    ]
+  },
+  "removed_params": [],
+  "removed_values": {},
+  "shrink_steps": [],
+  "candidate_count": 20,
+  "used_randomized_search": false,
+  "warnings": []
+}

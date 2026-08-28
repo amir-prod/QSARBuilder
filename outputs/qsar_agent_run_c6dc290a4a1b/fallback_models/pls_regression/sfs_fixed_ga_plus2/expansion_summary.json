@@ -1,0 +1,23 @@
+{
+  "estimator": "PLSRegression",
+  "fixed_features": [
+    "RDKit_BCUT2D_LOGPHI"
+  ],
+  "extra_features": [
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_SlogP_VSA7"
+  ],
+  "selected_features": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_SlogP_VSA7"
+  ],
+  "n_fixed": 1,
+  "n_extra": 2,
+  "ga_best_fitness": -8.623701145913174,
+  "acceptable_after_hpo": false,
+  "final_source": "hpo_round_1",
+  "mean_cv_r2": 0.31628437946934107,
+  "status": "underfit",
+  "expansion_dir": "outputs/c6dc290a4a1b/fallback_models/pls_regression/sfs_fixed_ga_plus2"
+}

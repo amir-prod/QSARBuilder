@@ -1,0 +1,10 @@
+{
+  "selected_features": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_ExactMolWt",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_fr_ArN",
+    "RDKit_fr_NH2",
+    "RDKit_qed"
+  ]
+}

@@ -616,6 +616,30 @@ class WorkflowRunner:
             self.artifact_paths["final_report_dir"] = str(report_dir)
             self.state.artifact_paths = self.artifact_paths
 
+            if self.config.agentic_improvement.enabled:
+                try:
+                    from qsar_agent.agentic.runner import run_modeling_agent
+
+                    append_log(self.state.logs, "Starting opt-in modeling-improvement agent.")
+                    agent_state = run_modeling_agent(self.run_dir)
+                    if agent_state.report_path:
+                        self.artifact_paths["agent_final_report"] = agent_state.report_path
+                    self.state.artifact_paths = self.artifact_paths
+                    append_log(
+                        self.state.logs,
+                        f"Modeling agent finished: {agent_state.stopping_reason or 'complete'}",
+                    )
+                except Exception as exc:
+                    logger.exception("Modeling-improvement agent failed")
+                    append_log(
+                        self.state.logs,
+                        f"Modeling agent failed (deterministic handoff preserved): {exc}",
+                        "ERROR",
+                    )
+                    self.warnings.append(
+                        f"Modeling-improvement agent failed; final_report/ was kept. {exc}"
+                    )
+
             zip_path = create_zip_archive(self.run_dir, self.run_id)
             self.state.zip_path = str(zip_path)
             self.artifact_paths["zip"] = str(zip_path)

@@ -25,19 +25,45 @@
 ```
 streamlit_app.py          # Streamlit UI
 qsar_agent/
-  config.py               # Workflow defaults and OpenAI settings
+  config.py               # Workflow defaults, OpenAI, opt-in agentic settings
   app_state.py            # Streamlit session state helpers
-  schemas/                # Pydantic models for tools, state, and reports
+  schemas/                # Pydantic models (handoff, workflow, agentic state)
   tools/                  # Deterministic scientific pipeline stages
-  agents/                 # OpenAI-assisted feature-count explanation
-  services/               # Workflow runner, plotting, artifact management
+  agents/                 # OpenAI-assisted HPO grids and feature-count explanation
+  agentic/                # LangGraph post-handoff improvement loop (opt-in)
+  services/               # Workflow runner, plotting, artifact management, handoff
+scripts/run_modeling_agent.py
 examples/                 # Original reference scripts (UMAP split, GA, SFS)
 example/                  # Sample input CSV for testing
 outputs/<run_id>/         # Isolated artifacts per workflow run
 tests/                    # Unit and integration tests
 ```
 
-The OpenAI agent coordinates the workflow and explains decisions but **never** calculates descriptors, trains models, or fabricates metrics. All scientific work is done by deterministic Python tools.
+`WorkflowRunner` is the deterministic QSAR pipeline and is unchanged unless
+`agentic_improvement.enabled` is set. The OpenAI helpers never calculate descriptors,
+train models, or fabricate metrics. All scientific work is done by deterministic
+Python tools. LangGraph is only the post-handoff decision/orchestration layer:
+typed state, checkpoints, and human interrupts. It has no Python/shell tools and
+does not decide numeric requirement pass/fail.
+
+## Modeling-improvement agent (opt-in)
+
+Disabled by default. After a successful `final_report/` handoff you can launch a
+LangGraph loop that diagnoses failed development requirements and runs **one
+allowlisted experiment at a time**.
+
+The agent never sees sealed external-test labels, predictions, residuals, or
+metrics. Those are evaluated **once** after the selected pipeline is frozen.
+
+```bash
+python scripts/run_modeling_agent.py outputs/<run_id>
+python scripts/run_modeling_agent.py outputs/<run_id> --resume
+python scripts/run_modeling_agent.py outputs/<run_id> --approve-exclusion pending
+python scripts/run_modeling_agent.py outputs/<run_id> --no-openai
+```
+
+Checkpoints: `outputs/<run_id>/agent_results/langgraph_checkpoints.sqlite`.
+Report: `outputs/<run_id>/agent_results/agent_final_report.md`.
 
 ## Installation
 

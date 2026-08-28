@@ -1,0 +1,45 @@
+{
+  "train": {
+    "r2": 0.846858704132126,
+    "rmse": 0.37944446544830496,
+    "mae": 0.3042886688675931,
+    "n_samples": 153
+  },
+  "test": {
+    "r2": 0.36598884740299475,
+    "rmse": 0.8073514802761863,
+    "mae": 0.6099835371237186,
+    "n_samples": 19
+  },
+  "selected_features": [
+    "RDKit_BCUT2D_MWLOW",
+    "RDKit_EState_VSA2",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SMR_VSA6",
+    "RDKit_SlogP_VSA10",
+    "RDKit_fr_ether",
+    "RDKit_NumHAcceptors",
+    "RDKit_SlogP_VSA11"
+  ],
+  "hyperparameter_optimization": {
+    "enabled": true,
+    "rounds_completed": 3,
+    "final_model_source": "baseline",
+    "final_params": {
+      "min_samples_leaf": 1,
+      "max_features": "log2",
+      "bootstrap": false,
+      "criterion": "squared_error",
+      "n_estimators": 100,
+      "max_depth": 5,
+      "min_samples_split": 2,
+      "max_samples": null
+    }
+  },
+  "val": {
+    "r2": 0.4306609839995831,
+    "rmse": 0.7327577221774715,
+    "mae": 0.5926124916039641,
+    "n_samples": 19
+  }
+}

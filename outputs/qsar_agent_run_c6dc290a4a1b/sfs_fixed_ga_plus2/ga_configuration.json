@@ -1,0 +1,20 @@
+{
+  "population_size": 50,
+  "n_generations": 30,
+  "crossover_prob": 0.7,
+  "mutation_prob": 0.2,
+  "tournament_size": 3,
+  "cv_folds": 5,
+  "n_jobs": -1,
+  "random_seed": 42,
+  "number_of_features": 8,
+  "extra_features": 2,
+  "fixed_features": [
+    "RDKit_BCUT2D_MWLOW",
+    "RDKit_EState_VSA2",
+    "RDKit_MaxAbsPartialCharge",
+    "RDKit_SMR_VSA6",
+    "RDKit_SlogP_VSA10",
+    "RDKit_fr_ether"
+  ]
+}

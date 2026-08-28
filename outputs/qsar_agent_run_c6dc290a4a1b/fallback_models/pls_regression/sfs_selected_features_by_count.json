@@ -1,0 +1,77 @@
+{
+  "1": [
+    "RDKit_BCUT2D_LOGPHI"
+  ],
+  "2": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_SlogP_VSA7"
+  ],
+  "3": [
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_SlogP_VSA7"
+  ],
+  "4": [
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_PEOE_VSA14",
+    "RDKit_SlogP_VSA7"
+  ],
+  "5": [
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_PEOE_VSA14",
+    "RDKit_SlogP_VSA7",
+    "RDKit_fr_ether"
+  ],
+  "6": [
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_PEOE_VSA14",
+    "RDKit_SlogP_VSA7",
+    "RDKit_fr_NH1",
+    "RDKit_fr_ether"
+  ],
+  "7": [
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_PEOE_VSA14",
+    "RDKit_SlogP_VSA7",
+    "RDKit_VSA_EState7",
+    "RDKit_fr_NH1",
+    "RDKit_fr_ether"
+  ],
+  "8": [
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_MinAbsEStateIndex",
+    "RDKit_PEOE_VSA14",
+    "RDKit_SlogP_VSA7",
+    "RDKit_VSA_EState7",
+    "RDKit_fr_NH1",
+    "RDKit_fr_ether"
+  ],
+  "9": [
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_MinAbsEStateIndex",
+    "RDKit_PEOE_VSA14",
+    "RDKit_SlogP_VSA7",
+    "RDKit_VSA_EState7",
+    "RDKit_fr_NH1",
+    "RDKit_fr_ether",
+    "RDKit_fr_pyridine"
+  ],
+  "10": [
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_MinAbsEStateIndex",
+    "RDKit_PEOE_VSA12",
+    "RDKit_PEOE_VSA14",
+    "RDKit_SlogP_VSA7",
+    "RDKit_VSA_EState7",
+    "RDKit_fr_NH1",
+    "RDKit_fr_ether",
+    "RDKit_fr_pyridine"
+  ]
+}

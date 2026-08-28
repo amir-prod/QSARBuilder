@@ -1,0 +1,23 @@
+{
+  "run_id": "c6dc290a4a1b__svr__sfs_fixed_ga_plus2",
+  "estimator": "SVR",
+  "feature_selection_method": "sfs_fixed_ga_plus2",
+  "hyperparameters": {
+    "epsilon": 0.1,
+    "kernel": "rbf",
+    "gamma": "scale",
+    "C": 1.0
+  },
+  "selected_features": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA10",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA6",
+    "RDKit_Kappa1",
+    "RDKit_NumRotatableBonds"
+  ],
+  "cv_folds": 5,
+  "random_seed": 42
+}

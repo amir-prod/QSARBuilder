@@ -1,0 +1,17 @@
+{
+  "run_id": "c6dc290a4a1b__pls_regression__sfs_fixed_ga_plus2",
+  "estimator": "PLSRegression",
+  "feature_selection_method": "sfs_fixed_ga_plus2",
+  "hyperparameters": {
+    "max_iter": 100,
+    "n_components": 2,
+    "scale": false
+  },
+  "selected_features": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_SlogP_VSA7"
+  ],
+  "cv_folds": 5,
+  "random_seed": 42
+}

@@ -1,0 +1,24 @@
+{
+  "selected_features": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA10",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA6",
+    "RDKit_Kappa1",
+    "RDKit_NumRotatableBonds"
+  ],
+  "fixed_features": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_Chi2v",
+    "RDKit_PEOE_VSA1",
+    "RDKit_SlogP_VSA10",
+    "RDKit_SlogP_VSA11",
+    "RDKit_SlogP_VSA6"
+  ],
+  "extra_features": [
+    "RDKit_Kappa1",
+    "RDKit_NumRotatableBonds"
+  ]
+}

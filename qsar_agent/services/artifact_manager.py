@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import shutil
+import tempfile
 import uuid
 import zipfile
 from pathlib import Path
@@ -51,11 +53,34 @@ def file_hash(path: str | Path) -> str:
     return h.hexdigest()
 
 
-def save_json(path: str | Path, data: dict[str, Any]) -> None:
+def hash_sorted_ids(ids: list[str] | tuple[str, ...]) -> str:
+    """SHA-256 of sorted unique compound IDs, one per line."""
+    payload = "\n".join(sorted({str(i) for i in ids}))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def atomic_write_text(path: str | Path, text: str, encoding: str = "utf-8") -> None:
+    """Write ``text`` to ``path`` via a same-directory temp file and ``os.replace``."""
     out = Path(path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    with open(out, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, default=str)
+    fd, tmp_name = tempfile.mkstemp(prefix=f".{out.name}.", suffix=".tmp", dir=str(out.parent))
+    try:
+        with os.fdopen(fd, "w", encoding=encoding) as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_name, out)
+    except Exception:
+        try:
+            os.unlink(tmp_name)
+        except OSError:
+            pass
+        raise
+
+
+def save_json(path: str | Path, data: dict[str, Any]) -> None:
+    payload = json.dumps(data, indent=2, default=str) + "\n"
+    atomic_write_text(path, payload)
 
 
 def create_zip_archive(run_dir: Path, run_id: str) -> Path:

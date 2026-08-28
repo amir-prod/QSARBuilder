@@ -1,0 +1,75 @@
+{
+  "source": "baseline",
+  "params": {
+    "n_neighbors": 5,
+    "p": 2,
+    "metric": "minkowski",
+    "weights": "uniform"
+  },
+  "cv_summary": {
+    "mean_train_r2": 0.6219860705599168,
+    "mean_cv_r2": 0.3278671302602831,
+    "std_cv_r2": 0.21761090842813186,
+    "mean_train_rmse": 0.593698527709831,
+    "mean_cv_rmse": 0.7614222864733788,
+    "mean_train_mae": 0.45587760629081703,
+    "mean_cv_mae": 0.6066060215053763,
+    "train_cv_r2_gap": 0.29411894029963376,
+    "n_folds": 5,
+    "holdout_val_r2": 0.16075675990677352
+  },
+  "assessment": {
+    "status": "unstable",
+    "is_acceptable": false,
+    "is_overfit": true,
+    "is_underfit": false,
+    "is_unstable": true,
+    "is_severe_overfit": true,
+    "mean_train_r2": 0.6219860705599168,
+    "mean_cv_r2": 0.3278671302602831,
+    "train_cv_r2_gap": 0.29411894029963376,
+    "cv_r2_std": 0.21761090842813186,
+    "warnings": [
+      "Severe overfitting: train-CV R\u00b2 gap (0.294) exceeds 0.25.",
+      "High CV R\u00b2 standard deviation: 0.218.",
+      "CV R\u00b2 (0.328) is below minimum threshold."
+    ],
+    "explanation": "CV R\u00b2 variability is high (std=0.218 > 0.15). The model may be sensitive to training fold composition."
+  },
+  "selection_rationale": "Selected baseline with combined R\u00b2=0.2443 (mean CV R\u00b2=0.3279, holdout val R\u00b2=0.1608), train-CV gap=0.2941, status=unstable. No acceptable models; chose best combined R\u00b2 with warning.",
+  "warning": "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.3278671302602831,
+      "holdout_val_r2": 0.16075675990677352,
+      "combined_r2": 0.2443119450835283,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.4040867346875684,
+      "holdout_val_r2": 0.15942707630495,
+      "combined_r2": 0.2817569054962592,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.4086414365357441,
+      "holdout_val_r2": 0.15278995044488763,
+      "combined_r2": 0.2807156934903159,
+      "status": "unstable",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_3",
+      "mean_cv_r2": 0.4086414365357441,
+      "holdout_val_r2": 0.15278995044488763,
+      "combined_r2": 0.2807156934903159,
+      "status": "unstable",
+      "acceptable": false
+    }
+  ]
+}

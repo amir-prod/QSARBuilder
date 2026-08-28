@@ -9,8 +9,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from deap import base, creator, tools
-from sklearn.metrics import r2_score
-from sklearn.model_selection import cross_val_score
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import cross_val_score, cross_validate
 
 from qsar_agent.config import GAConfig, ModelConfig
 from qsar_agent.schemas.feature_selection import GAResult
@@ -32,6 +32,41 @@ def _get_xy(df: pd.DataFrame) -> tuple[pd.DataFrame, np.ndarray]:
     return df[feature_cols], df["activity"].values.ravel()
 
 
+def _score_objective(
+    *,
+    cv_r2: float,
+    cv_std: float,
+    train_cv_gap: float,
+    rmse: float,
+    n_features: int,
+    objective: dict | None,
+) -> float:
+    """Score a subset. Default is mean CV R² (caller may blend with val separately)."""
+    if not objective:
+        return float(cv_r2)
+    name = str(objective.get("name") or "mean_cv_r2")
+    if name == "cv_r2_minus_complexity":
+        return float(cv_r2) - 0.05 * n_features
+    if name == "cv_r2_minus_variance":
+        return float(cv_r2) - 0.25 * float(cv_std)
+    if name == "cv_r2_minus_overfit_gap":
+        return float(cv_r2) - 0.5 * max(float(train_cv_gap), 0.0)
+    if name == "balanced_r2_rmse":
+        return float(cv_r2) - 0.1 * float(rmse)
+    if name == "regularized_cv_score":
+        w = float(objective.get("cv_r2_weight", 1.0))
+        gap_p = float(objective.get("overfit_gap_penalty", 0.5))
+        std_p = float(objective.get("cv_std_penalty", 0.25))
+        feat_p = float(objective.get("feature_count_penalty", 0.05))
+        return (
+            w * float(cv_r2)
+            - gap_p * max(float(train_cv_gap), 0.0)
+            - std_p * float(cv_std)
+            - feat_p * n_features
+        )
+    return float(cv_r2)
+
+
 def run_genetic_algorithm(
     train_path: str | Path,
     run_dir: Path,
@@ -40,6 +75,7 @@ def run_genetic_algorithm(
     model_config: ModelConfig | None = None,
     fixed_features: list[str] | None = None,
     val_path: str | Path | None = None,
+    objective: dict | None = None,
 ) -> GAResult:
     """
     GA feature selection optimizing combined CV + validation R².
@@ -105,15 +141,40 @@ def run_genetic_algorithm(
         col_idx = _column_indices_for_fitness(selected)
         X_sel = X.iloc[:, col_idx]
         model = build_estimator(estimator_template)
-        scores = cross_val_score(
-            model,
-            X_sel.values,
-            y,
-            cv=cfg.cv_folds,
-            scoring="r2",
-            n_jobs=cfg.n_jobs,
-        )
-        cv_r2 = float(scores.mean())
+        n_sel = X_sel.shape[1]
+        if objective:
+            cv_res = cross_validate(
+                model,
+                X_sel.values,
+                y,
+                cv=cfg.cv_folds,
+                scoring=["r2", "neg_root_mean_squared_error"],
+                return_train_score=True,
+                n_jobs=cfg.n_jobs,
+            )
+            cv_r2 = float(np.mean(cv_res["test_r2"]))
+            cv_std = float(np.std(cv_res["test_r2"]))
+            train_mean = float(np.mean(cv_res["train_r2"]))
+            gap = train_mean - cv_r2
+            rmse = float(-np.mean(cv_res["test_neg_root_mean_squared_error"]))
+            fitness = _score_objective(
+                cv_r2=cv_r2,
+                cv_std=cv_std,
+                train_cv_gap=gap,
+                rmse=rmse,
+                n_features=n_sel,
+                objective=objective,
+            )
+        else:
+            scores = cross_val_score(
+                model,
+                X_sel.values,
+                y,
+                cv=cfg.cv_folds,
+                scoring="r2",
+                n_jobs=cfg.n_jobs,
+            )
+            fitness = float(scores.mean())
         val_score = None
         if X_val is not None and y_val is not None:
             val_model = build_estimator(estimator_template)
@@ -124,7 +185,9 @@ def run_genetic_algorithm(
                 return (-1000.0,)
             y_val_pred = val_model.predict(X_val[names].values)
             val_score = float(r2_score(y_val, y_val_pred))
-        return (combined_r2(cv_r2, val_score),)
+            if not objective:
+                fitness = combined_r2(fitness, val_score)
+        return (float(fitness),)
 
     toolbox = base.Toolbox()
 
@@ -235,6 +298,7 @@ def run_genetic_algorithm(
         "number_of_features": n_select if not fixed else len(selected_names),
         "extra_features": n_select if fixed else None,
         "fixed_features": fixed if fixed else None,
+        "objective": objective,
     }
     save_json(config_path, config_payload)
 

@@ -1,0 +1,14 @@
+{
+  "selected_features": [
+    "RDKit_BCUT2D_LOGPHI",
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_SlogP_VSA7"
+  ],
+  "fixed_features": [
+    "RDKit_BCUT2D_LOGPHI"
+  ],
+  "extra_features": [
+    "RDKit_BCUT2D_CHGHI",
+    "RDKit_SlogP_VSA7"
+  ]
+}

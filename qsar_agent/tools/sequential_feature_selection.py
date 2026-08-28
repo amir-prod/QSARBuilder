@@ -36,15 +36,17 @@ def run_sequential_feature_selection(
     random_seed: int = 42,
     n_jobs: int = -1,
     val_path: str | Path | None = None,
+    forward: bool = True,
 ) -> SFSResult:
     """
-    Run forward SFS for feature counts 1..min(max_features, n_descriptors).
+    Run sequential feature selection for feature counts 1..min(max_features, n_descriptors).
 
-    Uses a single mlxtend SFS fit (as in examples/utils.py build_each_model) and
-    reads intermediate subsets from sfs.subsets_, rather than re-fitting SFS
-    separately for every feature count. Search uses K-fold CV on train; each
-    subset is also scored on the held-out validation set when ``val_path`` is set.
+    Uses a single mlxtend SFS fit and reads intermediate subsets from sfs.subsets_.
+    Search uses K-fold CV on train; each subset is also scored on the held-out
+    validation set when ``val_path`` is set. ``forward=False`` runs backward SFS.
     """
+    run_dir = Path(run_dir)
+    run_dir.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(train_path)
     X, y = _get_xy(df)
     n_descriptors = X.shape[1]
@@ -67,7 +69,7 @@ def run_sequential_feature_selection(
     sfs = SFS(
         estimator,
         k_features=max_eval,
-        forward=True,
+        forward=forward,
         floating=False,
         verbose=2,
         scoring="r2",
@@ -79,7 +81,11 @@ def run_sequential_feature_selection(
     results: list[SFSResultRow] = []
     selected_by_count: dict[str, list[str]] = {}
 
-    for k in range(1, max_eval + 1):
+    if forward:
+        subset_keys = list(range(1, max_eval + 1))
+    else:
+        subset_keys = sorted(int(k) for k in sfs.subsets_)
+    for k in subset_keys:
         if k not in sfs.subsets_:
             raise RuntimeError(f"SFS did not produce a subset for k={k}")
 

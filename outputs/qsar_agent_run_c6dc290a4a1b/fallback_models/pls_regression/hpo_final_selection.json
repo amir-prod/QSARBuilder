@@ -1,0 +1,72 @@
+{
+  "source": "hpo_round_1",
+  "params": {
+    "max_iter": 100,
+    "n_components": 1,
+    "scale": false
+  },
+  "cv_summary": {
+    "mean_train_r2": 0.28107782226590894,
+    "mean_cv_r2": 0.23909047475804232,
+    "std_cv_r2": 0.12480189795433512,
+    "mean_train_rmse": 0.0,
+    "mean_cv_rmse": 0.0,
+    "mean_train_mae": 0.0,
+    "mean_cv_mae": 0.0,
+    "train_cv_r2_gap": 0.04198734750786662,
+    "n_folds": 5,
+    "holdout_val_r2": 0.1508200497346487
+  },
+  "assessment": {
+    "status": "underfit",
+    "is_acceptable": false,
+    "is_overfit": false,
+    "is_underfit": true,
+    "is_unstable": false,
+    "is_severe_overfit": false,
+    "mean_train_r2": 0.28107782226590894,
+    "mean_cv_r2": 0.23909047475804232,
+    "train_cv_r2_gap": 0.04198734750786662,
+    "cv_r2_std": 0.12480189795433512,
+    "warnings": [
+      "CV R\u00b2 (0.239) is below minimum threshold."
+    ],
+    "explanation": "Both training R\u00b2 (0.281) and CV R\u00b2 (0.239) are low. The model lacks capacity or informative descriptors."
+  },
+  "selection_rationale": "Selected hpo_round_1 with combined R\u00b2=0.1950 (mean CV R\u00b2=0.2391, holdout val R\u00b2=0.1508), train-CV gap=0.0420, status=underfit. No acceptable models; chose best combined R\u00b2 with warning.",
+  "warning": "No acceptable model found after HPO; selected highest combined R\u00b2 candidate. Final model may still be overfit, unstable, or poor-performing.",
+  "compared_candidates": [
+    {
+      "source": "baseline",
+      "mean_cv_r2": 0.23909047475804232,
+      "holdout_val_r2": 0.1508200497346487,
+      "combined_r2": 0.19495526224634552,
+      "status": "underfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_1",
+      "mean_cv_r2": 0.23909047475804232,
+      "holdout_val_r2": 0.1508200497346487,
+      "combined_r2": 0.19495526224634552,
+      "status": "underfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_2",
+      "mean_cv_r2": 0.23909047475804232,
+      "holdout_val_r2": 0.1508200497346487,
+      "combined_r2": 0.19495526224634552,
+      "status": "underfit",
+      "acceptable": false
+    },
+    {
+      "source": "hpo_round_3",
+      "mean_cv_r2": 0.23909047475804232,
+      "holdout_val_r2": 0.1508200497346487,
+      "combined_r2": 0.19495526224634552,
+      "status": "underfit",
+      "acceptable": false
+    }
+  ]
+}
