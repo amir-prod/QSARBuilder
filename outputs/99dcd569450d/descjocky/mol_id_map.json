@@ -1,0 +1,1339 @@
+{
+  "mol_0001": {
+    "compound_id": "compound_0",
+    "canonical_smiles": "O=[N+]([O-])c1ccccc1-c1ccccc1",
+    "activity": 2.209,
+    "original_row_index": 0,
+    "row_pos": 0
+  },
+  "mol_0002": {
+    "compound_id": "compound_1",
+    "canonical_smiles": "O=[N+]([O-])c1cc([N+](=O)[O-])c(F)cc1F",
+    "activity": 3.611,
+    "original_row_index": 1,
+    "row_pos": 1
+  },
+  "mol_0003": {
+    "compound_id": "compound_2",
+    "canonical_smiles": "Nc1ccc([N+](=O)[O-])cc1Cl",
+    "activity": 1.429,
+    "original_row_index": 2,
+    "row_pos": 2
+  },
+  "mol_0004": {
+    "compound_id": "compound_3",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(Cl)c([N+](=O)[O-])c1",
+    "activity": 2.5,
+    "original_row_index": 3,
+    "row_pos": 3
+  },
+  "mol_0005": {
+    "compound_id": "compound_4",
+    "canonical_smiles": "CN1C(=O)c2ccc([N+](=O)[O-])cc2C1=O",
+    "activity": 1.867,
+    "original_row_index": 4,
+    "row_pos": 4
+  },
+  "mol_0006": {
+    "compound_id": "compound_5",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(F)cc1F",
+    "activity": 2.903,
+    "original_row_index": 5,
+    "row_pos": 5
+  },
+  "mol_0007": {
+    "compound_id": "compound_6",
+    "canonical_smiles": "O=C1c2ccccc2C(=O)c2c1ccc(C(=O)O)c2[N+](=O)[O-]",
+    "activity": 2.172,
+    "original_row_index": 6,
+    "row_pos": 6
+  },
+  "mol_0008": {
+    "compound_id": "compound_7",
+    "canonical_smiles": "O=C1c2cc([N+](=O)[O-])ccc2-c2c1cc([N+](=O)[O-])cc2[N+](=O)[O-]",
+    "activity": 1.503,
+    "original_row_index": 7,
+    "row_pos": 7
+  },
+  "mol_0009": {
+    "compound_id": "compound_8",
+    "canonical_smiles": "O=[N+]([O-])c1cc(Cl)ccc1Cl",
+    "activity": 2.283,
+    "original_row_index": 8,
+    "row_pos": 8
+  },
+  "mol_0010": {
+    "compound_id": "compound_9",
+    "canonical_smiles": "Nc1cc([N+](=O)[O-])ccc1O",
+    "activity": 1.808,
+    "original_row_index": 9,
+    "row_pos": 9
+  },
+  "mol_0011": {
+    "compound_id": "compound_10",
+    "canonical_smiles": "Nc1ccc([N+](=O)[O-])cc1O",
+    "activity": 1.586,
+    "original_row_index": 10,
+    "row_pos": 10
+  },
+  "mol_0012": {
+    "compound_id": "compound_11",
+    "canonical_smiles": "Cc1ccc(O)c([N+](=O)[O-])c1",
+    "activity": 1.659,
+    "original_row_index": 11,
+    "row_pos": 11
+  },
+  "mol_0013": {
+    "compound_id": "compound_12",
+    "canonical_smiles": "Nc1ccccc1[N+](=O)[O-]",
+    "activity": 1.936,
+    "original_row_index": 12,
+    "row_pos": 12
+  },
+  "mol_0014": {
+    "compound_id": "compound_13",
+    "canonical_smiles": "COc1ccccc1[N+](=O)[O-]",
+    "activity": 2.316,
+    "original_row_index": 13,
+    "row_pos": 13
+  },
+  "mol_0015": {
+    "compound_id": "compound_14",
+    "canonical_smiles": "O=[N+]([O-])c1ccc2ccccc2c1",
+    "activity": 1.595,
+    "original_row_index": 14,
+    "row_pos": 14
+  },
+  "mol_0016": {
+    "compound_id": "compound_15",
+    "canonical_smiles": "Nc1ccc(N)c([N+](=O)[O-])c1",
+    "activity": 1.863,
+    "original_row_index": 15,
+    "row_pos": 15
+  },
+  "mol_0017": {
+    "compound_id": "compound_16",
+    "canonical_smiles": "Nc1cccc([N+](=O)[O-])c1",
+    "activity": 2.412,
+    "original_row_index": 16,
+    "row_pos": 16
+  },
+  "mol_0018": {
+    "compound_id": "compound_17",
+    "canonical_smiles": "Cc1cccc([N+](=O)[O-])c1",
+    "activity": 2.107,
+    "original_row_index": 17,
+    "row_pos": 17
+  },
+  "mol_0019": {
+    "compound_id": "compound_18",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(/C=C/c2ccc([N+](=O)[O-])cc2S(=O)(=O)O)c(S(=O)(=O)O)c1",
+    "activity": 1.534,
+    "original_row_index": 18,
+    "row_pos": 18
+  },
+  "mol_0020": {
+    "compound_id": "compound_19",
+    "canonical_smiles": "Nc1ccc(O)c([N+](=O)[O-])c1",
+    "activity": 2.021,
+    "original_row_index": 19,
+    "row_pos": 19
+  },
+  "mol_0021": {
+    "compound_id": "compound_20",
+    "canonical_smiles": "Cc1ccc(N)cc1[N+](=O)[O-]",
+    "activity": 1.346,
+    "original_row_index": 20,
+    "row_pos": 20
+  },
+  "mol_0022": {
+    "compound_id": "compound_21",
+    "canonical_smiles": "Nc1ccc(Cl)cc1[N+](=O)[O-]",
+    "activity": 2.635,
+    "original_row_index": 21,
+    "row_pos": 21
+  },
+  "mol_0023": {
+    "compound_id": "compound_22",
+    "canonical_smiles": "O=C(O)c1ccc(Cl)c([N+](=O)[O-])c1",
+    "activity": 1.806,
+    "original_row_index": 22,
+    "row_pos": 22
+  },
+  "mol_0024": {
+    "compound_id": "compound_23",
+    "canonical_smiles": "O=[N+]([O-])c1cc(C(F)(F)F)ccc1Cl",
+    "activity": 2.401,
+    "original_row_index": 23,
+    "row_pos": 23
+  },
+  "mol_0025": {
+    "compound_id": "compound_24",
+    "canonical_smiles": "Nc1ccc([N+](=O)[O-])cc1",
+    "activity": 2.265,
+    "original_row_index": 24,
+    "row_pos": 24
+  },
+  "mol_0026": {
+    "compound_id": "compound_25",
+    "canonical_smiles": "O=C(Cl)c1ccc([N+](=O)[O-])cc1",
+    "activity": 1.52,
+    "original_row_index": 25,
+    "row_pos": 25
+  },
+  "mol_0027": {
+    "compound_id": "compound_26",
+    "canonical_smiles": "COc1ccc([N+](=O)[O-])cc1N",
+    "activity": 1.874,
+    "original_row_index": 26,
+    "row_pos": 26
+  },
+  "mol_0028": {
+    "compound_id": "compound_27",
+    "canonical_smiles": "CC(=O)CC(c1ccc([N+](=O)[O-])cc1)c1c(O)c2ccccc2oc1=O",
+    "activity": 2.838,
+    "original_row_index": 27,
+    "row_pos": 27
+  },
+  "mol_0029": {
+    "compound_id": "compound_28",
+    "canonical_smiles": "O=C(O)c1cc(Oc2ccc(C(F)(F)F)cc2Cl)ccc1[N+](=O)[O-]",
+    "activity": 2.422,
+    "original_row_index": 28,
+    "row_pos": 28
+  },
+  "mol_0030": {
+    "compound_id": "compound_29",
+    "canonical_smiles": "CCP(=S)(Oc1ccc([N+](=O)[O-])cc1Cl)OC(C)C",
+    "activity": 4.005,
+    "original_row_index": 29,
+    "row_pos": 29
+  },
+  "mol_0031": {
+    "compound_id": "compound_30",
+    "canonical_smiles": "COc1cccc2c1cc([N+](=O)[O-])c1c(C(=O)O)cc3c(c12)OCO3",
+    "activity": 3.268,
+    "original_row_index": 30,
+    "row_pos": 30
+  },
+  "mol_0032": {
+    "compound_id": "compound_31",
+    "canonical_smiles": "Cn1c([N+](=O)[O-])cnc1/C=C/c1ccnc(N)n1",
+    "activity": 1.511,
+    "original_row_index": 31,
+    "row_pos": 31
+  },
+  "mol_0033": {
+    "compound_id": "compound_32",
+    "canonical_smiles": "COc1cc([N+](=O)[O-])ccc1N",
+    "activity": 2.227,
+    "original_row_index": 32,
+    "row_pos": 32
+  },
+  "mol_0034": {
+    "compound_id": "compound_33",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(CCl)cc1",
+    "activity": 1.977,
+    "original_row_index": 33,
+    "row_pos": 33
+  },
+  "mol_0035": {
+    "compound_id": "compound_34",
+    "canonical_smiles": "O=C=Nc1ccc([N+](=O)[O-])cc1",
+    "activity": 2.011,
+    "original_row_index": 34,
+    "row_pos": 34
+  },
+  "mol_0036": {
+    "compound_id": "compound_35",
+    "canonical_smiles": "O=C(O)c1cc(Cl)cc([N+](=O)[O-])c1Cl",
+    "activity": 1.829,
+    "original_row_index": 35,
+    "row_pos": 35
+  },
+  "mol_0037": {
+    "compound_id": "compound_36",
+    "canonical_smiles": "COc1cc(N=Nc2c(Br)cc([N+](=O)[O-])cc2[N+](=O)[O-])c(NC(C)=O)cc1N(CCOC(C)=O)CCOC(C)=O",
+    "activity": 2.097,
+    "original_row_index": 36,
+    "row_pos": 36
+  },
+  "mol_0038": {
+    "compound_id": "compound_37",
+    "canonical_smiles": "O=C(NC(CO)C(O)c1ccc([N+](=O)[O-])cc1)C(Cl)Cl",
+    "activity": 2.092,
+    "original_row_index": 37,
+    "row_pos": 37
+  },
+  "mol_0039": {
+    "compound_id": "compound_38",
+    "canonical_smiles": "O=C1CN=C(c2ccccc2Cl)c2cc([N+](=O)[O-])ccc2N1",
+    "activity": 1.323,
+    "original_row_index": 38,
+    "row_pos": 38
+  },
+  "mol_0040": {
+    "compound_id": "compound_39",
+    "canonical_smiles": "O=[N+]([O-])c1cc(C2CCCCC2)c(O)c([N+](=O)[O-])c1",
+    "activity": 3.612,
+    "original_row_index": 39,
+    "row_pos": 39
+  },
+  "mol_0041": {
+    "compound_id": "compound_40",
+    "canonical_smiles": "Cc1c(C(N)=O)cc([N+](=O)[O-])cc1[N+](=O)[O-]",
+    "activity": 2.574,
+    "original_row_index": 40,
+    "row_pos": 40
+  },
+  "mol_0042": {
+    "compound_id": "compound_41",
+    "canonical_smiles": "CCC(C)c1cc([N+](=O)[O-])cc([N+](=O)[O-])c1O",
+    "activity": 3.983,
+    "original_row_index": 41,
+    "row_pos": 41
+  },
+  "mol_0043": {
+    "compound_id": "compound_42",
+    "canonical_smiles": "Cc1cc([N+](=O)[O-])cc([N+](=O)[O-])c1O",
+    "activity": 4.452,
+    "original_row_index": 42,
+    "row_pos": 42
+  },
+  "mol_0044": {
+    "compound_id": "compound_43",
+    "canonical_smiles": "COP(=S)(OC)Oc1ccc([N+](=O)[O-])c(C)c1",
+    "activity": 3.045,
+    "original_row_index": 43,
+    "row_pos": 43
+  },
+  "mol_0045": {
+    "compound_id": "compound_44",
+    "canonical_smiles": "CN1C(=O)CN=C(c2ccccc2F)c2cc([N+](=O)[O-])ccc21",
+    "activity": 2.878,
+    "original_row_index": 44,
+    "row_pos": 44
+  },
+  "mol_0046": {
+    "compound_id": "compound_45",
+    "canonical_smiles": "COP(=S)(OC)Oc1ccc([N+](=O)[O-])c(C(F)(F)F)c1",
+    "activity": 3.122,
+    "original_row_index": 45,
+    "row_pos": 45
+  },
+  "mol_0047": {
+    "compound_id": "compound_46",
+    "canonical_smiles": "O=[N+]([O-])c1cccc(C(F)(F)F)c1",
+    "activity": 2.496,
+    "original_row_index": 46,
+    "row_pos": 46
+  },
+  "mol_0048": {
+    "compound_id": "compound_47",
+    "canonical_smiles": "CC(=O)c1cccc([N+](=O)[O-])c1",
+    "activity": 1.706,
+    "original_row_index": 47,
+    "row_pos": 47
+  },
+  "mol_0049": {
+    "compound_id": "compound_48",
+    "canonical_smiles": "Cc1c([N+](=O)[O-])cc2c(c1[N+](=O)[O-])C(C)(C)CC2(C)C",
+    "activity": 1.746,
+    "original_row_index": 48,
+    "row_pos": 48
+  },
+  "mol_0050": {
+    "compound_id": "compound_49",
+    "canonical_smiles": "COc1c(C(C)(C)C)cc([N+](=O)[O-])c(C)c1[N+](=O)[O-]",
+    "activity": 2.898,
+    "original_row_index": 49,
+    "row_pos": 49
+  },
+  "mol_0051": {
+    "compound_id": "compound_50",
+    "canonical_smiles": "CC(=O)c1c(C)c([N+](=O)[O-])c(C(C)(C)C)c([N+](=O)[O-])c1C",
+    "activity": 1.469,
+    "original_row_index": 50,
+    "row_pos": 50
+  },
+  "mol_0052": {
+    "compound_id": "compound_51",
+    "canonical_smiles": "Cc1c(C)c([N+](=O)[O-])c(C(C)(C)C)c([N+](=O)[O-])c1C",
+    "activity": 1.647,
+    "original_row_index": 51,
+    "row_pos": 51
+  },
+  "mol_0053": {
+    "compound_id": "compound_52",
+    "canonical_smiles": "Cc1c([N+](=O)[O-])c(C)c([N+](=O)[O-])c(C(C)(C)C)c1[N+](=O)[O-]",
+    "activity": 1.473,
+    "original_row_index": 52,
+    "row_pos": 52
+  },
+  "mol_0054": {
+    "compound_id": "compound_53",
+    "canonical_smiles": "COC(=O)C1=C(C)NC(C)=C(C(=O)OCCN(C)Cc2ccccc2)C1c1cccc([N+](=O)[O-])c1",
+    "activity": 3.176,
+    "original_row_index": 53,
+    "row_pos": 53
+  },
+  "mol_0055": {
+    "compound_id": "compound_54",
+    "canonical_smiles": "O=C(Nc1ccc([N+](=O)[O-])cc1Cl)c1cc(Cl)ccc1O",
+    "activity": 2.117,
+    "original_row_index": 54,
+    "row_pos": 54
+  },
+  "mol_0056": {
+    "compound_id": "compound_55",
+    "canonical_smiles": "COC(=O)C1=C(C)NC(C)=C(C(=O)OC)C1c1ccccc1[N+](=O)[O-]",
+    "activity": 2.53,
+    "original_row_index": 55,
+    "row_pos": 55
+  },
+  "mol_0057": {
+    "compound_id": "compound_56",
+    "canonical_smiles": "O=C1CN=C(c2ccccc2)c2cc([N+](=O)[O-])ccc2N1",
+    "activity": 2.533,
+    "original_row_index": 56,
+    "row_pos": 56
+  },
+  "mol_0058": {
+    "compound_id": "compound_57",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(Oc2ccc(Cl)cc2Cl)cc1",
+    "activity": 2.584,
+    "original_row_index": 57,
+    "row_pos": 57
+  },
+  "mol_0059": {
+    "compound_id": "compound_58",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(O)c(Cl)c1",
+    "activity": 2.285,
+    "original_row_index": 58,
+    "row_pos": 58
+  },
+  "mol_0060": {
+    "compound_id": "compound_59",
+    "canonical_smiles": "CC(C)OC(=O)c1cc(C(=O)OC(C)C)cc([N+](=O)[O-])c1",
+    "activity": 1.664,
+    "original_row_index": 59,
+    "row_pos": 59
+  },
+  "mol_0061": {
+    "compound_id": "compound_60",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(O)c2ncccc12",
+    "activity": 2.572,
+    "original_row_index": 60,
+    "row_pos": 60
+  },
+  "mol_0062": {
+    "compound_id": "compound_61",
+    "canonical_smiles": "Cc1c(O)cc([N+](=O)[O-])cc1[N+](=O)[O-]",
+    "activity": 3.899,
+    "original_row_index": 61,
+    "row_pos": 61
+  },
+  "mol_0063": {
+    "compound_id": "compound_62",
+    "canonical_smiles": "Nc1ccc([N+](=O)[O-])cc1N",
+    "activity": 2.352,
+    "original_row_index": 62,
+    "row_pos": 62
+  },
+  "mol_0064": {
+    "compound_id": "compound_63",
+    "canonical_smiles": "Cc1ccc([N+](=O)[O-])cc1S(=O)(=O)Cl",
+    "activity": 1.499,
+    "original_row_index": 63,
+    "row_pos": 63
+  },
+  "mol_0065": {
+    "compound_id": "compound_64",
+    "canonical_smiles": "CCOP(=O)(OCC)Oc1ccc([N+](=O)[O-])cc1",
+    "activity": 5.184,
+    "original_row_index": 64,
+    "row_pos": 64
+  },
+  "mol_0066": {
+    "compound_id": "compound_65",
+    "canonical_smiles": "COP(=S)(OC)Oc1ccc([N+](=O)[O-])cc1",
+    "activity": 4.641,
+    "original_row_index": 65,
+    "row_pos": 65
+  },
+  "mol_0067": {
+    "compound_id": "compound_66",
+    "canonical_smiles": "CC(C)c1cc([N+](=O)[O-])cc([N+](=O)[O-])c1O",
+    "activity": 3.555,
+    "original_row_index": 66,
+    "row_pos": 66
+  },
+  "mol_0068": {
+    "compound_id": "compound_67",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(Nc2ccc(O)cc2)c([N+](=O)[O-])c1",
+    "activity": 1.246,
+    "original_row_index": 67,
+    "row_pos": 67
+  },
+  "mol_0069": {
+    "compound_id": "compound_68",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(OP(=O)(OCCCl)OCCCl)cc1",
+    "activity": 3.968,
+    "original_row_index": 68,
+    "row_pos": 68
+  },
+  "mol_0070": {
+    "compound_id": "compound_69",
+    "canonical_smiles": "O=[N+]([O-])c1cc([N+](=O)[O-])c(O)c([N+](=O)[O-])c1",
+    "activity": 3.059,
+    "original_row_index": 69,
+    "row_pos": 69
+  },
+  "mol_0071": {
+    "compound_id": "compound_70",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(-c2ccccc2)cc1",
+    "activity": 1.951,
+    "original_row_index": 70,
+    "row_pos": 70
+  },
+  "mol_0072": {
+    "compound_id": "compound_71",
+    "canonical_smiles": "O=C(NCc1cccnc1)Nc1ccc([N+](=O)[O-])cc1",
+    "activity": 4.643,
+    "original_row_index": 71,
+    "row_pos": 71
+  },
+  "mol_0073": {
+    "compound_id": "compound_72",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(OCC2CO2)cc1",
+    "activity": 1.591,
+    "original_row_index": 72,
+    "row_pos": 72
+  },
+  "mol_0074": {
+    "compound_id": "compound_73",
+    "canonical_smiles": "Nc1ccc([N+](=O)[O-])cc1[N+](=O)[O-]",
+    "activity": 2.808,
+    "original_row_index": 73,
+    "row_pos": 73
+  },
+  "mol_0075": {
+    "compound_id": "compound_74",
+    "canonical_smiles": "O=[N+]([O-])c1cc(C(F)(F)F)cc([N+](=O)[O-])c1Cl",
+    "activity": 2.464,
+    "original_row_index": 74,
+    "row_pos": 74
+  },
+  "mol_0076": {
+    "compound_id": "compound_75",
+    "canonical_smiles": "COc1ccc([N+](=O)[O-])cc1",
+    "activity": 1.823,
+    "original_row_index": 75,
+    "row_pos": 75
+  },
+  "mol_0077": {
+    "compound_id": "compound_76",
+    "canonical_smiles": "O=Cc1ccc([N+](=O)[O-])cc1",
+    "activity": 1.507,
+    "original_row_index": 76,
+    "row_pos": 76
+  },
+  "mol_0078": {
+    "compound_id": "compound_77",
+    "canonical_smiles": "CCOc1ccc([N+](=O)[O-])cc1",
+    "activity": 1.705,
+    "original_row_index": 77,
+    "row_pos": 77
+  },
+  "mol_0079": {
+    "compound_id": "compound_78",
+    "canonical_smiles": "O=Cc1cc([N+](=O)[O-])ccc1O",
+    "activity": 2.321,
+    "original_row_index": 78,
+    "row_pos": 78
+  },
+  "mol_0080": {
+    "compound_id": "compound_79",
+    "canonical_smiles": "COc1ccc(N)c([N+](=O)[O-])c1",
+    "activity": 1.077,
+    "original_row_index": 79,
+    "row_pos": 79
+  },
+  "mol_0081": {
+    "compound_id": "compound_80",
+    "canonical_smiles": "Nc1ccc(/C=C/c2ccc([N+](=O)[O-])cc2S(=O)(=O)O)c(S(=O)(=O)O)c1",
+    "activity": 1.45,
+    "original_row_index": 80,
+    "row_pos": 80
+  },
+  "mol_0082": {
+    "compound_id": "compound_81",
+    "canonical_smiles": "CCC(C)c1cc([N+](=O)[O-])cc([N+](=O)[O-])c1OC(=O)C=C(C)C",
+    "activity": 3.745,
+    "original_row_index": 81,
+    "row_pos": 81
+  },
+  "mol_0083": {
+    "compound_id": "compound_82",
+    "canonical_smiles": "COP(=S)(OC)Oc1ccc([N+](=O)[O-])c(Cl)c1",
+    "activity": 3.019,
+    "original_row_index": 82,
+    "row_pos": 82
+  },
+  "mol_0084": {
+    "compound_id": "compound_83",
+    "canonical_smiles": "Nc1c(Cl)cc([N+](=O)[O-])cc1Cl",
+    "activity": 1.936,
+    "original_row_index": 83,
+    "row_pos": 83
+  },
+  "mol_0085": {
+    "compound_id": "compound_84",
+    "canonical_smiles": "CC(=O)c1ccccc1[N+](=O)[O-]",
+    "activity": 2.014,
+    "original_row_index": 84,
+    "row_pos": 84
+  },
+  "mol_0086": {
+    "compound_id": "compound_85",
+    "canonical_smiles": "COP(=O)(OC)Oc1ccc([N+](=O)[O-])c(C)c1",
+    "activity": 4.037,
+    "original_row_index": 85,
+    "row_pos": 85
+  },
+  "mol_0087": {
+    "compound_id": "compound_86",
+    "canonical_smiles": "CC(C)C(=O)Nc1ccc([N+](=O)[O-])c(C(F)(F)F)c1",
+    "activity": 2.545,
+    "original_row_index": 86,
+    "row_pos": 86
+  },
+  "mol_0088": {
+    "compound_id": "compound_87",
+    "canonical_smiles": "CS(=O)(=O)Nc1ccc([N+](=O)[O-])cc1Oc1ccccc1",
+    "activity": 3.188,
+    "original_row_index": 87,
+    "row_pos": 87
+  },
+  "mol_0089": {
+    "compound_id": "compound_88",
+    "canonical_smiles": "NC(=O)c1cc([N+](=O)[O-])cc([N+](=O)[O-])c1",
+    "activity": 2.228,
+    "original_row_index": 88,
+    "row_pos": 88
+  },
+  "mol_0090": {
+    "compound_id": "compound_89",
+    "canonical_smiles": "O=[N+]([O-])c1c(Cl)cccc1-c1c[nH]cc1Cl",
+    "activity": 2.109,
+    "original_row_index": 89,
+    "row_pos": 89
+  },
+  "mol_0091": {
+    "compound_id": "compound_90",
+    "canonical_smiles": "Nc1ccc(-c2ccc(N)cc2[N+](=O)[O-])cc1",
+    "activity": 2.06,
+    "original_row_index": 90,
+    "row_pos": 90
+  },
+  "mol_0092": {
+    "compound_id": "compound_91",
+    "canonical_smiles": "Nc1ccc(Cl)c([N+](=O)[O-])c1",
+    "activity": 2.63,
+    "original_row_index": 91,
+    "row_pos": 91
+  },
+  "mol_0093": {
+    "compound_id": "compound_92",
+    "canonical_smiles": "Nc1c([N+](=O)[O-])cc(Cl)cc1[N+](=O)[O-]",
+    "activity": 2.74,
+    "original_row_index": 92,
+    "row_pos": 92
+  },
+  "mol_0094": {
+    "compound_id": "compound_93",
+    "canonical_smiles": "O=[N+]([O-])c1ccccc1O",
+    "activity": 2.62,
+    "original_row_index": 93,
+    "row_pos": 93
+  },
+  "mol_0095": {
+    "compound_id": "compound_94",
+    "canonical_smiles": "O=[N+]([O-])c1cccc([N+](=O)[O-])c1",
+    "activity": 3.45,
+    "original_row_index": 94,
+    "row_pos": 94
+  },
+  "mol_0096": {
+    "compound_id": "compound_95",
+    "canonical_smiles": "Cc1c(N)cc([N+](=O)[O-])cc1[N+](=O)[O-]",
+    "activity": 2.15,
+    "original_row_index": 95,
+    "row_pos": 95
+  },
+  "mol_0097": {
+    "compound_id": "compound_96",
+    "canonical_smiles": "Cc1c([N+](=O)[O-])cc(N)cc1[N+](=O)[O-]",
+    "activity": 2.31,
+    "original_row_index": 96,
+    "row_pos": 96
+  },
+  "mol_0098": {
+    "compound_id": "compound_97",
+    "canonical_smiles": "Cc1ccc([N+](=O)[O-])cc1[N+](=O)[O-]",
+    "activity": 2.83,
+    "original_row_index": 97,
+    "row_pos": 97
+  },
+  "mol_0099": {
+    "compound_id": "compound_98",
+    "canonical_smiles": "Nc1cc(Cl)c([N+](=O)[O-])cc1Cl",
+    "activity": 1.87,
+    "original_row_index": 98,
+    "row_pos": 98
+  },
+  "mol_0100": {
+    "compound_id": "compound_99",
+    "canonical_smiles": "Nc1ccc([N+](=O)[O-])c(Cl)n1",
+    "activity": 1.99,
+    "original_row_index": 99,
+    "row_pos": 99
+  },
+  "mol_0101": {
+    "compound_id": "compound_100",
+    "canonical_smiles": "O=[N+]([O-])c1cccc(Cl)c1",
+    "activity": 2.57,
+    "original_row_index": 100,
+    "row_pos": 100
+  },
+  "mol_0102": {
+    "compound_id": "compound_101",
+    "canonical_smiles": "Nc1ccc([N+](=O)[O-])c(N)c1",
+    "activity": 1.53,
+    "original_row_index": 101,
+    "row_pos": 101
+  },
+  "mol_0103": {
+    "compound_id": "compound_102",
+    "canonical_smiles": "O=C(O)c1cc([N+](=O)[O-])cc([N+](=O)[O-])c1O",
+    "activity": 2.42,
+    "original_row_index": 102,
+    "row_pos": 102
+  },
+  "mol_0104": {
+    "compound_id": "compound_103",
+    "canonical_smiles": "O=[N+]([O-])c1cnc(Cl)c([N+](=O)[O-])c1",
+    "activity": 3.61,
+    "original_row_index": 103,
+    "row_pos": 103
+  },
+  "mol_0105": {
+    "compound_id": "compound_104",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(O)c([N+](=O)[O-])c1",
+    "activity": 3.79,
+    "original_row_index": 104,
+    "row_pos": 104
+  },
+  "mol_0106": {
+    "compound_id": "compound_105",
+    "canonical_smiles": "Cc1cccc([N+](=O)[O-])c1[N+](=O)[O-]",
+    "activity": 2.3,
+    "original_row_index": 105,
+    "row_pos": 105
+  },
+  "mol_0107": {
+    "compound_id": "compound_106",
+    "canonical_smiles": "O=[N+]([O-])c1cc([N+](=O)[O-])cc([N+](=O)[O-])c1",
+    "activity": 2.89,
+    "original_row_index": 106,
+    "row_pos": 106
+  },
+  "mol_0108": {
+    "compound_id": "compound_107",
+    "canonical_smiles": "Cc1c([N+](=O)[O-])cccc1[N+](=O)[O-]",
+    "activity": 3.01,
+    "original_row_index": 107,
+    "row_pos": 107
+  },
+  "mol_0109": {
+    "compound_id": "compound_108",
+    "canonical_smiles": "Cc1cc([N+](=O)[O-])cc([N+](=O)[O-])c1",
+    "activity": 2.93,
+    "original_row_index": 108,
+    "row_pos": 108
+  },
+  "mol_0110": {
+    "compound_id": "compound_109",
+    "canonical_smiles": "Cc1c([N+](=O)[O-])cc([N+](=O)[O-])cc1[N+](=O)[O-]",
+    "activity": 2.57,
+    "original_row_index": 109,
+    "row_pos": 109
+  },
+  "mol_0111": {
+    "compound_id": "compound_110",
+    "canonical_smiles": "CCCCN1C(=O)c2ccc([N+](=O)[O-])cc2C1=O",
+    "activity": 2.27,
+    "original_row_index": 110,
+    "row_pos": 110
+  },
+  "mol_0112": {
+    "compound_id": "compound_111",
+    "canonical_smiles": "NC(=O)c1ccc([N+](=O)[O-])cc1",
+    "activity": 2.54,
+    "original_row_index": 111,
+    "row_pos": 111
+  },
+  "mol_0113": {
+    "compound_id": "compound_112",
+    "canonical_smiles": "CCCCN1C(=O)c2cccc([N+](=O)[O-])c2C1=O",
+    "activity": 2.09,
+    "original_row_index": 112,
+    "row_pos": 112
+  },
+  "mol_0114": {
+    "compound_id": "compound_113",
+    "canonical_smiles": "NC(=O)c1ccc(Cl)c([N+](=O)[O-])c1",
+    "activity": 1.89,
+    "original_row_index": 113,
+    "row_pos": 113
+  },
+  "mol_0115": {
+    "compound_id": "compound_114",
+    "canonical_smiles": "Cc1cc([N+](=O)[O-])ccc1[N+](=O)[O-]",
+    "activity": 2.55,
+    "original_row_index": 114,
+    "row_pos": 114
+  },
+  "mol_0116": {
+    "compound_id": "compound_115",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(Cl)cc1",
+    "activity": 2.57,
+    "original_row_index": 115,
+    "row_pos": 115
+  },
+  "mol_0117": {
+    "compound_id": "compound_116",
+    "canonical_smiles": "Nc1ccc(F)c([N+](=O)[O-])c1",
+    "activity": 2.15,
+    "original_row_index": 116,
+    "row_pos": 116
+  },
+  "mol_0118": {
+    "compound_id": "compound_117",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(O)cc1",
+    "activity": 2.84,
+    "original_row_index": 117,
+    "row_pos": 117
+  },
+  "mol_0119": {
+    "compound_id": "compound_118",
+    "canonical_smiles": "Nc1c(Br)cc([N+](=O)[O-])cc1[N+](=O)[O-]",
+    "activity": 1.81,
+    "original_row_index": 118,
+    "row_pos": 118
+  },
+  "mol_0120": {
+    "compound_id": "compound_119",
+    "canonical_smiles": "O=[N+]([O-])c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl",
+    "activity": 2.43,
+    "original_row_index": 119,
+    "row_pos": 119
+  },
+  "mol_0121": {
+    "compound_id": "compound_120",
+    "canonical_smiles": "O=[N+]([O-])c1ccccc1Cl",
+    "activity": 2.77,
+    "original_row_index": 120,
+    "row_pos": 120
+  },
+  "mol_0122": {
+    "compound_id": "compound_121",
+    "canonical_smiles": "O=[N+]([O-])c1c(Cl)c(Cl)cc(Cl)c1Cl",
+    "activity": 1.54,
+    "original_row_index": 121,
+    "row_pos": 121
+  },
+  "mol_0123": {
+    "compound_id": "compound_122",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(Cl)c(Cl)c1",
+    "activity": 2.3,
+    "original_row_index": 122,
+    "row_pos": 122
+  },
+  "mol_0124": {
+    "compound_id": "compound_123",
+    "canonical_smiles": "O=[N+]([O-])c1cccc(O)c1",
+    "activity": 2.63,
+    "original_row_index": 123,
+    "row_pos": 123
+  },
+  "mol_0125": {
+    "compound_id": "compound_124",
+    "canonical_smiles": "O=[N+]([O-])c1ccccc1",
+    "activity": 2.55,
+    "original_row_index": 124,
+    "row_pos": 124
+  },
+  "mol_0126": {
+    "compound_id": "compound_125",
+    "canonical_smiles": "Cc1cc(O)ccc1[N+](=O)[O-]",
+    "activity": 2.11,
+    "original_row_index": 125,
+    "row_pos": 125
+  },
+  "mol_0127": {
+    "compound_id": "compound_126",
+    "canonical_smiles": "Cc1ccccc1[N+](=O)[O-]",
+    "activity": 2.19,
+    "original_row_index": 126,
+    "row_pos": 126
+  },
+  "mol_0128": {
+    "compound_id": "compound_127",
+    "canonical_smiles": "Cc1ccc(C)c([N+](=O)[O-])c1",
+    "activity": 1.79,
+    "original_row_index": 127,
+    "row_pos": 127
+  },
+  "mol_0129": {
+    "compound_id": "compound_128",
+    "canonical_smiles": "NC(=O)c1cccnc1",
+    "activity": 1.54,
+    "original_row_index": 128,
+    "row_pos": 128
+  },
+  "mol_0130": {
+    "compound_id": "compound_129",
+    "canonical_smiles": "O=[N+]([O-])c1cc2c(ccc3ccccc32)o1",
+    "activity": 2.69,
+    "original_row_index": 129,
+    "row_pos": 129
+  },
+  "mol_0131": {
+    "compound_id": "compound_130",
+    "canonical_smiles": "Cc1ccc([N+](=O)[O-])cc1",
+    "activity": 1.84,
+    "original_row_index": 130,
+    "row_pos": 130
+  },
+  "mol_0132": {
+    "compound_id": "compound_131",
+    "canonical_smiles": "CCN(Cc1c(F)cccc1Cl)c1c([N+](=O)[O-])cc(C(F)(F)F)cc1[N+](=O)[O-]",
+    "activity": 2.13,
+    "original_row_index": 131,
+    "row_pos": 131
+  },
+  "mol_0133": {
+    "compound_id": "compound_132",
+    "canonical_smiles": "CCOC(=O)COC(=O)c1cc(Oc2ccc(C(F)(F)F)cc2Cl)ccc1[N+](=O)[O-]",
+    "activity": 2.48,
+    "original_row_index": 132,
+    "row_pos": 132
+  },
+  "mol_0134": {
+    "compound_id": "compound_133",
+    "canonical_smiles": "O=C1C(=NNc2cc([N+](=O)[O-])ccc2O)C(S(=O)(=O)O)=Cc2cc(S(=O)(=O)O)cc(Nc3nc(Cl)nc(Cl)n3)c21",
+    "activity": 1.84,
+    "original_row_index": 133,
+    "row_pos": 133
+  },
+  "mol_0135": {
+    "compound_id": "compound_134",
+    "canonical_smiles": "O=C(O)c1c(Cl)ccc(Cl)c1Cl",
+    "activity": 2.54,
+    "original_row_index": 134,
+    "row_pos": 134
+  },
+  "mol_0136": {
+    "compound_id": "compound_135",
+    "canonical_smiles": "O=C(O)c1ccc([N+](=O)[O-])cc1",
+    "activity": 1.93,
+    "original_row_index": 135,
+    "row_pos": 135
+  },
+  "mol_0137": {
+    "compound_id": "compound_136",
+    "canonical_smiles": "CC1(C)NC(=O)N(c2ccc([N+](=O)[O-])c(C(F)(F)F)c2)C1=O",
+    "activity": 3.21,
+    "original_row_index": 136,
+    "row_pos": 136
+  },
+  "mol_0138": {
+    "compound_id": "compound_137",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(Oc2c(Cl)cc(Cl)cc2Cl)cc1",
+    "activity": 1.47,
+    "original_row_index": 137,
+    "row_pos": 137
+  },
+  "mol_0139": {
+    "compound_id": "compound_138",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(Oc2ccc(C(F)(F)F)cc2Cl)cc1",
+    "activity": 2.5,
+    "original_row_index": 138,
+    "row_pos": 138
+  },
+  "mol_0140": {
+    "compound_id": "compound_139",
+    "canonical_smiles": "CCOc1cc(Oc2ccc(C(F)(F)F)cc2Cl)ccc1[N+](=O)[O-]",
+    "activity": 1.86,
+    "original_row_index": 139,
+    "row_pos": 139
+  },
+  "mol_0141": {
+    "compound_id": "compound_140",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(Oc2ccc(C(F)(F)F)cc2[N+](=O)[O-])cc1",
+    "activity": 1.56,
+    "original_row_index": 140,
+    "row_pos": 140
+  },
+  "mol_0142": {
+    "compound_id": "compound_141",
+    "canonical_smiles": "O=[N+]([O-])c1cc([N+](=O)[O-])c(Nc2cc(C(F)(F)F)ccc2Cl)c(C(F)(F)F)c1",
+    "activity": 3.66,
+    "original_row_index": 141,
+    "row_pos": 141
+  },
+  "mol_0143": {
+    "compound_id": "compound_142",
+    "canonical_smiles": "CN(c1ccc(Cl)cc1Cl)c1c([N+](=O)[O-])cc([N+](=O)[O-])cc1C(F)(F)F",
+    "activity": 4.96,
+    "original_row_index": 142,
+    "row_pos": 142
+  },
+  "mol_0144": {
+    "compound_id": "compound_143",
+    "canonical_smiles": "CN(c1ccc(Cl)cc1Br)c1c([N+](=O)[O-])cc([N+](=O)[O-])cc1C(F)(F)F",
+    "activity": 5.0,
+    "original_row_index": 143,
+    "row_pos": 143
+  },
+  "mol_0145": {
+    "compound_id": "compound_144",
+    "canonical_smiles": "CCOP(=S)(OCC)Oc1ccc(Cl)c([N+](=O)[O-])c1",
+    "activity": 3.51,
+    "original_row_index": 144,
+    "row_pos": 144
+  },
+  "mol_0146": {
+    "compound_id": "compound_145",
+    "canonical_smiles": "COP(=S)(OC)Oc1ccc([N+](=O)[O-])cc1Cl",
+    "activity": 3.02,
+    "original_row_index": 145,
+    "row_pos": 145
+  },
+  "mol_0147": {
+    "compound_id": "compound_146",
+    "canonical_smiles": "CP(=S)(Oc1ccccc1)Oc1ccc([N+](=O)[O-])cc1",
+    "activity": 4.59,
+    "original_row_index": 146,
+    "row_pos": 146
+  },
+  "mol_0148": {
+    "compound_id": "compound_147",
+    "canonical_smiles": "CCN(CC)P1(=S)OCc2cc([N+](=O)[O-])ccc2O1",
+    "activity": 3.3,
+    "original_row_index": 147,
+    "row_pos": 147
+  },
+  "mol_0149": {
+    "compound_id": "compound_148",
+    "canonical_smiles": "CN(C)P1(=S)OCc2cc([N+](=O)[O-])ccc2O1",
+    "activity": 3.34,
+    "original_row_index": 148,
+    "row_pos": 148
+  },
+  "mol_0150": {
+    "compound_id": "compound_149",
+    "canonical_smiles": "CCOP(=S)(CC)Oc1ccc([N+](=O)[O-])cc1Cl",
+    "activity": 4.13,
+    "original_row_index": 149,
+    "row_pos": 149
+  },
+  "mol_0151": {
+    "compound_id": "compound_150",
+    "canonical_smiles": "CCOP(=S)(CC)Oc1ccc([N+](=O)[O-])c(C)c1",
+    "activity": 4.46,
+    "original_row_index": 150,
+    "row_pos": 150
+  },
+  "mol_0152": {
+    "compound_id": "compound_151",
+    "canonical_smiles": "CCOP(=S)(OCC)Oc1ccc([N+](=O)[O-])cc1Cl",
+    "activity": 4.51,
+    "original_row_index": 151,
+    "row_pos": 151
+  },
+  "mol_0153": {
+    "compound_id": "compound_152",
+    "canonical_smiles": "CCP(=S)(OC)Oc1ccc([N+](=O)[O-])cc1Cl",
+    "activity": 4.11,
+    "original_row_index": 152,
+    "row_pos": 152
+  },
+  "mol_0154": {
+    "compound_id": "compound_153",
+    "canonical_smiles": "CCOP(=S)(OCC)Oc1ccc([N+](=O)[O-])c(Cl)c1",
+    "activity": 3.81,
+    "original_row_index": 153,
+    "row_pos": 153
+  },
+  "mol_0155": {
+    "compound_id": "compound_154",
+    "canonical_smiles": "CCCOP(C)(=S)Oc1ccc([N+](=O)[O-])cc1",
+    "activity": 4.96,
+    "original_row_index": 154,
+    "row_pos": 154
+  },
+  "mol_0156": {
+    "compound_id": "compound_155",
+    "canonical_smiles": "COP(=S)(Oc1ccc([N+](=O)[O-])cc1)OC(C)C",
+    "activity": 4.76,
+    "original_row_index": 155,
+    "row_pos": 155
+  },
+  "mol_0157": {
+    "compound_id": "compound_156",
+    "canonical_smiles": "COP(=S)(Oc1ccc([N+](=O)[O-])c(C)c1)OC(C)C",
+    "activity": 4.09,
+    "original_row_index": 156,
+    "row_pos": 156
+  },
+  "mol_0158": {
+    "compound_id": "compound_157",
+    "canonical_smiles": "CCOP(=S)(OCC)Oc1ccc([N+](=O)[O-])c(C)c1",
+    "activity": 4.49,
+    "original_row_index": 157,
+    "row_pos": 157
+  },
+  "mol_0159": {
+    "compound_id": "compound_158",
+    "canonical_smiles": "CCOP(=S)(OCC)Oc1cc([N+](=O)[O-])c(Cl)cc1Cl",
+    "activity": 3.56,
+    "original_row_index": 158,
+    "row_pos": 158
+  },
+  "mol_0160": {
+    "compound_id": "compound_159",
+    "canonical_smiles": "Nc1ncc(/C=C/c2ccc([N+](=O)[O-])o2)nn1",
+    "activity": 2.97,
+    "original_row_index": 159,
+    "row_pos": 159
+  },
+  "mol_0161": {
+    "compound_id": "compound_160",
+    "canonical_smiles": "Cc1nc([N+](=O)[O-])cn1-c1ccc([N+](=O)[O-])cc1",
+    "activity": 1.71,
+    "original_row_index": 160,
+    "row_pos": 160
+  },
+  "mol_0162": {
+    "compound_id": "compound_161",
+    "canonical_smiles": "Nc1nnc(/C=C/c2ccc([N+](=O)[O-])o2)s1",
+    "activity": 2.1,
+    "original_row_index": 161,
+    "row_pos": 161
+  },
+  "mol_0163": {
+    "compound_id": "compound_162",
+    "canonical_smiles": "COC(=O)C1=C(C)NC(C)=C(C(=O)OCC(C)C)C1c1ccccc1[N+](=O)[O-]",
+    "activity": 2.49,
+    "original_row_index": 162,
+    "row_pos": 162
+  },
+  "mol_0164": {
+    "compound_id": "compound_163",
+    "canonical_smiles": "CCOC(=O)C1=C(C)NC(C)=C(C(=O)OC)C1c1cccc([N+](=O)[O-])c1",
+    "activity": 1.37,
+    "original_row_index": 163,
+    "row_pos": 163
+  },
+  "mol_0165": {
+    "compound_id": "compound_164",
+    "canonical_smiles": "CNC(=O)N1C(=O)CN=C(c2ccccc2)c2cc([N+](=O)[O-])ccc21",
+    "activity": 2.17,
+    "original_row_index": 164,
+    "row_pos": 164
+  },
+  "mol_0166": {
+    "compound_id": "compound_165",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(Sc2ccc([N+](=O)[O-])cc2)cc1",
+    "activity": 2.27,
+    "original_row_index": 165,
+    "row_pos": 165
+  },
+  "mol_0167": {
+    "compound_id": "compound_166",
+    "canonical_smiles": "CCC(C)c1cc([N+](=O)[O-])cc([N+](=O)[O-])c1OC(C)=O",
+    "activity": 3.67,
+    "original_row_index": 166,
+    "row_pos": 166
+  },
+  "mol_0168": {
+    "compound_id": "compound_167",
+    "canonical_smiles": "CC(C)(C)c1cc([N+](=O)[O-])cc([N+](=O)[O-])c1Nc1ccc([N+](=O)[O-])cc1[N+](=O)[O-]",
+    "activity": 5.31,
+    "original_row_index": 167,
+    "row_pos": 167
+  },
+  "mol_0169": {
+    "compound_id": "compound_168",
+    "canonical_smiles": "CCCN(CCC)c1c([N+](=O)[O-])cc(C(C)C)cc1[N+](=O)[O-]",
+    "activity": 1.79,
+    "original_row_index": 168,
+    "row_pos": 168
+  },
+  "mol_0170": {
+    "compound_id": "compound_169",
+    "canonical_smiles": "CCCN(CCC)c1c([N+](=O)[O-])cc(C(C)=O)cc1[N+](=O)[O-]",
+    "activity": 2.62,
+    "original_row_index": 169,
+    "row_pos": 169
+  },
+  "mol_0171": {
+    "compound_id": "compound_170",
+    "canonical_smiles": "CCC(C)c1cc([N+](=O)[O-])cc([N+](=O)[O-])c1OC(=O)Oc1ccc([N+](=O)[O-])cc1[N+](=O)[O-]",
+    "activity": 3.62,
+    "original_row_index": 170,
+    "row_pos": 170
+  },
+  "mol_0172": {
+    "compound_id": "compound_171",
+    "canonical_smiles": "CC(=O)Oc1c(C(C)(C)C)cc([N+](=O)[O-])c(C)c1[N+](=O)[O-]",
+    "activity": 3.85,
+    "original_row_index": 171,
+    "row_pos": 171
+  },
+  "mol_0173": {
+    "compound_id": "compound_172",
+    "canonical_smiles": "CC(=O)Oc1c([N+](=O)[O-])cc([N+](=O)[O-])cc1C(C)(C)C",
+    "activity": 3.66,
+    "original_row_index": 172,
+    "row_pos": 172
+  },
+  "mol_0174": {
+    "compound_id": "compound_173",
+    "canonical_smiles": "CCC(CC)Nc1c([N+](=O)[O-])cc(C)c(C)c1[N+](=O)[O-]",
+    "activity": 2.43,
+    "original_row_index": 173,
+    "row_pos": 173
+  },
+  "mol_0175": {
+    "compound_id": "compound_174",
+    "canonical_smiles": "CCCN(CCC)c1c([N+](=O)[O-])cc(C)cc1[N+](=O)[O-]",
+    "activity": 1.89,
+    "original_row_index": 174,
+    "row_pos": 174
+  },
+  "mol_0176": {
+    "compound_id": "compound_175",
+    "canonical_smiles": "CCC(C)Nc1c([N+](=O)[O-])cc(C(C)(C)C)cc1[N+](=O)[O-]",
+    "activity": 2.07,
+    "original_row_index": 175,
+    "row_pos": 175
+  },
+  "mol_0177": {
+    "compound_id": "compound_176",
+    "canonical_smiles": "CN(CCO)c1ccc(N=Nc2c(Cl)cc([N+](=O)[O-])cc2Cl)cc1",
+    "activity": 2.12,
+    "original_row_index": 176,
+    "row_pos": 176
+  },
+  "mol_0178": {
+    "compound_id": "compound_177",
+    "canonical_smiles": "O=[N+]([O-])c1cc(Cl)c(N=Nc2ccc(N3CCS(=O)(=O)CC3)cc2)c(Cl)c1",
+    "activity": 2.13,
+    "original_row_index": 177,
+    "row_pos": 177
+  },
+  "mol_0179": {
+    "compound_id": "compound_178",
+    "canonical_smiles": "CCCOCCOC(=O)C1=C(C)NC(C)=C(C(=O)OCCOCCC)C1c1cccc([N+](=O)[O-])c1",
+    "activity": 2.52,
+    "original_row_index": 178,
+    "row_pos": 178
+  },
+  "mol_0180": {
+    "compound_id": "compound_179",
+    "canonical_smiles": "CCCCCCCCCOC(=O)C1=CNC=C(C(=O)NC2CCCC2)C1c1ccccc1[N+](=O)[O-]",
+    "activity": 4.68,
+    "original_row_index": 179,
+    "row_pos": 179
+  },
+  "mol_0181": {
+    "compound_id": "compound_180",
+    "canonical_smiles": "COCCOC(=O)C1=C(C)NC(C)=C(C(=O)OC/C=C/c2ccccc2)C1c1cccc([N+](=O)[O-])c1",
+    "activity": 2.05,
+    "original_row_index": 180,
+    "row_pos": 180
+  },
+  "mol_0182": {
+    "compound_id": "compound_181",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(O)c(CNCCCl)c1",
+    "activity": 3.96,
+    "original_row_index": 181,
+    "row_pos": 181
+  },
+  "mol_0183": {
+    "compound_id": "compound_182",
+    "canonical_smiles": "O=C(O)CCC(=O)OCC(NC(=O)C(Cl)Cl)C(O)c1ccc([N+](=O)[O-])cc1",
+    "activity": 1.71,
+    "original_row_index": 182,
+    "row_pos": 182
+  },
+  "mol_0184": {
+    "compound_id": "compound_183",
+    "canonical_smiles": "O=[N+]([O-])c1ccc(C(O)C2COC(C(Cl)Cl)=N2)cc1",
+    "activity": 1.71,
+    "original_row_index": 183,
+    "row_pos": 183
+  },
+  "mol_0185": {
+    "compound_id": "compound_184",
+    "canonical_smiles": "O=[N+]([O-])c1cc(Cl)cc(-c2cc(Cl)cc([N+](=O)[O-])c2O)c1O",
+    "activity": 4.54,
+    "original_row_index": 184,
+    "row_pos": 184
+  },
+  "mol_0186": {
+    "compound_id": "compound_185",
+    "canonical_smiles": "CCOc1ccc([N+](=O)[O-])cc1CNCCCl",
+    "activity": 4.01,
+    "original_row_index": 185,
+    "row_pos": 185
+  },
+  "mol_0187": {
+    "compound_id": "compound_186",
+    "canonical_smiles": "COc1ccc([N+](=O)[O-])cc1CNCCCl",
+    "activity": 3.94,
+    "original_row_index": 186,
+    "row_pos": 186
+  },
+  "mol_0188": {
+    "compound_id": "compound_187",
+    "canonical_smiles": "COP(=S)(OC)Oc1cc(Cl)c([N+](=O)[O-])c(Cl)c1",
+    "activity": 2.65,
+    "original_row_index": 187,
+    "row_pos": 187
+  },
+  "mol_0189": {
+    "compound_id": "compound_188",
+    "canonical_smiles": "CCOP(=S)(OC)Oc1ccc([N+](=O)[O-])cc1",
+    "activity": 4.99,
+    "original_row_index": 188,
+    "row_pos": 188
+  },
+  "mol_0190": {
+    "compound_id": "compound_189",
+    "canonical_smiles": "CCOP(=S)(OCC)Oc1ccc([N+](=O)[O-])cc1",
+    "activity": 5.16,
+    "original_row_index": 189,
+    "row_pos": 189
+  },
+  "mol_0191": {
+    "compound_id": "compound_190",
+    "canonical_smiles": "COP(=S)(OC)Oc1ccc(Cl)c([N+](=O)[O-])c1",
+    "activity": 2.77,
+    "original_row_index": 190,
+    "row_pos": 190
+  }
+}

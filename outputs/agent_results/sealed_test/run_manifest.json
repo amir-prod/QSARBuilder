@@ -1,0 +1,32 @@
+{
+  "python_version": "3.12.2 (main, Sep  9 2024, 13:14:21) [GCC 11.2.0]",
+  "platform": "Linux-5.14.0-570.119.1.el9_6.x86_64-x86_64-with-glibc2.34",
+  "sklearn_version": "1.9.0",
+  "model_config": {
+    "estimator": "RandomForestRegressor",
+    "n_estimators": 100,
+    "max_depth": 10,
+    "min_samples_split": 2,
+    "min_samples_leaf": 1,
+    "max_features": "sqrt",
+    "bootstrap": true,
+    "max_samples": null,
+    "criterion": "squared_error",
+    "random_state": 42,
+    "n_jobs": -1,
+    "params": {}
+  },
+  "selected_features": [
+    "Mordred_AATSC1d",
+    "Mordred_ATSC8Z",
+    "Mordred_GATS5c",
+    "Mordred_GATS7i",
+    "Mordred_NdsssP",
+    "Mordred_RNCS",
+    "Mordred_VSA_EState3",
+    "RDKit_SMR_VSA10"
+  ],
+  "dataset_hash": "8b547ba5d2a0032165ca1bfc37aad3924cde60de3ef2a0014f33a8566e8041d4",
+  "workflow_config": {},
+  "hyperparameter_optimization": {}
+}

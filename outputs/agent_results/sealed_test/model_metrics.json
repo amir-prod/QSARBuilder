@@ -1,0 +1,31 @@
+{
+  "train": {
+    "r2": 0.9219840892823041,
+    "rmse": 0.27082805765855134,
+    "mae": 0.214846789305464,
+    "n_samples": 153
+  },
+  "test": {
+    "r2": 0.32977316695522096,
+    "rmse": 0.8300898485496737,
+    "mae": 0.6598771709925724,
+    "n_samples": 19
+  },
+  "selected_features": [
+    "Mordred_AATSC1d",
+    "Mordred_ATSC8Z",
+    "Mordred_GATS5c",
+    "Mordred_GATS7i",
+    "Mordred_NdsssP",
+    "Mordred_RNCS",
+    "Mordred_VSA_EState3",
+    "RDKit_SMR_VSA10"
+  ],
+  "hyperparameter_optimization": {},
+  "val": {
+    "r2": 0.4131055889931107,
+    "rmse": 0.7439691337068493,
+    "mae": 0.5657457488983281,
+    "n_samples": 19
+  }
+}

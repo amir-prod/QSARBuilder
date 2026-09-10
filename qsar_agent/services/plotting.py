@@ -7,6 +7,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from matplotlib.lines import Line2D
 
 
 def save_figure(fig: plt.Figure, png_path: Path, svg_path: Path, dpi: int = 300) -> None:
@@ -26,8 +27,9 @@ def plot_umap_split(
     clusters = sorted(umap_df["cluster"].unique())
     colors = sns.color_palette("tab10", n_colors=max(len(clusters), 1))
     cluster_colors = {c: colors[i % len(colors)] for i, c in enumerate(clusters)}
+    split_markers = [("train", "o"), ("val", "s"), ("test", "^")]
 
-    for split, marker in [("train", "o"), ("val", "s"), ("test", "^")]:
+    for split, marker in split_markers:
         subset = umap_df[umap_df["split"] == split]
         for cluster_id in clusters:
             mask = subset["cluster"] == cluster_id
@@ -42,15 +44,55 @@ def plot_umap_split(
                 alpha=0.7,
                 edgecolors="black",
                 linewidths=0.3,
-                label=f"Cluster {cluster_id} ({split})",
             )
+
+    split_handles = [
+        Line2D(
+            [0],
+            [0],
+            marker=marker,
+            color="none",
+            markerfacecolor="gray",
+            markeredgecolor="black",
+            markersize=8,
+            linestyle="None",
+            label=label.capitalize(),
+        )
+        for label, marker in split_markers
+    ]
+    cluster_handles = [
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="none",
+            markerfacecolor=cluster_colors[cluster_id],
+            markeredgecolor="black",
+            markersize=8,
+            linestyle="None",
+            label=f"Cluster {cluster_id}",
+        )
+        for cluster_id in clusters
+    ]
 
     ax.set_xlabel("UMAP Dimension 1")
     ax.set_ylabel("UMAP Dimension 2")
     ax.set_title(title)
-    handles, labels = ax.get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))
-    ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.05, 1), loc="upper left", fontsize=8)
+    legend_split = ax.legend(
+        handles=split_handles,
+        title="Split (marker)",
+        loc="upper left",
+        bbox_to_anchor=(1.05, 1),
+        fontsize=8,
+    )
+    ax.add_artist(legend_split)
+    ax.legend(
+        handles=cluster_handles,
+        title="Cluster (color)",
+        loc="upper left",
+        bbox_to_anchor=(1.05, 0.72),
+        fontsize=8,
+    )
     fig.tight_layout()
     save_figure(fig, png_path, svg_path)
 
@@ -83,6 +125,46 @@ def plot_sorted_split(
         )
     ax.set_xlabel("Activity rank (low → high)")
     ax.set_ylabel("Activity")
+    ax.set_title(title)
+    ax.legend()
+    fig.tight_layout()
+    save_figure(fig, png_path, svg_path)
+
+
+def plot_pca_split(
+    assignments_df,
+    png_path: Path,
+    svg_path: Path,
+    title: str = "PCA View of Random Train/Val/Test Split",
+    explained_variance_ratio: tuple[float, float] | None = None,
+) -> None:
+    fig, ax = plt.subplots(figsize=(10, 8))
+    for split, marker, color in [
+        ("train", "o", "steelblue"),
+        ("val", "s", "darkorange"),
+        ("test", "^", "crimson"),
+    ]:
+        subset = assignments_df[assignments_df["split"] == split]
+        if subset.empty:
+            continue
+        ax.scatter(
+            subset["pca_1"],
+            subset["pca_2"],
+            c=color,
+            marker=marker,
+            s=50,
+            alpha=0.8,
+            edgecolors="black",
+            linewidths=0.3,
+            label=split,
+        )
+    if explained_variance_ratio is not None:
+        pc1_var, pc2_var = explained_variance_ratio
+        ax.set_xlabel(f"PC1 ({100 * pc1_var:.1f}% variance)")
+        ax.set_ylabel(f"PC2 ({100 * pc2_var:.1f}% variance)")
+    else:
+        ax.set_xlabel("PC1")
+        ax.set_ylabel("PC2")
     ax.set_title(title)
     ax.legend()
     fig.tight_layout()

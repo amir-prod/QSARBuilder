@@ -1,4 +1,4 @@
-"""Tests for UMAP cluster split and activity-sorted split."""
+"""Tests for UMAP cluster split, activity-sorted split, and random split."""
 
 import numpy as np
 import pandas as pd
@@ -7,7 +7,9 @@ from qsar_agent.tools.dataset_validation import validate_dataset
 from qsar_agent.tools.descriptor_calculation import calculate_descriptors
 from qsar_agent.tools.umap_split import (
     assign_sorted_split_indices,
+    create_random_split,
     create_sorted_split,
+    create_split,
     create_umap_cluster_split,
     split_indices_three_way,
     sorted_split_stride,
@@ -183,12 +185,15 @@ def test_sorted_split_tied_min_max_stay_in_train():
 
 def _write_descriptor_table(path, activity) -> None:
     n = len(activity)
+    rng = np.random.default_rng(0)
     rows = {
         "compound_id": [f"C{i}" for i in range(n)],
         "canonical_smiles": ["CCO"] * n,
         "activity": list(activity),
         "original_row_index": list(range(n)),
         "feat_0": np.arange(n, dtype=float),
+        "feat_1": rng.normal(size=n),
+        "feat_2": rng.normal(size=n),
     }
     pd.DataFrame(rows).to_csv(path, index=False)
 
@@ -216,3 +221,64 @@ def test_create_sorted_split_artifacts(tmp_run_dir):
     assert set(assignments["split"]) == {"train", "val", "test"}
     assert (tmp_run_dir / "sorted_split.png").exists()
     assert (tmp_run_dir / "val_set_raw_descriptors.csv").exists()
+
+
+def test_create_random_split_artifacts(tmp_run_dir):
+    activity = np.linspace(1.0, 10.0, 30)
+    path = tmp_run_dir / "raw.csv"
+    _write_descriptor_table(path, activity)
+    split = create_random_split(
+        path, tmp_run_dir, test_fraction=0.10, val_fraction=0.10, random_seed=42
+    )
+    assert split.split_method == "random"
+    assert split.test_count >= 1
+    assert split.val_count >= 1
+    assert split.train_count + split.val_count + split.test_count == 30
+    assignments = pd.read_csv(split.split_assignments_path)
+    assert set(assignments["split"]) == {"train", "val", "test"}
+    assert {"pca_1", "pca_2"}.issubset(assignments.columns)
+    train_ids = set(assignments[assignments["split"] == "train"]["compound_id"])
+    val_ids = set(assignments[assignments["split"] == "val"]["compound_id"])
+    test_ids = set(assignments[assignments["split"] == "test"]["compound_id"])
+    assert len(train_ids & test_ids) == 0
+    assert len(train_ids & val_ids) == 0
+    assert len(val_ids & test_ids) == 0
+    assert (tmp_run_dir / "random_split.png").exists()
+    assert (tmp_run_dir / "pca_coordinates.csv").exists()
+    assert (tmp_run_dir / "val_set_raw_descriptors.csv").exists()
+
+
+def test_create_random_split_reproducible(tmp_run_dir):
+    activity = np.linspace(1.0, 10.0, 40)
+    path = tmp_run_dir / "raw.csv"
+    _write_descriptor_table(path, activity)
+    run1 = tmp_run_dir / "run1"
+    run2 = tmp_run_dir / "run2"
+    run3 = tmp_run_dir / "run3"
+    run1.mkdir()
+    run2.mkdir()
+    run3.mkdir()
+    split1 = create_random_split(path, run1, random_seed=42)
+    split2 = create_random_split(path, run2, random_seed=42)
+    split3 = create_random_split(path, run3, random_seed=7)
+    a1 = pd.read_csv(split1.split_assignments_path).sort_values("compound_id")
+    a2 = pd.read_csv(split2.split_assignments_path).sort_values("compound_id")
+    a3 = pd.read_csv(split3.split_assignments_path).sort_values("compound_id")
+    assert a1["split"].tolist() == a2["split"].tolist()
+    assert a1["split"].tolist() != a3["split"].tolist()
+
+
+def test_create_split_dispatches_random(tmp_run_dir):
+    activity = np.linspace(1.0, 10.0, 30)
+    path = tmp_run_dir / "raw.csv"
+    _write_descriptor_table(path, activity)
+    split = create_split(
+        path,
+        tmp_run_dir,
+        test_fraction=0.10,
+        val_fraction=0.10,
+        random_seed=0,
+        split_method="random",
+    )
+    assert split.split_method == "random"
+    assert (tmp_run_dir / "random_split.png").exists()

@@ -116,17 +116,19 @@ def render_sidebar_config() -> WorkflowConfig:
         )
     split_method = st.sidebar.selectbox(
         "Splitting method",
-        options=["umap_cluster", "sorted"],
+        options=["umap_cluster", "sorted", "random"],
         format_func=lambda m: {
             "umap_cluster": "UMAP cluster",
             "sorted": "Sorted (by activity)",
+            "random": "Random",
         }[m],
         index=0,
         help=(
             "UMAP cluster: structure-aware split within chemical clusters. "
             "Sorted: rank compounds by activity and send every k-th to test "
             "and an offset rank to validation (k ≈ 1 / fraction; 10% → every 10th). "
-            "Min and max activity always stay in the training set."
+            "Min and max activity always stay in the training set. "
+            "Random: seeded random train/val/test split (PCA figure for visualization)."
         ),
     )
     random_seed = st.sidebar.number_input("Random seed", 0, 99999, 42)

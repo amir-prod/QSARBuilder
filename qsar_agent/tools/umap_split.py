@@ -9,13 +9,14 @@ import numpy as np
 import pandas as pd
 import umap
 from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
 from sklearn.metrics import davies_bouldin_score, silhouette_score
 from sklearn.model_selection import train_test_split
 
 from qsar_agent.config import ClusteringConfig, UMAPConfig
 from qsar_agent.schemas.split import ClusterInfo, SplitResult
 from qsar_agent.services.artifact_manager import save_json
-from qsar_agent.services.plotting import plot_sorted_split, plot_umap_split
+from qsar_agent.services.plotting import plot_pca_split, plot_sorted_split, plot_umap_split
 from qsar_agent.tools.provisional_preprocessing import provisional_preprocess_for_umap
 
 _SMALL_CLUSTER_SIZE = 5
@@ -554,6 +555,152 @@ def create_sorted_split(
     )
 
 
+def create_random_split(
+    descriptor_path: str | Path,
+    run_dir: Path,
+    test_fraction: float = 0.10,
+    random_seed: int = 42,
+    val_fraction: float = 0.10,
+) -> SplitResult:
+    """
+    Create a seeded random train/validation/external-test split.
+
+    PCA (2D) of provisional-preprocessed descriptors is used only for visualization.
+    """
+    warnings: list[str] = []
+    run_dir = Path(run_dir)
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    df = pd.read_csv(descriptor_path)
+    n_total = len(df)
+    train_indices, val_indices, test_indices = split_indices_three_way(
+        list(range(n_total)), val_fraction, test_fraction, random_seed
+    )
+    if len(test_indices) == 0:
+        raise RuntimeError(
+            f"Cannot create an external test set with only {n_total} compound(s)."
+        )
+    if len(val_indices) == 0:
+        raise RuntimeError(
+            f"Cannot create a validation set with only {n_total} compound(s)."
+        )
+    _assert_no_overlap(train_indices, val_indices, test_indices)
+
+    train_df = df.iloc[train_indices].copy()
+    val_df = df.iloc[val_indices].copy()
+    test_df = df.iloc[test_indices].copy()
+    _holdout_size_warnings(len(val_df), len(test_df), warnings)
+
+    train_path, val_path, test_path = _write_raw_split_csvs(
+        run_dir, train_df, val_df, test_df
+    )
+
+    _, X_scaled = provisional_preprocess_for_umap(df)
+    n_components = min(2, X_scaled.shape[0], X_scaled.shape[1])
+    if n_components < 2:
+        raise ValueError(
+            "Need at least 2 samples and 2 descriptors after provisional "
+            "preprocessing to build a PCA split figure."
+        )
+    pca = PCA(n_components=2, random_state=random_seed)
+    embedding = pca.fit_transform(X_scaled)
+    explained = tuple(float(v) for v in pca.explained_variance_ratio_[:2])
+
+    assignments = pd.DataFrame(
+        {
+            "compound_id": df["compound_id"].values,
+            "original_row_index": df["original_row_index"].values,
+            "activity": df["activity"].values,
+            "pca_1": embedding[:, 0],
+            "pca_2": embedding[:, 1],
+            "split": "train",
+        }
+    )
+    assignments.loc[val_indices, "split"] = "val"
+    assignments.loc[test_indices, "split"] = "test"
+
+    assignments_path = run_dir / "split_assignments.csv"
+    assignments.to_csv(assignments_path, index=False)
+
+    pca_coords_path = run_dir / "pca_coordinates.csv"
+    assignments[
+        ["compound_id", "original_row_index", "pca_1", "pca_2", "split"]
+    ].to_csv(pca_coords_path, index=False)
+
+    png_path = run_dir / "random_split.png"
+    svg_path = run_dir / "random_split.svg"
+    plot_pca_split(
+        assignments,
+        png_path,
+        svg_path,
+        explained_variance_ratio=explained,
+    )
+
+    train_mean, train_std = _activity_mean_std(train_df["activity"])
+    val_mean, val_std = _activity_mean_std(val_df["activity"])
+    test_mean, test_std = _activity_mean_std(test_df["activity"])
+
+    report = {
+        "split_method": "random",
+        "train_count": len(train_df),
+        "val_count": len(val_df),
+        "test_count": len(test_df),
+        "val_fraction_target": val_fraction,
+        "test_fraction_target": test_fraction,
+        "val_fraction_actual": len(val_df) / len(df),
+        "test_fraction_actual": len(test_df) / len(df),
+        "random_seed": random_seed,
+        "n_clusters": 0,
+        "cluster_sizes": [],
+        "pca_explained_variance_ratio": list(explained),
+        "train_activity_mean": train_mean,
+        "train_activity_std": train_std,
+        "val_activity_mean": val_mean,
+        "val_activity_std": val_std,
+        "test_activity_mean": test_mean,
+        "test_activity_std": test_std,
+        "train_activity_min": float(train_df["activity"].min()),
+        "train_activity_max": float(train_df["activity"].max()),
+        "val_activity_min": float(val_df["activity"].min()),
+        "val_activity_max": float(val_df["activity"].max()),
+        "test_activity_min": float(test_df["activity"].min()),
+        "test_activity_max": float(test_df["activity"].max()),
+        "warnings": warnings,
+        "note": (
+            "Compounds randomly assigned to train/val/test with the given seed. "
+            "PCA of provisional-preprocessed descriptors is for visualization only."
+        ),
+    }
+    report_path = run_dir / "split_report.json"
+    save_json(report_path, report)
+
+    return SplitResult(
+        train_count=len(train_df),
+        val_count=len(val_df),
+        test_count=len(test_df),
+        val_fraction_actual=len(val_df) / len(df),
+        test_fraction_actual=len(test_df) / len(df),
+        n_clusters=0,
+        cluster_sizes=[],
+        train_activity_mean=train_mean,
+        train_activity_std=train_std,
+        val_activity_mean=val_mean,
+        val_activity_std=val_std,
+        test_activity_mean=test_mean,
+        test_activity_std=test_std,
+        train_path=str(train_path),
+        val_path=str(val_path),
+        test_path=str(test_path),
+        split_assignments_path=str(assignments_path),
+        umap_coordinates_path=str(pca_coords_path),
+        umap_plot_png=str(png_path),
+        umap_plot_svg=str(svg_path),
+        split_report_path=str(report_path),
+        split_method="random",
+        warnings=warnings,
+    )
+
+
 def create_split(
     descriptor_path: str | Path,
     run_dir: Path,
@@ -564,11 +711,19 @@ def create_split(
     split_method: str = "umap_cluster",
     val_fraction: float = 0.10,
 ) -> SplitResult:
-    """Dispatch to UMAP-cluster or activity-sorted splitting."""
+    """Dispatch to UMAP-cluster, activity-sorted, or random splitting."""
     method = (split_method or "umap_cluster").strip().lower()
     if method == "sorted":
         return create_sorted_split(
             descriptor_path, run_dir, test_fraction, val_fraction=val_fraction
+        )
+    if method == "random":
+        return create_random_split(
+            descriptor_path,
+            run_dir,
+            test_fraction,
+            random_seed,
+            val_fraction=val_fraction,
         )
     if method in {"umap_cluster", "umap"}:
         return create_umap_cluster_split(
@@ -581,7 +736,8 @@ def create_split(
             val_fraction=val_fraction,
         )
     raise ValueError(
-        f"Unknown split_method {split_method!r}; expected 'umap_cluster' or 'sorted'."
+        f"Unknown split_method {split_method!r}; "
+        "expected 'umap_cluster', 'sorted', or 'random'."
     )
 
 

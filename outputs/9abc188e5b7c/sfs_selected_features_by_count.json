@@ -1,0 +1,27 @@
+{
+  "1": [
+    "RDKit_Chi2v"
+  ],
+  "2": [
+    "RDKit_Chi2v",
+    "RDKit_qed"
+  ],
+  "3": [
+    "RDKit_AvgIpc",
+    "RDKit_Chi2v",
+    "RDKit_qed"
+  ],
+  "4": [
+    "RDKit_AvgIpc",
+    "RDKit_Chi2v",
+    "RDKit_fr_pyridine",
+    "RDKit_qed"
+  ],
+  "5": [
+    "RDKit_AvgIpc",
+    "RDKit_Chi2v",
+    "RDKit_fr_ether",
+    "RDKit_fr_pyridine",
+    "RDKit_qed"
+  ]
+}

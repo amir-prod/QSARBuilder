@@ -157,7 +157,7 @@ class AgenticImprovementSettings(BaseModel):
 class WorkflowConfig(BaseModel):
     val_fraction: float = 0.10
     test_fraction: float = 0.10
-    split_method: Literal["umap_cluster", "sorted"] = "umap_cluster"
+    split_method: Literal["umap_cluster", "sorted", "random"] = "umap_cluster"
     random_seed: int = 42
     output_dir: str = "outputs"
     umap: UMAPConfig = Field(default_factory=UMAPConfig)

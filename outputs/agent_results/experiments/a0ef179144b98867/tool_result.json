@@ -1,0 +1,62 @@
+{
+  "experiment_id": "a0ef179144b98867",
+  "tool_name": "freeze_pipeline",
+  "arguments": {
+    "candidate": {
+      "experiment_id": "a02e5cc03982__random_forest__ga",
+      "metrics": {
+        "train_r2": 0.6313288775278405,
+        "train_rmse": 0.5887373983433889,
+        "train_mae": 0.4656875552573088,
+        "train_n": 153,
+        "cv_r2": 0.6020755394206312,
+        "cv_rmse": 0.5974017942101979,
+        "cv_mae": 0.47470091685324245,
+        "cv_r2_std": 0.06177008753247458,
+        "train_cv_r2_gap": 0.030364437804821343,
+        "val_r2": 0.1531370668026879,
+        "val_rmse": 0.8936788767536415,
+        "val_mae": 0.69336675902687,
+        "val_n": 19,
+        "refit_train_r2": 0.6313288775278405,
+        "mean_cv_fold_train_r2": 0.6324399772254525,
+        "oof_cv_r2": 0.6020755394206312,
+        "refit_train_cv_gap": 0.029253338107209315,
+        "cv_fold_train_val_gap": 0.030364437804821343
+      },
+      "selected_features": [
+        "Mordred_AATSC1d",
+        "Mordred_ATSC8Z",
+        "Mordred_GATS5c",
+        "Mordred_GATS7i",
+        "Mordred_NdsssP",
+        "Mordred_RNCS",
+        "Mordred_VSA_EState3",
+        "RDKit_SMR_VSA10"
+      ],
+      "model": "PLSRegression"
+    }
+  },
+  "status": "completed",
+  "metrics": {},
+  "selected_features": [
+    "Mordred_AATSC1d",
+    "Mordred_ATSC8Z",
+    "Mordred_GATS5c",
+    "Mordred_GATS7i",
+    "Mordred_NdsssP",
+    "Mordred_RNCS",
+    "Mordred_VSA_EState3",
+    "RDKit_SMR_VSA10"
+  ],
+  "artifact_paths": {
+    "frozen_pipeline": "outputs/a02e5cc03982/agent_results/frozen_pipeline"
+  },
+  "warnings": [],
+  "errors": [],
+  "runtime_seconds": null,
+  "parent_experiment_id": null,
+  "extra": {
+    "frozen_dir": "outputs/a02e5cc03982/agent_results/frozen_pipeline"
+  }
+}

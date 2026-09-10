@@ -1,0 +1,44 @@
+{
+  "experiment_id": "7ed734693ad815e3",
+  "tool_name": "evaluate_sealed_test",
+  "arguments": {
+    "selected_features": [
+      "Mordred_AATSC1d",
+      "Mordred_ATSC8Z",
+      "Mordred_GATS5c",
+      "Mordred_GATS7i",
+      "Mordred_NdsssP",
+      "Mordred_RNCS",
+      "Mordred_VSA_EState3",
+      "RDKit_SMR_VSA10"
+    ]
+  },
+  "status": "completed",
+  "metrics": {
+    "test_r2": 0.32977316695522096,
+    "test_rmse": 0.8300898485496737,
+    "test_mae": 0.6598771709925724,
+    "train_r2": 0.9219840892823041,
+    "val_r2": 0.4131055889931107
+  },
+  "selected_features": [
+    "Mordred_AATSC1d",
+    "Mordred_ATSC8Z",
+    "Mordred_GATS5c",
+    "Mordred_GATS7i",
+    "Mordred_NdsssP",
+    "Mordred_RNCS",
+    "Mordred_VSA_EState3",
+    "RDKit_SMR_VSA10"
+  ],
+  "artifact_paths": {
+    "sealed_test": "outputs/a02e5cc03982/agent_results/sealed_test"
+  },
+  "warnings": [],
+  "errors": [],
+  "runtime_seconds": null,
+  "parent_experiment_id": null,
+  "extra": {
+    "confirmatory": true
+  }
+}
