@@ -256,10 +256,7 @@ def prompt_for_criteria(
         print(f"\n{spec.label} {symbol} ?", file=stream_out)
         print(f"  {spec.description}", file=stream_out)
         if optional:
-            print(
-                f"  No general value exists ({spec.source}); disabled unless you give one.",
-                file=stream_out,
-            )
+            print(f"  Disabled unless you give a value: {spec.source}.", file=stream_out)
         else:
             print(f"  Suggested: {suggestion:g} — {spec.source}", file=stream_out)
         stream_out.write(f"  Your requirement [{default_label}]: ")

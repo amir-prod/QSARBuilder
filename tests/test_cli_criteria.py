@@ -78,6 +78,15 @@ def test_the_prompt_shows_the_suggestion_and_its_basis():
     assert "What are you looking for" in text
 
 
+def test_optional_criteria_explain_why_they_are_off():
+    out = io.StringIO()
+    prompt_for_criteria("regression", REGRESSION_DETECTION, {}, FakeTTY("\n" * 10), out)
+    text = out.getvalue()
+    assert "Disabled unless you give a value" in text
+    assert "depends on your activity scale" in text
+    assert "No general value exists (no general value exists" not in text
+
+
 def test_the_prompt_reports_the_detected_task():
     out = io.StringIO()
     prompt_for_criteria(
