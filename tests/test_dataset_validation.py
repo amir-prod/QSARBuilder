@@ -36,6 +36,8 @@ def test_missing_activity(tmp_run_dir):
 
 
 def test_duplicate_compounds(tmp_run_dir):
+    # The generated series starts at "CCO" (i=1), so ethanol appears 11 times in
+    # total and 10 copies are removed, leaving 15 unique structures.
     smiles = ["CCO"] * 10 + [f"C{'C' * i}O" for i in range(1, 16)]
     df = pd.DataFrame({
         "smiles": smiles,
@@ -44,7 +46,8 @@ def test_duplicate_compounds(tmp_run_dir):
     path = tmp_run_dir / "data.csv"
     df.to_csv(path, index=False)
     result = validate_dataset(path, "smiles", "activity", None, tmp_run_dir, min_valid_compounds=10)
-    assert result.duplicate_compound_count == 9
+    assert result.duplicate_compound_count == 10
+    assert result.valid_compound_count == 15
 
 
 def test_too_few_compounds(tmp_run_dir):
