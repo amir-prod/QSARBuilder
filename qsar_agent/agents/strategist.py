@@ -16,7 +16,7 @@ from qsar_agent.llm.agent_tools import build_strategist_toolset
 from qsar_agent.llm.provider import LLMClient, LLMResponseError
 from qsar_agent.logging_utils import get_logger
 from qsar_agent.schemas.agentic import IterationPlan, PlanRevision
-from qsar_agent.tools.model_zoo import describe_zoo, list_estimators, validate_hyperparameters
+from qsar_agent.tools.model_zoo import list_estimators, validate_hyperparameters
 from qsar_agent.tools.rdkit_features import AVAILABLE_BLOCKS
 
 logger = get_logger()
@@ -252,6 +252,3 @@ class Strategist:
                 f"Choose from: {', '.join(available)}."
             )
         validate_hyperparameters(self.task, estimator, hyperparameters)
-
-    def zoo_description(self) -> list[dict[str, Any]]:
-        return describe_zoo(self.task)

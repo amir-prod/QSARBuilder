@@ -14,7 +14,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any, TextIO
+from typing import TextIO
 
 from qsar_agent.config import load_env_file
 from qsar_agent.llm.provider import (

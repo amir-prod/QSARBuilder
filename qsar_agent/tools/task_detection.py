@@ -39,7 +39,10 @@ def detect_task(values: pd.Series | np.ndarray | list, forced: str | None = None
         all_integral = bool(np.all(np.isclose(numeric.values, np.round(numeric.values))))
         if n_unique == 2:
             task = "classification"
-            reason = f"Exactly 2 distinct activity values {sorted(unique_raw.tolist())}: binary classification."
+            reason = (
+                f"Exactly 2 distinct activity values {sorted(unique_raw.tolist())}: "
+                "binary classification."
+            )
         elif all_integral and n_unique <= MAX_CLASS_LEVELS:
             task = "classification"
             reason = (
@@ -55,7 +58,10 @@ def detect_task(values: pd.Series | np.ndarray | list, forced: str | None = None
         labels = numeric.astype(str) if task == "classification" else numeric.astype(str)
 
     if forced and forced != task:
-        reason = f"Task forced to '{forced}' by the caller; automatic inference said '{task}' ({reason})"
+        reason = (
+            f"Task forced to '{forced}' by the caller; automatic inference said "
+            f"'{task}' ({reason})"
+        )
         task = forced
 
     class_counts: dict[str, int] = {}

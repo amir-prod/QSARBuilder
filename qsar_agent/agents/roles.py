@@ -189,7 +189,9 @@ class DescriptorAgent:
             self._raw_cache[key] = compute_features(self.bundle.smiles(), recipe)
         return self._raw_cache[key]
 
-    def build(self, recipe: FeatureRecipe, y_train_encoded: np.ndarray | None = None) -> FeatureMatrices:
+    def build(
+        self, recipe: FeatureRecipe, y_train_encoded: np.ndarray | None = None
+    ) -> FeatureMatrices:
         raw = self._raw_features(recipe)
         n_raw = raw.shape[1]
         notes: list[str] = []

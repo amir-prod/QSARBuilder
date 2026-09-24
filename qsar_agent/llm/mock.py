@@ -202,7 +202,8 @@ def _candidate_signature(revision: dict[str, Any], context: dict[str, Any]) -> s
     from qsar_agent.schemas.agentic import FeatureRecipe, IterationPlan, ModelPlan
 
     previous = context.get("current_plan") or {}
-    features = revision.get("features") or previous.get("features") or {"blocks": ["rdkit_descriptors"]}
+    fallback_features = {"blocks": ["rdkit_descriptors"]}
+    features = revision.get("features") or previous.get("features") or fallback_features
     model = revision.get("model") or previous.get("model") or {"estimator": "RandomForest"}
     try:
         plan = IterationPlan(

@@ -242,10 +242,6 @@ def build_estimator(
     return cls(**params)
 
 
-def supports_proba(model: BaseEstimator) -> bool:
-    return hasattr(model, "predict_proba") or hasattr(model, "decision_function")
-
-
 def decision_scores(model: BaseEstimator, X) -> np.ndarray | None:
     """Probabilities when available, otherwise decision-function margins."""
     if hasattr(model, "predict_proba"):

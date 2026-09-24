@@ -10,7 +10,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from rdkit import Chem, RDLogger
-from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdFingerprintGenerator
+from rdkit.Chem import Descriptors, MACCSkeys, rdFingerprintGenerator
 
 from qsar_agent.schemas.agentic import FeatureRecipe
 
@@ -163,12 +163,3 @@ def murcko_scaffold(smiles: str) -> str:
         return Chem.MolToSmiles(scaffold) if scaffold is not None else ""
     except Exception:
         return ""
-
-
-def morgan_fingerprint_matrix(
-    smiles: list[str], n_bits: int = 1024, radius: int = 2
-) -> np.ndarray:
-    """Convenience binary fingerprint matrix, used for similarity-based diagnostics."""
-    _ = AllChem  # kept imported for downstream users of this module
-    mols = mols_from_smiles(smiles)
-    return compute_morgan(mols, n_bits, radius).to_numpy(dtype=float)
