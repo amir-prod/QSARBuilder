@@ -140,8 +140,11 @@ _CLASSIFIERS: dict[str, dict[str, Any]] = {
     },
     "SVC": {
         "cls": SVC,
-        "defaults": {"C": 1.0, "gamma": "scale", "kernel": "rbf", "probability": True},
-        "description": "Support-vector classifier with probability estimates.",
+        "defaults": {"C": 1.0, "gamma": "scale", "kernel": "rbf"},
+        "description": (
+            "Support-vector classifier; ROC-AUC uses its decision-function margins "
+            "rather than calibrated probabilities."
+        ),
         "supports_seed": True,
     },
     "KNN": {
@@ -236,8 +239,6 @@ def build_estimator(
     # ones where it is a no-op (e.g. LogisticRegression since 1.8).
     if spec.get("parallel") and "n_jobs" in accepted:
         params.setdefault("n_jobs", n_jobs)
-    if estimator == "SVC":
-        params.setdefault("probability", True)
     return cls(**params)
 
 

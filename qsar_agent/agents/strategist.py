@@ -123,33 +123,39 @@ class Strategist:
 
     def initial_plan(self, context: dict[str, Any]) -> IterationPlan:
         """Ask for the opening plan."""
-        payload = {"request": "initial_plan", **context}
-        user_prompt = (
-            "Propose the first feature recipe and model for this dataset.\n"
-            "Prefer a defensible, modest starting point: it is better to start simple and let "
-            "the measured results justify added complexity.\n\n"
-            + json.dumps(payload, indent=2, default=str)
-        )
-        data = self._ask(
+        payload = {
+            "request": "initial_plan",
+            "instruction": (
+                "Propose the first feature recipe and model for this dataset. Prefer a "
+                "defensible, modest starting point: it is better to start simple and let the "
+                "measured results justify added complexity."
+            ),
+            **context,
+        }
+        return self._ask(
             system=self._system_prompt(),
             user=json.dumps(payload, indent=2, default=str),
             schema_hint=_INITIAL_SCHEMA_HINT,
-            instruction=user_prompt,
             validator=self._validate_initial,
         )
-        return data
 
     def revise(self, context: dict[str, Any]) -> PlanRevision:
         """Ask how to change the plan after a failed validation."""
-        payload = {"request": "revision", **context}
-        data = self._ask(
+        payload = {
+            "request": "revision",
+            "instruction": (
+                "The current plan did not meet the acceptance criteria. Propose the single most "
+                "promising change, addressing the reported diagnosis. Set stop=true only if no "
+                "untried change is worth testing."
+            ),
+            **context,
+        }
+        return self._ask(
             system=self._system_prompt(),
             user=json.dumps(payload, indent=2, default=str),
             schema_hint=_REVISION_SCHEMA_HINT,
-            instruction="",
             validator=self._validate_revision,
         )
-        return data
 
     # -- internals -------------------------------------------------------------
 
@@ -158,7 +164,6 @@ class Strategist:
         system: str,
         user: str,
         schema_hint: str,
-        instruction: str,
         validator: Callable[[dict[str, Any]], Any],
     ) -> Any:
         """Call the model, validating the reply and feeding errors back for repair."""
@@ -202,11 +207,24 @@ class Strategist:
 
     @staticmethod
     def _repair_message(original: str, error: str) -> str:
-        return (
-            f"{original}\n\nYour previous reply was rejected: {error}\n"
-            "Return corrected JSON only, using only registered estimators, registered feature "
-            "blocks, and hyperparameters that the chosen estimator actually accepts."
-        )
+        """Fold the validation error into the context.
+
+        The user message stays a single JSON document so every client sees the
+        same contract on the first attempt and on a repair.
+        """
+        try:
+            context = json.loads(original)
+        except json.JSONDecodeError:
+            context = {"original_context": original}
+        context["rejected_previous_reply"] = {
+            "error": error,
+            "instruction": (
+                "Your previous reply was rejected for the reason above. Return corrected JSON "
+                "only, using registered estimators, registered feature blocks, and "
+                "hyperparameters the chosen estimator actually accepts."
+            ),
+        }
+        return json.dumps(context, indent=2, default=str)
 
     def _validate_initial(self, data: dict[str, Any]) -> IterationPlan:
         plan = IterationPlan.model_validate(data)
