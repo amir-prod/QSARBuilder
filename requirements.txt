@@ -1,23 +1,46 @@
-streamlit>=1.32.0
-# PyArrow 25.0.0 segfaults with Streamlit's script threads (mimalloc); keep <25.
-# See https://github.com/apache/arrow/issues/50471
-pyarrow>=14.0.0,<25.0.0
-openai>=1.30.0
-pydantic>=2.0.0
-pandas>=2.0.0
-numpy>=1.24.0
-scikit-learn>=1.3.0
-rdkit>=2023.9.1
-mordred>=1.2.0
-# Upstream DescJocky uses invalid requires-python ("=3.11"); install the patched vendor copy.
+# Pinned to the versions this project is tested against.
+# Regenerate deliberately: several of these interact badly across major versions.
+
+# --- Core scientific stack ---
+numpy==2.2.6
+scipy==1.18.1
+pandas==3.0.6
+scikit-learn==1.9.1
+joblib==1.6.0
+
+# --- Cheminformatics ---
+rdkit==2026.3.6
+# Mordred declares `numpy==1.*` but imports and runs against numpy 2.x. Installing
+# it will print a pip resolver warning; the descriptor backends still work.
+mordred==1.2.0
+# Upstream DescJocky uses an invalid requires-python ("=3.11"); install the
+# patched vendor copy instead of the PyPI release.
 ./vendor/descjocky
-umap-learn>=0.5.5
-matplotlib>=3.7.0
-seaborn>=0.13.0
-joblib>=1.3.0
-mlxtend>=0.23.0
-deap>=1.4.1
-python-dotenv>=1.0.0
-pytest>=7.4.0
-pytest-mock>=3.12.0
-eval_type_backport>=0.2.0
+
+# --- Modelling and feature selection (Streamlit workflow) ---
+umap-learn==0.5.12
+mlxtend==0.25.0
+deap==1.4.4
+
+# --- Agents, LLM and tools ---
+openai==3.19.2
+pydantic==2.13.5
+requests==2.33.1
+python-dotenv==1.2.3
+
+# --- Plotting ---
+matplotlib==3.11.2
+seaborn==0.13.2
+
+# --- Streamlit UI ---
+streamlit==1.64.0
+# PyArrow 25.0.0 segfaults with Streamlit's script threads (mimalloc); keep < 25.
+# See https://github.com/apache/arrow/issues/50471
+pyarrow==24.0.0
+
+# --- Tests ---
+pytest==9.1.1
+pytest-mock==3.15.1
+
+# Required on Python 3.9 for Pydantic's deferred type annotations.
+eval_type_backport==0.2.2; python_version < "3.10"
